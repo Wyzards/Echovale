@@ -11,6 +11,10 @@ import java.util.Set;
 
 public class VariantHuman extends Human {
 
+    public VariantHuman() {
+        super(true);
+    }
+
     /**
      * Replaces the +1 to all abilities Human (non-variant) receives
      */

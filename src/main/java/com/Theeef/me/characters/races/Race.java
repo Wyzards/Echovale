@@ -8,7 +8,7 @@ import java.util.Set;
 
 public abstract class Race implements AbilityAlterationSource, SkillProficiencySource, FeatSource {
 
-    public static Race HUMAN = new Human();
+    public static Race HUMAN = new Human(false);
     public static Race VARIANT_HUMAN = new VariantHuman();
 
     private String name;

@@ -9,5 +9,4 @@ public abstract class Feat {
     public static Set<Feat> values() {
         return Sets.newHashSet();
     }
-
 }
