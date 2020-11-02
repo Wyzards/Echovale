@@ -10,7 +10,7 @@ import java.util.Set;
 public class Human extends Race {
 
     public Human(boolean isVariant) {
-        super(isVariant ? "Variant Human" : "Human", 30, Sets.newHashSet(Language.COMMON), 1, CreatureSize.MEDIUM, "Humans are the most adaptable and ambitious people among the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.");
+        super(isVariant ? "Variant Human" : "Human", 30, Sets.newHashSet(Language.COMMON, Language.DRACONIC), 1, CreatureSize.MEDIUM, "Humans are the most adaptable and ambitious people among the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.");
     }
 
     /**

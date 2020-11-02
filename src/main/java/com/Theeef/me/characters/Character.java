@@ -7,16 +7,18 @@ import com.Theeef.me.characters.abilities.Skill;
 import com.Theeef.me.characters.backgrounds.Background;
 import com.Theeef.me.characters.classes.DNDClass;
 import com.Theeef.me.characters.classes.HitDice;
+import com.Theeef.me.characters.features.FeatureDraconicAncestry;
 import com.Theeef.me.characters.races.Race;
+import com.Theeef.me.combat.damage.DamageType;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 public class Character {
 
-    private UUID owner;
+    private final UUID owner;
+    private int characterID;
     private String name;
     private Race race;
     private HashMap<DNDClass, Integer> classes;
@@ -36,7 +38,7 @@ public class Character {
         this.owner = owner;
         this.name = name;
         this.race = race;
-        this.classes = new HashMap<DNDClass, Integer>;
+        this.classes = new HashMap<DNDClass, Integer>();
         classes.put(startingClass, 1);
         this.background = background;
         this.abilities = new Abilities(baseAbilities, race.getAlterations());
@@ -61,5 +63,15 @@ public class Character {
 
     public int getSpeed() {
         return 0;
+    }
+
+    public Set<DamageType> getResistances() {
+        Set<DamageType> resistances = race.sourceResistances();
+
+        if (race.getName().equals("Dragonborn")) {
+            resistances.add(FeatureDraconicAncestry.getChoice(owner, characterID).getDamageType());
+        }
+
+        return resistances;
     }
 }

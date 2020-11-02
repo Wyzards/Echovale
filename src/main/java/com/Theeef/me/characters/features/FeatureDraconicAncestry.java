@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class FeatureDraconicAncestry extends ChoiceFeature {
 
@@ -17,6 +18,10 @@ public class FeatureDraconicAncestry extends ChoiceFeature {
     @Override
     public Set<? extends FeatureChoice> getChoices() {
         return FeatureChoiceDraconicAncestry.values();
+    }
+
+    public static FeatureChoiceDraconicAncestry getChoice(UUID characterOwner, int characterID) {
+        return null;
     }
 
     public static class FeatureChoiceDraconicAncestry extends FeatureChoice {
@@ -55,6 +60,10 @@ public class FeatureDraconicAncestry extends ChoiceFeature {
         @Override
         public String getDescription() {
             return "Deals " + damageType.name().toLowerCase() + " damage in a " + breathWeapon;
+        }
+
+        public DamageType getDamageType() {
+            return damageType;
         }
     }
 }

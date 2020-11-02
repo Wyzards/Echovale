@@ -5,6 +5,7 @@ import com.Theeef.me.characters.abilities.AbilityAlteration;
 import com.Theeef.me.characters.abilities.CreatureSize;
 import com.Theeef.me.characters.abilities.Language;
 import com.Theeef.me.characters.features.Feature;
+import com.Theeef.me.combat.damage.DamageType;
 import com.google.common.collect.Sets;
 
 import java.util.HashSet;

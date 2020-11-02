@@ -5,11 +5,13 @@ import com.Theeef.me.characters.feats.Feat;
 import com.Theeef.me.characters.feats.FeatSource;
 import com.Theeef.me.characters.features.Feature;
 import com.Theeef.me.characters.features.FeatureSource;
+import com.Theeef.me.combat.damage.DamageType;
+import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Race implements AbilityAlterationSource, SkillProficiencySource, FeatSource, FeatureSource {
+public abstract class Race implements AbilityAlterationSource, SkillProficiencySource, FeatSource, FeatureSource, ResistanceSource {
 
     public static Race HUMAN = new Human(false);
     public static Race VARIANT_HUMAN = new VariantHuman();
@@ -103,5 +105,14 @@ public abstract class Race implements AbilityAlterationSource, SkillProficiencyS
     @Override
     public Set<? extends Feature> getSourceFeatures() {
         return null;
+    }
+
+    @Override
+    public Set<DamageType> sourceResistances() {
+        return null;
+    }
+
+    public String getName() {
+        return name;
     }
 }
