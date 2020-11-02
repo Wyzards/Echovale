@@ -4,6 +4,7 @@ import com.Theeef.me.characters.abilities.Ability;
 import com.Theeef.me.characters.abilities.AbilityAlteration;
 import com.Theeef.me.characters.abilities.CreatureSize;
 import com.Theeef.me.characters.abilities.Language;
+import com.Theeef.me.characters.features.Feature;
 import com.google.common.collect.Sets;
 
 import java.util.HashSet;
@@ -23,5 +24,10 @@ public class Dragonborn extends Race {
     @Override
     public Set<AbilityAlteration> getAlterations() {
         return Sets.newHashSet(new AbilityAlteration(Ability.STR, 2, this), new AbilityAlteration(Ability.CHA, 1, this));
+    }
+
+    @Override
+    public Set<? extends Feature> getSourceFeatures() {
+        return Sets.newHashSet(Feature.DRACONIC_ANCESTRY);
     }
 }

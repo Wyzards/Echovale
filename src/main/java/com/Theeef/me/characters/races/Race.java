@@ -3,10 +3,13 @@ package com.Theeef.me.characters.races;
 import com.Theeef.me.characters.abilities.*;
 import com.Theeef.me.characters.feats.Feat;
 import com.Theeef.me.characters.feats.FeatSource;
+import com.Theeef.me.characters.features.Feature;
+import com.Theeef.me.characters.features.FeatureSource;
 
+import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Race implements AbilityAlterationSource, SkillProficiencySource, FeatSource {
+public abstract class Race implements AbilityAlterationSource, SkillProficiencySource, FeatSource, FeatureSource {
 
     public static Race HUMAN = new Human(false);
     public static Race VARIANT_HUMAN = new VariantHuman();
@@ -95,5 +98,10 @@ public abstract class Race implements AbilityAlterationSource, SkillProficiencyS
     @Override
     public int featChoiceAmount() {
         return 0;
+    }
+
+    @Override
+    public Set<? extends Feature> getSourceFeatures() {
+        return null;
     }
 }
