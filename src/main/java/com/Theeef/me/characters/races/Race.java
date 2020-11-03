@@ -11,7 +11,7 @@ import com.google.common.collect.Sets;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Race implements AbilityAlterationSource, SkillProficiencySource, FeatSource, FeatureSource, ResistanceSource {
+public abstract class Race implements AbilityAlterationSource, SkillProficiencySource, ProficiencySource, FeatSource, FeatureSource, ResistanceSource {
 
     public static Race HUMAN = new Human(false);
     public static Race VARIANT_HUMAN = new VariantHuman();
@@ -109,6 +109,21 @@ public abstract class Race implements AbilityAlterationSource, SkillProficiencyS
 
     @Override
     public Set<DamageType> sourceResistances() {
+        return null;
+    }
+
+    @Override
+    public Set<Proficiency> proficiencyOptions() {
+        return null;
+    }
+
+    @Override
+    public int proficiencyChoiceAmount() {
+        return 0;
+    }
+
+    @Override
+    public Set<Proficiency> sourceProficiencies() {
         return null;
     }
 

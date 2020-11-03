@@ -3,26 +3,26 @@ package com.Theeef.me.characters.abilities;
 public class Proficiency {
 
     public enum ProficiencyType {
-        WEAPON, ARTISONS_TOOLS, GAMING_SETS, INSTRUMENTS, KIT, MISC;
+        WEAPON, ARTISANS_TOOLS, GAMING_SETS, INSTRUMENTS, KIT, MISC;
     }
 
-    public static Proficiency ALCHEMISTS_SUPPLIES = new Proficiency("Alchemist's supplies", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency BREWERS_SUPPLIES = new Proficiency("Brewer's supplies", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency CALLIGRAPHERS_SUPPLIES = new Proficiency("Calligrapher's supplies", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency CARPENTERS_TOOLS = new Proficiency("Carpenter's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency CARTOGRAPHERS_TOOLS = new Proficiency("Cartographer's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency COBBLERS_TOOLS = new Proficiency("Cobbler's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency COOKS_UTENSILS = new Proficiency("Cook's utensils", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency GLASSBLOWERS_TOOLS = new Proficiency("Glassblower's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency JEWELERS_TOOLS = new Proficiency("Jeweler's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency LEATHERWORKERS_TOOLS = new Proficiency("Leatherworker's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency MASONS_TOOLS = new Proficiency("Mason's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency PAINTERS_SUPPLIES = new Proficiency("Painter's supplies", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency POTTERS_TOOLS = new Proficiency("Potter's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency SMITHS_TOOLS = new Proficiency("Smith's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency TINKERS_TOOLS = new Proficiency("Tinker's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency WEAVERS_TOOLS = new Proficiency("Weaver's tools", ProficiencyType.ARTISONS_TOOLS);
-    public static Proficiency WOODCARVERS_TOOLS = new Proficiency("Woodcarver's tools", ProficiencyType.ARTISONS_TOOLS);
+    public static Proficiency ALCHEMISTS_SUPPLIES = new Proficiency("Alchemist's supplies", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency BREWERS_SUPPLIES = new Proficiency("Brewer's supplies", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency CALLIGRAPHERS_SUPPLIES = new Proficiency("Calligrapher's supplies", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency CARPENTERS_TOOLS = new Proficiency("Carpenter's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency CARTOGRAPHERS_TOOLS = new Proficiency("Cartographer's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency COBBLERS_TOOLS = new Proficiency("Cobbler's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency COOKS_UTENSILS = new Proficiency("Cook's utensils", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency GLASSBLOWERS_TOOLS = new Proficiency("Glassblower's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency JEWELERS_TOOLS = new Proficiency("Jeweler's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency LEATHERWORKERS_TOOLS = new Proficiency("Leatherworker's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency MASONS_TOOLS = new Proficiency("Mason's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency PAINTERS_SUPPLIES = new Proficiency("Painter's supplies", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency POTTERS_TOOLS = new Proficiency("Potter's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency SMITHS_TOOLS = new Proficiency("Smith's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency TINKERS_TOOLS = new Proficiency("Tinker's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency WEAVERS_TOOLS = new Proficiency("Weaver's tools", ProficiencyType.ARTISANS_TOOLS);
+    public static Proficiency WOODCARVERS_TOOLS = new Proficiency("Woodcarver's tools", ProficiencyType.ARTISANS_TOOLS);
     public static Proficiency DICE_SET = new Proficiency("Dice set", ProficiencyType.GAMING_SETS);
     public static Proficiency PLAYING_CARD_SET = new Proficiency("Playing card set", ProficiencyType.GAMING_SETS);
     public static Proficiency BAGPIPES = new Proficiency("Bagpipes", ProficiencyType.INSTRUMENTS);
@@ -42,6 +42,12 @@ public class Proficiency {
     public static Proficiency FORGERY_KIT = new Proficiency("Forgery Kit", ProficiencyType.KIT);
     public static Proficiency HERBALISM_KIT = new Proficiency("Herbalism Kit", ProficiencyType.KIT);
     public static Proficiency POISONERS_KIT = new Proficiency("Poisoner's Kit", ProficiencyType.KIT);
+
+    // WEAPON PROFICIENCIES
+    public static Proficiency BATTLEAXE = new Proficiency("Battleaxe", ProficiencyType.WEAPON);
+    public static Proficiency HANDAXE = new Proficiency("Handaxe", ProficiencyType.WEAPON);
+    public static Proficiency LIGHT_HAMMER = new Proficiency("Light Hammer", ProficiencyType.WEAPON);
+    public static Proficiency WARHAMMER = new Proficiency("Warhammer", ProficiencyType.WEAPON);
 
     private ProficiencyType type;
     private String name;

@@ -1,9 +1,6 @@
 package com.Theeef.me.characters.races;
 
-import com.Theeef.me.characters.abilities.Ability;
-import com.Theeef.me.characters.abilities.AbilityAlteration;
-import com.Theeef.me.characters.abilities.CreatureSize;
-import com.Theeef.me.characters.abilities.Language;
+import com.Theeef.me.characters.abilities.*;
 import com.Theeef.me.characters.features.Feature;
 import com.Theeef.me.combat.damage.DamageType;
 import com.google.common.collect.Sets;
@@ -34,11 +31,26 @@ public class Dwarf extends Race {
      */
     @Override
     public Set<? extends Feature> getSourceFeatures() {
-        return Sets.newHashSet(Feature.DARKVISION, Feature.DWARVEN_RESILIENCE);
+        return Sets.newHashSet(Feature.DARKVISION, Feature.DWARVEN_RESILIENCE, Feature.STONECUNNING);
     }
 
     @Override
     public Set<DamageType> sourceResistances() {
         return Sets.newHashSet(DamageType.POISON);
+    }
+
+    @Override
+    public Set<Proficiency> proficiencyOptions() {
+        return Sets.newHashSet(Proficiency.SMITHS_TOOLS, Proficiency.BREWERS_SUPPLIES, Proficiency.MASONS_TOOLS);
+    }
+
+    @Override
+    public int proficiencyChoiceAmount() {
+        return 1;
+    }
+
+    @Override
+    public Set<Proficiency> sourceProficiencies() {
+        return Sets.newHashSet(Proficiency.BATTLEAXE, Proficiency.HANDAXE, Proficiency.LIGHT_HAMMER, Proficiency.WARHAMMER);
     }
 }
