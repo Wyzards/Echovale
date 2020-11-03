@@ -11,10 +11,10 @@ import com.google.common.collect.Sets;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Dragonborn extends Race {
+public class Dwarf extends Race {
 
-    public Dragonborn() {
-        super("Dragonborn", 30, Sets.newHashSet(Language.COMMON), 0, CreatureSize.MEDIUM, "desc");
+    public Dwarf() {
+        super("Dwarf", 25, Sets.newHashSet(Language.COMMON, Language.DWARVISH), 1, CreatureSize.MEDIUM, "Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal.");
     }
 
     /**
@@ -24,11 +24,21 @@ public class Dragonborn extends Race {
      */
     @Override
     public Set<AbilityAlteration> getAlterations() {
-        return Sets.newHashSet(new AbilityAlteration(Ability.STR, 2, this), new AbilityAlteration(Ability.CHA, 1, this));
+        return Sets.newHashSet(new AbilityAlteration(Ability.CON, 2, this));
+    }
+
+    /**
+     * Get the features granted by this source
+     *
+     * @return set of features
+     */
+    @Override
+    public Set<? extends Feature> getSourceFeatures() {
+        return Sets.newHashSet(Feature.DARKVISION, Feature.DWARVEN_RESILIENCE);
     }
 
     @Override
-    public Set<? extends Feature> getSourceFeatures() {
-        return Sets.newHashSet(Feature.DRACONIC_ANCESTRY, Feature.BREATH_WEAPON);
+    public Set<DamageType> sourceResistances() {
+        return Sets.newHashSet(DamageType.POISON);
     }
 }
