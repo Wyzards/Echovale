@@ -3,6 +3,7 @@ package com.Theeef.me.characters.races;
 import com.Theeef.me.characters.abilities.*;
 import com.Theeef.me.characters.feats.Feat;
 import com.google.common.collect.Sets;
+import org.bukkit.Material;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,5 +27,9 @@ public class Human extends Race {
             alterations.add(new AbilityAlteration(ability, 1, this));
 
         return alterations;
+    }
+
+    public Material getDisplayMaterial() {
+        return Material.PLAYER_HEAD;
     }
 }

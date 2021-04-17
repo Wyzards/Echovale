@@ -5,6 +5,7 @@ import com.Theeef.me.characters.abilities.AbilityAlteration;
 import com.Theeef.me.characters.abilities.Skill;
 import com.Theeef.me.characters.feats.Feat;
 import com.google.common.collect.Sets;
+import org.bukkit.Material;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,12 +36,17 @@ public class VariantHuman extends Human {
 
     @Override
     /**
-     * A specified amount of abilities can be increased by 1
+     * A specified amount of additional skills you can be proficient in
      */
     public int skillChoiceAmount() {
         return 1;
     }
 
+    /**
+     * A specified amount of ablities you can increase by 1
+     *
+     * @return
+     */
     @Override
     public int abilityChoiceAmount() {
         return 2;
@@ -51,6 +57,12 @@ public class VariantHuman extends Human {
      *
      * @return the available feats
      */
+
+    @Override
+    public int maxAbilityAlteration() {
+        return 1;
+    }
+
     @Override
     public Set<Feat> featOptions() {
         return Feat.values();
@@ -64,5 +76,9 @@ public class VariantHuman extends Human {
     @Override
     public int featChoiceAmount() {
         return 1;
+    }
+
+    public Material getDisplayMaterial() {
+        return Material.PLAYER_HEAD;
     }
 }

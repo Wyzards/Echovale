@@ -7,6 +7,7 @@ import com.Theeef.me.characters.features.Feature;
 import com.Theeef.me.characters.features.FeatureSource;
 import com.Theeef.me.combat.damage.DamageType;
 import com.google.common.collect.Sets;
+import org.bukkit.Material;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +16,8 @@ public abstract class Race implements AbilityAlterationSource, SkillProficiencyS
 
     public static Race HUMAN = new Human(false);
     public static Race VARIANT_HUMAN = new VariantHuman();
+    public static Race DRAGONBORN = new Dragonborn();
+    public static Race DWARF = new Dwarf();
 
     private String name;
     private String description;
@@ -127,7 +130,17 @@ public abstract class Race implements AbilityAlterationSource, SkillProficiencyS
         return null;
     }
 
+    public static Set<Race> values() {
+        return Sets.newHashSet(DRAGONBORN, HUMAN, VARIANT_HUMAN, DWARF);
+    }
+
     public String getName() {
         return name;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public abstract Material getDisplayMaterial();
 }

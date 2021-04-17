@@ -1,9 +1,6 @@
 package com.Theeef.me.characters;
 
-import com.Theeef.me.characters.abilities.Abilities;
-import com.Theeef.me.characters.abilities.Ability;
-import com.Theeef.me.characters.abilities.Proficiency;
-import com.Theeef.me.characters.abilities.Skill;
+import com.Theeef.me.characters.abilities.*;
 import com.Theeef.me.characters.backgrounds.Background;
 import com.Theeef.me.characters.classes.DNDClass;
 import com.Theeef.me.characters.classes.HitDice;
@@ -34,7 +31,7 @@ public class Character {
     private Set<Proficiency> proficiencies;
     private Set<Skill> proficientSkills;
 
-    public Character(UUID owner, String name, HashMap<Ability, Integer> baseAbilities, Race race, DNDClass startingClass, Background background) {
+    public Character(UUID owner, String name, HashMap<Ability, Integer> baseAbilities, Race race, Set<AbilityAlteration> chosenAlterations, DNDClass startingClass, Background background) {
         this.owner = owner;
         this.name = name;
         this.race = race;
@@ -42,6 +39,7 @@ public class Character {
         classes.put(startingClass, 1);
         this.background = background;
         this.abilities = new Abilities(baseAbilities, race.getAlterations());
+        abilities.addAlterations(chosenAlterations);
         abilities.addAlterations(background.getAlterations());
         this.experience = 0;
         this.maxHP = startingClass.startingHealth(abilities);

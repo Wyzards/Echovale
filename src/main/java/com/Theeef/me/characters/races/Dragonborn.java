@@ -5,10 +5,9 @@ import com.Theeef.me.characters.abilities.AbilityAlteration;
 import com.Theeef.me.characters.abilities.CreatureSize;
 import com.Theeef.me.characters.abilities.Language;
 import com.Theeef.me.characters.features.Feature;
-import com.Theeef.me.combat.damage.DamageType;
 import com.google.common.collect.Sets;
+import org.bukkit.Material;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class Dragonborn extends Race {
@@ -30,5 +29,9 @@ public class Dragonborn extends Race {
     @Override
     public Set<? extends Feature> getSourceFeatures() {
         return Sets.newHashSet(Feature.DRACONIC_ANCESTRY, Feature.BREATH_WEAPON);
+    }
+
+    public Material getDisplayMaterial() {
+        return Material.DRAGON_EGG;
     }
 }

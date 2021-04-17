@@ -4,6 +4,7 @@ import com.Theeef.me.characters.abilities.*;
 import com.Theeef.me.characters.features.Feature;
 import com.Theeef.me.combat.damage.DamageType;
 import com.google.common.collect.Sets;
+import org.bukkit.Material;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -52,5 +53,9 @@ public class Dwarf extends Race {
     @Override
     public Set<Proficiency> sourceProficiencies() {
         return Sets.newHashSet(Proficiency.BATTLEAXE, Proficiency.HANDAXE, Proficiency.LIGHT_HAMMER, Proficiency.WARHAMMER);
+    }
+
+    public Material getDisplayMaterial() {
+        return Material.NETHERITE_PICKAXE;
     }
 }
