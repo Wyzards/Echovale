@@ -11,19 +11,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public class DNDRangedWeapon extends DNDWeapon {
+public class DNDVersatileWeapon extends DNDWeapon {
 
-    private int longRange;
-    private int closeRange;
+    private int twoHandedMinDamage;
+    private int twoHandedMaxDamage;
 
-    public DNDRangedWeapon(String ID, String name, Material material, String description, MoneyAmount cost, double weight, int minDamage, int maxDamage, DamageType damageType, List<ItemProperty> properties, int closeRange, int longRange, WeaponType weaponType) {
+    public DNDVersatileWeapon(String ID, String name, Material material, String description, MoneyAmount cost, double weight, int minDamage, int maxDamage, DamageType damageType, List<ItemProperty> properties, int twoHandedMinDamage, int twoHandedMaxDamage, WeaponType weaponType) {
         super(ID, name, material, description, cost, weight, minDamage, maxDamage, damageType, properties, weaponType);
 
-        if (!properties.contains(ItemProperty.AMMUNITION) && !properties.contains(ItemProperty.THROWN))
-            throw new IllegalArgumentException("All Ranged weapons must have the ItemProperty: AMMUNITION or THROWN");
+        if (!properties.contains(ItemProperty.VERSATILE))
+            throw new IllegalArgumentException("All Versatile weapons must have the ItemProperty: VERSATILE");
 
-        this.longRange = longRange;
-        this.closeRange = closeRange;
+        this.twoHandedMinDamage = twoHandedMinDamage;
+        this.twoHandedMaxDamage = twoHandedMaxDamage;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class DNDRangedWeapon extends DNDWeapon {
         ItemStack item = new ItemStack(getMaterial(), amount);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(getName());
-        List<String> lore = Lists.newArrayList(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().name().toLowerCase(), ChatColor.GRAY + "Range: " + ChatColor.WHITE + closeRange + "ft Normal Range - " + longRange + "ft Long Range", ChatColor.GRAY + "Type: " + ChatColor.RESET + Util.cleanEnumName(getWeaponType().name()), "", ChatColor.GRAY + "Cost: " + ChatColor.WHITE + getCost().amountString(), ChatColor.GRAY + "Weight: " + getWeight() + " pounds");
+        List<String> lore = Lists.newArrayList(ChatColor.GRAY + "One-Handed Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().name().toLowerCase(), ChatColor.GRAY + "Two-Handed Damage: " + ChatColor.WHITE + twoHandedMinDamage + "-" + twoHandedMaxDamage + " " + getDamageType().name().toLowerCase(), ChatColor.GRAY + "Type: " + ChatColor.RESET + Util.cleanEnumName(getWeaponType().name()), "", ChatColor.GRAY + "Cost: " + ChatColor.WHITE + getCost().amountString(), ChatColor.GRAY + "Weight: " + getWeight() + " pounds");
 
         if (getDescription() != null) {
             lore.add("");
@@ -52,13 +52,5 @@ public class DNDRangedWeapon extends DNDWeapon {
         item.setItemMeta(meta);
 
         return NBTHandler.addString(item, "itemID", getID());
-    }
-
-    public int getCloseRange() {
-        return closeRange;
-    }
-
-    public int getLongRange() {
-        return longRange;
     }
 }
