@@ -4,23 +4,10 @@ import org.bukkit.Material;
 
 public class DNDArmor extends DNDItem {
 
-    private int armorClass;
-    private int dexCap;
-    private int strengthRequirement;
-    private boolean stealthDisadvantage;
-    private ArmorType type;
+    private ArmorSet set;
+    private ArmorSet.ArmorPiece piece;
 
-    public DNDArmor(String ID, String name, Material material, MoneyAmount cost, double weight, int armorClass, int dexCap, int strengthRequirement, boolean stealthDisadvantage, ArmorType type) {
-        super(ID, name, material, 1, null, cost, weight);
-
-        this.armorClass = armorClass;
-        this.dexCap = dexCap;
-        this.strengthRequirement = strengthRequirement;
-        this.stealthDisadvantage = stealthDisadvantage;
-        this.type = type;
-    }
-
-    public enum ArmorType {
-        LIGHT, MEDIUM, HEAVY;
+    public DNDArmor(ArmorSet set, ArmorSet.ArmorPiece piece, String name, Material material, int amount, String description) {
+        super(set.getID() + "_" + piece.name(), name, material, amount, description, MoneyAmount.fromGold(set.getGoldCost() * piece.getAdjustedPercentage(set.getPieces())), set.);
     }
 }

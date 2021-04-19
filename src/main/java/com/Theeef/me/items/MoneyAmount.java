@@ -12,23 +12,23 @@ public class MoneyAmount {
     private int gold;
     private int platinum;
 
-    public MoneyAmount(int copper, int silver, int electrum, int gold, int platinum) {
-        this.copper = copper;
-        this.silver = silver;
-        this.electrum = electrum;
-        this.gold = gold;
-        this.platinum = platinum;
+    public MoneyAmount(double copper, double silver, double electrum, double gold, double platinum) {
+        this.platinum = (int) platinum;
+        this.gold = (int) (gold + 10 * (platinum - this.platinum));
+        this.silver = (int) (silver + 5 * (electrum - this.electrum) + 10 * ((gold + 10 * (platinum - this.platinum)) - this.gold));
+        this.electrum = (int) electrum;
+        this.copper = (int) (copper + 10 * ((silver + 5 * (electrum - this.electrum) + 10 * ((gold + 10 * (platinum - this.platinum)) - this.gold)) - this.silver));
     }
 
-    public static MoneyAmount fromGold(int gold) {
+    public static MoneyAmount fromGold(double gold) {
         return new MoneyAmount(0, 0, 0, gold, 0);
     }
 
-    public static MoneyAmount fromSilver(int silver) {
+    public static MoneyAmount fromSilver(double silver) {
         return new MoneyAmount(0, silver, 0, 0, 0);
     }
 
-    public static MoneyAmount fromCopper(int copper) {
+    public static MoneyAmount fromCopper(double copper) {
         return new MoneyAmount(copper, 0, 0, 0, 0);
     }
 
