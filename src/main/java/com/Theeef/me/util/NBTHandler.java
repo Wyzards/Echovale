@@ -1,8 +1,8 @@
 package com.Theeef.me.util;
 
-import net.minecraft.server.v1_16_R2.ItemStack;
-import net.minecraft.server.v1_16_R2.NBTTagCompound;
-import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
+import net.minecraft.server.v1_16_R3.ItemStack;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 
 public class NBTHandler {
     public static NBTTagCompound getTag(org.bukkit.inventory.ItemStack item) {

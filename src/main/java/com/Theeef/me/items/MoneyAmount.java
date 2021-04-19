@@ -1,7 +1,8 @@
 package com.Theeef.me.items;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
+
+import java.awt.*;
 
 public class MoneyAmount {
 
@@ -36,7 +37,8 @@ public class MoneyAmount {
     }
 
     public String amountString() {
-        return (platinum > 0 ? ChatColor.WHITE + Integer.toString(platinum) + "pp " : "") + (gold > 0 ? ChatColor.GOLD + Integer.toString(gold) + "gp " : "") + (electrum > 0 ? ChatColor.YELLOW + Integer.toString(electrum) + "ep " : "") + (silver > 0 ? ChatColor.GRAY + Integer.toString(silver) + "sp " : "") + (copper > 0 ? Color.fromRGB(72, 45, 20) + Integer.toString(platinum) + " " : "");
+        return (platinum > 0 ? ChatColor.WHITE + Integer.toString(platinum) + "pp " : "") + (gold > 0 ? ChatColor.GOLD + Integer.toString(gold) + "gp " : "") + (electrum > 0 ? ChatColor.YELLOW + Integer.toString(electrum) + "ep " : "") + (silver > 0 ? ChatColor.GRAY + Integer.toString(silver) + "sp " : "") + (copper > 0 ? net.md_5.bungee.api.ChatColor.of(new Color(184, 115, 51)) + Integer.toString(copper) + "cp" :
+                "");
     }
 
 }

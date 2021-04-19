@@ -1,16 +1,26 @@
 package com.Theeef.me;
 
+import com.Theeef.me.items.DNDWeapon;
+import com.Theeef.me.items.StartingEquipment;
+import com.Theeef.me.items.equipment.Weapons;
 import com.Theeef.me.util.ConfigManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Echovale extends JavaPlugin {
+public class Echovale extends JavaPlugin implements Listener {
 
     private ConfigManager configManager;
 
     @Override
     public void onEnable() {
         loadConfig();
+
+        getServer().getPluginManager().registerEvents(this, this);
 
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "Echovale Enabled");
     }
@@ -23,6 +33,25 @@ public class Echovale extends JavaPlugin {
         configManager.setup();
         configManager.charactersConfig.options().copyDefaults(true);
         configManager.saveCharacters();
+    }
+
+    @EventHandler
+    public void weapons(AsyncPlayerChatEvent event) {
+        if (event.getMessage().equalsIgnoreCase("weapons")) {
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Weapons");
+
+            for (DNDWeapon weapon : Weapons.values())
+                inventory.addItem(weapon.getItem());
+
+            inventory.addItem(StartingEquipment.COMPONENT_POUCH.getItem());
+
+            Bukkit.getScheduler().runTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    event.getPlayer().openInventory(inventory);
+                }
+            });
+        }
     }
 
     public ConfigManager getConfigManager() {

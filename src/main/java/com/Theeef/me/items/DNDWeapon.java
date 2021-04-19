@@ -6,6 +6,7 @@ import com.Theeef.me.util.Util;
 import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -19,13 +20,13 @@ public class DNDWeapon extends DNDItem {
     private DamageType damageType;
     private WeaponType weaponType;
 
-    public DNDWeapon(String ID, String name, Material material, String description, MoneyAmount cost, double weight, int minDamage, int maxDamage, DamageType damageType, List<ItemProperty> properties, WeaponType weaponType) {
-        super(ID, name, material, description, cost, weight);
+    public DNDWeapon(String ID, String name, Material material, int amount, String description, MoneyAmount cost, double weight, int minDamage, int maxDamage, DamageType damageType, List<ItemProperty> properties, WeaponType weaponType) {
+        super(ID, name, material, amount, description, cost, weight);
 
         if ((properties.contains(ItemProperty.AMMUNITION) || properties.contains(ItemProperty.THROWN)) && !(this instanceof DNDRangedWeapon))
             throw new IllegalArgumentException("Non-ranged weapons cannot have the ItemProperty AMMUNITION or THROWN");
 
-        if (properties.contains(ItemProperty.VERSATILE) && !(this instanceof DNDVersatileWeapon))
+        if (properties.contains(ItemProperty.VERSATILE) && !(this instanceof DNDVersatileWeapon) && !(this instanceof DNDRangedVersatileWeapon))
             throw new IllegalArgumentException("Non-versatile weapons cannot have the ItemProperty: VERSATILE");
 
         this.minDamage = minDamage;
@@ -36,11 +37,18 @@ public class DNDWeapon extends DNDItem {
     }
 
     @Override
-    public ItemStack getItem(int amount) {
-        ItemStack item = new ItemStack(getMaterial(), amount);
+    public ItemStack getItem() {
+        ItemStack item = new ItemStack(getMaterial(), getAmount());
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(getName());
-        List<String> lore = Lists.newArrayList(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + minDamage + "-" + maxDamage + " " + damageType.name().toLowerCase(), ChatColor.GRAY + "Type: " + ChatColor.RESET + Util.cleanEnumName(weaponType.name()), "", ChatColor.GRAY + "Cost: " + ChatColor.WHITE + getCost().amountString(), ChatColor.GRAY + "Weight: " + getWeight() + " pounds");
+        meta.setDisplayName(ChatColor.RESET + getName());
+        List<String> lore = Lists.newArrayList();
+
+        if (getMaxDamage() > 0 && getDamageType() != null)
+            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().name().toLowerCase());
+        lore.add(ChatColor.GRAY + "Type: " + ChatColor.WHITE + Util.cleanEnumName(getWeaponType().name()));
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + getCost().amountString());
+        lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + getWeight() + " pounds");
 
         if (getDescription() != null) {
             lore.add("");
@@ -58,6 +66,8 @@ public class DNDWeapon extends DNDItem {
                     propertyList.set(i, ChatColor.WHITE + propertyList.get(i));
         }
 
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
 
         return NBTHandler.addString(item, "itemID", getID());

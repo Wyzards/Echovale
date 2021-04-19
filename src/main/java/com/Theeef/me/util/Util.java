@@ -33,7 +33,7 @@ public class Util {
         String toReturn = "";
 
         for (String word : toClean.split(" "))
-            toReturn += word.substring(0, 1).toUpperCase() + word.substring(1);
+            toReturn += word.substring(0, 1).toUpperCase() + word.substring(1) + " ";
 
         return toReturn;
     }

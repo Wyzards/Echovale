@@ -7,6 +7,7 @@ import com.Theeef.me.characters.classes.HitDice;
 import com.Theeef.me.characters.features.FeatureDraconicAncestry;
 import com.Theeef.me.characters.races.Race;
 import com.Theeef.me.combat.damage.DamageType;
+import com.Theeef.me.items.DNDItem;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -28,14 +29,15 @@ public class Character {
     private Set<Ability> savingThrows;
     private int deathSuccesses;
     private int deathFailures;
-    private Set<Proficiency> proficiencies;
+    private Set<DNDItem> itemProficiencies;
     private Set<Skill> proficientSkills;
 
-    public Character(UUID owner, String name, HashMap<Ability, Integer> baseAbilities, Race race, Set<AbilityAlteration> chosenAlterations, DNDClass startingClass, Background background) {
+    public Character(UUID owner, String name, HashMap<Ability, Integer> baseAbilities, Race race, Set<AbilityAlteration> chosenAlterations, DNDClass startingClass, Set<DNDItem> itemProficiencies, Background background) {
         this.owner = owner;
         this.name = name;
         this.race = race;
         this.classes = new HashMap<DNDClass, Integer>();
+        this.itemProficiencies = itemProficiencies;
         classes.put(startingClass, 1);
         this.background = background;
         this.abilities = new Abilities(baseAbilities, race.getAlterations());

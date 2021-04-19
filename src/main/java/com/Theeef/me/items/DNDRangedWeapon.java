@@ -6,9 +6,11 @@ import com.Theeef.me.util.Util;
 import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DNDRangedWeapon extends DNDWeapon {
@@ -16,8 +18,8 @@ public class DNDRangedWeapon extends DNDWeapon {
     private int longRange;
     private int closeRange;
 
-    public DNDRangedWeapon(String ID, String name, Material material, String description, MoneyAmount cost, double weight, int minDamage, int maxDamage, DamageType damageType, List<ItemProperty> properties, int closeRange, int longRange, WeaponType weaponType) {
-        super(ID, name, material, description, cost, weight, minDamage, maxDamage, damageType, properties, weaponType);
+    public DNDRangedWeapon(String ID, String name, Material material, int amount, String description, MoneyAmount cost, double weight, int minDamage, int maxDamage, DamageType damageType, List<ItemProperty> properties, int closeRange, int longRange, WeaponType weaponType) {
+        super(ID, name, material, amount, description, cost, weight, minDamage, maxDamage, damageType, properties, weaponType);
 
         if (!properties.contains(ItemProperty.AMMUNITION) && !properties.contains(ItemProperty.THROWN))
             throw new IllegalArgumentException("All Ranged weapons must have the ItemProperty: AMMUNITION or THROWN");
@@ -27,11 +29,21 @@ public class DNDRangedWeapon extends DNDWeapon {
     }
 
     @Override
-    public ItemStack getItem(int amount) {
-        ItemStack item = new ItemStack(getMaterial(), amount);
+    public ItemStack getItem() {
+        ItemStack item = new ItemStack(getMaterial(), getAmount());
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(getName());
-        List<String> lore = Lists.newArrayList(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().name().toLowerCase(), ChatColor.GRAY + "Range: " + ChatColor.WHITE + closeRange + "ft Normal Range - " + longRange + "ft Long Range", ChatColor.GRAY + "Type: " + ChatColor.RESET + Util.cleanEnumName(getWeaponType().name()), "", ChatColor.GRAY + "Cost: " + ChatColor.WHITE + getCost().amountString(), ChatColor.GRAY + "Weight: " + getWeight() + " pounds");
+        meta.setDisplayName(ChatColor.RESET + getName());
+
+        List<String> lore = new ArrayList<String>();
+
+        if (getMaxDamage() > 0 && getDamageType() != null)
+            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().name().toLowerCase());
+        lore.add(ChatColor.GRAY + "Range: " + ChatColor.WHITE + closeRange + "ft Normal - " + longRange + "ft Long");
+        lore.add(ChatColor.GRAY + "Type: " + ChatColor.WHITE + Util.cleanEnumName(getWeaponType().name()));
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + getCost().amountString());
+        lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + getWeight() + " pounds");
+
 
         if (getDescription() != null) {
             lore.add("");
@@ -49,6 +61,8 @@ public class DNDRangedWeapon extends DNDWeapon {
                     propertyList.set(i, ChatColor.WHITE + propertyList.get(i));
         }
 
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
 
         return NBTHandler.addString(item, "itemID", getID());

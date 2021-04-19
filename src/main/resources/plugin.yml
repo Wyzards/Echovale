@@ -2,3 +2,4 @@ name: Echovale
 author: Theeef
 version: 1.0
 main: com.Theeef.me.Echovale
+api-version: 1.13
