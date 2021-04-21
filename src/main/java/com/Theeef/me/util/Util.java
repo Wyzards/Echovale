@@ -35,7 +35,7 @@ public class Util {
         for (String word : toClean.split(" "))
             toReturn += word.substring(0, 1).toUpperCase() + word.substring(1) + " ";
 
-        return toReturn;
+        return toReturn.trim();
     }
 
 }

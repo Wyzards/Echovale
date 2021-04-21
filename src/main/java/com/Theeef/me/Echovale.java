@@ -1,7 +1,10 @@
 package com.Theeef.me;
 
+import com.Theeef.me.items.DNDArmor;
+import com.Theeef.me.items.DNDItem;
 import com.Theeef.me.items.DNDWeapon;
 import com.Theeef.me.items.StartingEquipment;
+import com.Theeef.me.items.equipment.Armor;
 import com.Theeef.me.items.equipment.Weapons;
 import com.Theeef.me.util.ConfigManager;
 import org.bukkit.Bukkit;
@@ -44,6 +47,18 @@ public class Echovale extends JavaPlugin implements Listener {
                 inventory.addItem(weapon.getItem());
 
             inventory.addItem(StartingEquipment.COMPONENT_POUCH.getItem());
+
+            Bukkit.getScheduler().runTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    event.getPlayer().openInventory(inventory);
+                }
+            });
+        } else if (event.getMessage().equalsIgnoreCase("armor")) {
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Armor");
+
+            for (DNDItem item : Armor.values())
+                inventory.addItem(item.getItem());
 
             Bukkit.getScheduler().runTask(this, new Runnable() {
                 @Override

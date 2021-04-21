@@ -2,30 +2,71 @@ package com.Theeef.me.items.equipment;
 
 import com.Theeef.me.items.ArmorSet;
 import com.Theeef.me.items.DNDArmor;
+import com.Theeef.me.items.DNDItem;
 import com.Theeef.me.items.MoneyAmount;
+import com.Theeef.me.util.Util;
+import com.google.common.collect.Sets;
 import org.bukkit.Material;
+
+import java.util.Set;
 
 public class Armor {
 
-    // String ID, String name, MoneyAmount cost, int baseAC, int dexMax, int strengthRequirement,
-    // boolean stealthDisadvantage, double weight, ArmorType armorType, int numPieces
-    // new ArmorSet(id, name, desc, cost, ac, dexMax, str, disadvantage, weight, type, pieces...);
+    // Light Armor
+    public static final DNDArmor PADDED_LEGGINGS = new DNDArmor(ArmorSet.PADDED, ArmorSet.ArmorPiece.LEGGINGS, Material.LEATHER_LEGGINGS);
+    public static final DNDArmor PADDED_CHESTPLATE = new DNDArmor(ArmorSet.PADDED, ArmorSet.ArmorPiece.CHESTPLATE, Material.LEATHER_CHESTPLATE);
+    public static final DNDArmor LEATHER_BOOTS = new DNDArmor(ArmorSet.LEATHER, ArmorSet.ArmorPiece.BOOTS, Material.LEATHER_BOOTS);
+    public static final DNDArmor LEATHER_LEGGINGS = new DNDArmor(ArmorSet.LEATHER, ArmorSet.ArmorPiece.LEGGINGS, Material.LEATHER_LEGGINGS);
+    public static final DNDArmor LEATHER_CHESTPLATE = new DNDArmor(ArmorSet.LEATHER, ArmorSet.ArmorPiece.CHESTPLATE, Material.LEATHER_CHESTPLATE);
+    public static final DNDArmor STUDDED_LEATHER_BOOTS = new DNDArmor(ArmorSet.STUDDED_LEATHER, ArmorSet.ArmorPiece.BOOTS, Material.LEATHER_BOOTS);
+    public static final DNDArmor STUDDED_LEATHER_LEGGINGS = new DNDArmor(ArmorSet.STUDDED_LEATHER, ArmorSet.ArmorPiece.LEGGINGS, Material.LEATHER_LEGGINGS);
+    public static final DNDArmor STUDDED_LEATHER_CHESTPLATE = new DNDArmor(ArmorSet.STUDDED_LEATHER, ArmorSet.ArmorPiece.CHESTPLATE, Material.LEATHER_CHESTPLATE);
 
-    // Light Armor Sets
-    public static ArmorSet PADDED = new ArmorSet("PADDED", "Padded", "Padded armor consists of quilted layers of cloth and batting.", 5, 11, Integer.MAX_VALUE, 0, true, 8, ArmorSet.ArmorType.LIGHT, ArmorSet.ArmorPiece.LEGGINGS, ArmorSet.ArmorPiece.CHESTPLATE);
-    public static ArmorSet LEATHER = new ArmorSet("LEATHER", "Leather", "The breastplate and shoulder protectors of this armor are made of leather that has been stiffened by being boiled in oil. The rest of the armor is made of softer and more flexible materials.", 10, 11, Integer.MAX_VALUE, 0, false, 10, ArmorSet.ArmorType.LIGHT, ArmorSet.ArmorPiece.BOOTS, ArmorSet.ArmorPiece.LEGGINGS, ArmorSet.ArmorPiece.CHESTPLATE);
-    public static ArmorSet STUDDED_LEATHER = new ArmorSet("STUDDED_LEATHER", "Studded Leather", "Made from tough but flexible leather, studded leather is reinforced with close-set rivets or spikes.", 45, 12, Integer.MAX_VALUE, 0, false, 13, ArmorSet.ArmorType.LIGHT, ArmorSet.ArmorPiece.BOOTS, ArmorSet.ArmorPiece.LEGGINGS, ArmorSet.ArmorPiece.CHESTPLATE);
+    // Medium Armor
+    public static final DNDArmor HIDE_CHESTPLATE = new DNDArmor(ArmorSet.HIDE, ArmorSet.ArmorPiece.CHESTPLATE, Material.LEATHER_CHESTPLATE);
+    public static final DNDArmor HIDE_LEGGINGS = new DNDArmor(ArmorSet.HIDE, ArmorSet.ArmorPiece.LEGGINGS, Material.LEATHER_LEGGINGS);
+    public static final DNDArmor CHAIN_SHIRT = new DNDArmor(ArmorSet.CHAIN_SHIRT, ArmorSet.ArmorPiece.CHESTPLATE, "Chain Shirt", Material.CHAINMAIL_CHESTPLATE);
+    public static final DNDArmor SCALE_MAIL_CHESTPLATE = new DNDArmor(ArmorSet.SCALE_MAIL, ArmorSet.ArmorPiece.CHESTPLATE, Material.IRON_CHESTPLATE);
+    public static final DNDArmor SCALE_MAIL_LEGGINGS = new DNDArmor(ArmorSet.SCALE_MAIL, ArmorSet.ArmorPiece.LEGGINGS, Material.IRON_LEGGINGS);
+    public static final DNDArmor BREASTPLATE = new DNDArmor(ArmorSet.BREASTPLATE, ArmorSet.ArmorPiece.CHESTPLATE, Material.IRON_CHESTPLATE);
+    public static final DNDArmor HALF_PLATE_HELMET = new DNDArmor(ArmorSet.HALF_PLATE, ArmorSet.ArmorPiece.HELMET, Material.IRON_HELMET);
+    public static final DNDArmor HALF_PLATE_CHESTPLATE = new DNDArmor(ArmorSet.HALF_PLATE, ArmorSet.ArmorPiece.CHESTPLATE, Material.IRON_CHESTPLATE);
+    public static final DNDArmor HALF_PLATE_LEGGINGS = new DNDArmor(ArmorSet.HALF_PLATE, ArmorSet.ArmorPiece.LEGGINGS, Material.LEATHER_LEGGINGS);
+    public static final DNDArmor HALF_PLATE_BOOTS = new DNDArmor(ArmorSet.HALF_PLATE, ArmorSet.ArmorPiece.BOOTS, Material.IRON_BOOTS);
 
-    // Medium Armor Sets
-    public static ArmorSet HIDE = new ArmorSet("HIDE", "Hide", "This crude armor consists of thick furs and pelts. It is commonly worn by barbarian tribes, evil humanoids, and other folk who lack access to the tools and materials needed to create better armor.", 10, 12, 2, 0, false, 12, ArmorSet.ArmorType.MEDIUM, ArmorSet.ArmorPiece.LEGGINGS, ArmorSet.ArmorPiece.CHESTPLATE);
-    public static ArmorSet CHAIN_SHIRT = new ArmorSet("CHAIN_SHIRT", "Chain Shirt", "Made of interlocking metal rings, a chain shirt is worn between layers of clothing or leather. This armor offers modest protection to the wearer's upper body and allows the sound of the rings rubbing against one another to be muffled by outer layers.", 50, 13, 2, 0, false, 20, ArmorSet.ArmorType.MEDIUM, ArmorSet.ArmorPiece.CHESTPLATE);
-    public static ArmorSet SCALE_MAIL = new ArmorSet("SCALE_MAIL", "Scale Mail", "This armor consists of a coat and leggings (and perhaps a separate skirt) of leather covered with overlapping pieces of metal, much like the scales of a fish. The suit includes gauntlets.", 50, 14, 2, 0, true, 45, ArmorSet.ArmorType.MEDIUM, ArmorSet.ArmorPiece.CHESTPLATE, ArmorSet.ArmorPiece.LEGGINGS);
-    public static ArmorSet BREASTPLATE = new ArmorSet("BREASTPLATE", "Breastplate", "This armor consists of a fitted metal chest piece worn with supple leather. Although it leaves the legs and arms relatively unprotected, this armor provides good protection for the wearer's vital organs while leaving the wearer relatively unencumbered.", 400, 14, 2, 0, false, 20, ArmorSet.ArmorType.MEDIUM, ArmorSet.ArmorPiece.CHESTPLATE);
-    public static ArmorSet HALF_PLATE = new ArmorSet("HALF_PLATE", "Half Plate", "Half plate consists of shaped metal plates that cover most of the wearer's body. It does not include leg protection beyond simple greaves that are attached with leather straps.", 750, 15, 2, 0, true, 40, ArmorSet.ArmorType.MEDIUM, ArmorSet.ArmorPiece.values());
+    // Heavy Armor
+    public static final DNDArmor RING_MAIL_BOOTS = new DNDArmor(ArmorSet.RING_MAIL, ArmorSet.ArmorPiece.BOOTS, Material.CHAINMAIL_BOOTS);
+    public static final DNDArmor RING_MAIL_LEGGINGS = new DNDArmor(ArmorSet.RING_MAIL, ArmorSet.ArmorPiece.LEGGINGS, Material.CHAINMAIL_LEGGINGS);
+    public static final DNDArmor RING_MAIL_CHESTPLATE = new DNDArmor(ArmorSet.RING_MAIL, ArmorSet.ArmorPiece.CHESTPLATE, Material.CHAINMAIL_CHESTPLATE);
+    public static final DNDArmor CHAIN_MAIL_BOOTS = new DNDArmor(ArmorSet.CHAIN_MAIL, ArmorSet.ArmorPiece.BOOTS, Material.CHAINMAIL_BOOTS);
+    public static final DNDArmor CHAIN_MAIL_LEGGINGS = new DNDArmor(ArmorSet.CHAIN_MAIL, ArmorSet.ArmorPiece.LEGGINGS, Material.CHAINMAIL_LEGGINGS);
+    public static final DNDArmor CHAIN_MAIL_CHESTPLATE = new DNDArmor(ArmorSet.CHAIN_MAIL, ArmorSet.ArmorPiece.CHESTPLATE, Material.CHAINMAIL_CHESTPLATE);
+    public static final DNDArmor CHAIN_MAIL_HELMET = new DNDArmor(ArmorSet.CHAIN_MAIL, ArmorSet.ArmorPiece.HELMET, Material.CHAINMAIL_HELMET);
+    public static final DNDArmor SPLINT_BOOTS = new DNDArmor(ArmorSet.SPLINT, ArmorSet.ArmorPiece.BOOTS, Material.NETHERITE_BOOTS);
+    public static final DNDArmor SPLINT_LEGGINGS = new DNDArmor(ArmorSet.SPLINT, ArmorSet.ArmorPiece.LEGGINGS, Material.CHAINMAIL_LEGGINGS);
+    public static final DNDArmor SPLINT_CHESTPLATE = new DNDArmor(ArmorSet.SPLINT, ArmorSet.ArmorPiece.CHESTPLATE, Material.NETHERITE_CHESTPLATE);
+    public static final DNDArmor SPLINT_HELMET = new DNDArmor(ArmorSet.SPLINT, ArmorSet.ArmorPiece.HELMET, Material.NETHERITE_HELMET);
+    public static final DNDArmor PLATE_BOOTS = new DNDArmor(ArmorSet.PLATE, ArmorSet.ArmorPiece.BOOTS, Material.NETHERITE_BOOTS);
+    public static final DNDArmor PLATE_LEGGINGS = new DNDArmor(ArmorSet.PLATE, ArmorSet.ArmorPiece.LEGGINGS, Material.NETHERITE_LEGGINGS);
+    public static final DNDArmor PLATE_CHESTPLATE = new DNDArmor(ArmorSet.PLATE, ArmorSet.ArmorPiece.CHESTPLATE, Material.NETHERITE_CHESTPLATE);
+    public static final DNDArmor PLATE_HELMET = new DNDArmor(ArmorSet.PLATE, ArmorSet.ArmorPiece.HELMET, Material.NETHERITE_HELMET);
 
-    // Heavy Armor Sets
-    public static ArmorSet RING_MAIL = new ArmorSet("RING_MAIL", "Ring Mail", "This armor is leather armor with heavy rings sewn into it. The rings help reinforce the armor against blows from swords and axes. Ring mail is inferior to chain mail, and it's usually worn only by those who can't afford better armor.", 30, 14, 0, 0, true, 40, ArmorSet.ArmorType.HEAVY, ArmorSet.ArmorPiece.BOOTS, ArmorSet.ArmorPiece.LEGGINGS, ArmorSet.ArmorPiece.CHESTPLATE);
-    public static ArmorSet CHAIN_MAIL = new ArmorSet("CHAIN_MAIL", "Chain Mail", "Made of interlocking metal rings, chain mail includes a layer of quilted fabric worn underneath the mail to prevent chafing and to cushion the impact of blows. The suit includes gauntlets.", 75, 16, 0, 13, true, 55, ArmorSet.ArmorType.HEAVY, ArmorSet.ArmorPiece.values());
-    public static ArmorSet SPLINT = new ArmorSet("SPLINT", "Splint", "This armor is made of narrow vertical strips of metal riveted to a backing of leather that is worn over cloth padding. Flexible chain mail protects the joints.", 200, 17, 0, 15, true, 60, ArmorSet.ArmorType.HEAVY, ArmorSet.ArmorPiece.values());
-    public static ArmorSet PLATE = new ArmorSet("PLATE", "Plate", "Plate consists of shaped, interlocking metal plates to cover the entire body. A suit of plate includes gauntlets, heavy leather boots, a visored helmet, and thick layers of padding underneath the armor. Buckles and straps distribute the weight over the body.", 750, 18, 0, 15, true, 65, ArmorSet.ArmorType.HEAVY, ArmorSet.ArmorPiece.values());
+    // Misc
+    public static final DNDItem SHIELD = new DNDItem("SHIELD", "Shield", Material.SHIELD, 1, null, MoneyAmount.fromGold(10), 6);
+
+    public static DNDArmor getArmor(ArmorSet set, ArmorSet.ArmorPiece piece) {
+        for (DNDItem item : values())
+            if (item instanceof DNDArmor && ((DNDArmor) item).getSet() == set && ((DNDArmor) item).getPiece() == piece)
+                return (DNDArmor) item;
+
+        throw new IllegalArgumentException("The armorset " + set.getName() + " does not have the piece " + Util.cleanEnumName(piece.name()));
+    }
+
+    public static Set<DNDItem> values() {
+        return Sets.newHashSet(SHIELD, PLATE_HELMET, PLATE_CHESTPLATE, PLATE_LEGGINGS, PLATE_BOOTS, SPLINT_HELMET, SPLINT_CHESTPLATE, SPLINT_LEGGINGS,
+                SPLINT_BOOTS, CHAIN_MAIL_HELMET, CHAIN_MAIL_CHESTPLATE, CHAIN_MAIL_LEGGINGS, CHAIN_MAIL_BOOTS, RING_MAIL_CHESTPLATE, RING_MAIL_LEGGINGS, RING_MAIL_BOOTS,
+                HALF_PLATE_BOOTS, HALF_PLATE_LEGGINGS, HALF_PLATE_CHESTPLATE, HALF_PLATE_HELMET, BREASTPLATE, SCALE_MAIL_LEGGINGS, SCALE_MAIL_CHESTPLATE, CHAIN_SHIRT,
+                HIDE_LEGGINGS, HIDE_CHESTPLATE, STUDDED_LEATHER_CHESTPLATE, STUDDED_LEATHER_LEGGINGS, STUDDED_LEATHER_BOOTS, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS,
+                PADDED_CHESTPLATE, PADDED_LEGGINGS);
+    }
 }

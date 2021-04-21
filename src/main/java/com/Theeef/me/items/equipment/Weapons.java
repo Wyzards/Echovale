@@ -50,10 +50,7 @@ public class Weapons {
     public static DNDRangedWeapon HEAVY_CROSSBOW = new DNDRangedWeapon("HEAVY_CROSSBOW", "Heavy Crossbow", Material.CROSSBOW, 1, null, MoneyAmount.fromGold(50), 18, 1, 10, DamageType.PIERCING, Lists.newArrayList(DNDWeapon.ItemProperty.AMMUNITION, DNDWeapon.ItemProperty.HEAVY, DNDWeapon.ItemProperty.LOADING, DNDWeapon.ItemProperty.TWO_HANDED), 30, 120, DNDWeapon.WeaponType.MARTIAL_RANGED);
     public static DNDRangedWeapon LONGBOW = new DNDRangedWeapon("LONGBOW", "Longbow", Material.BOW, 1, null, MoneyAmount.fromGold(10), 2, 1, 8, DamageType.PIERCING, Lists.newArrayList(DNDWeapon.ItemProperty.AMMUNITION, DNDWeapon.ItemProperty.HEAVY, DNDWeapon.ItemProperty.TWO_HANDED), 150, 600, DNDWeapon.WeaponType.MARTIAL_RANGED);
     public static DNDRangedWeapon NET = new DNDRangedWeapon("NET", "Net", Material.COBWEB, 1, null, MoneyAmount.fromGold(1), 3, 0, 0, null, Lists.newArrayList(DNDWeapon.ItemProperty.SPECIAL, DNDWeapon.ItemProperty.THROWN), 5, 15, DNDWeapon.WeaponType.MARTIAL_RANGED);
-
-    // Ammunition
-    public static DNDItem CROSSBOW_BOLT = new DNDItem("CROSSBOW_BOLT", "Crossbow Bolt", Material.ARROW, 1, null, MoneyAmount.fromGold(1), 1.5);
-
+    
     public static Set<DNDWeapon> values() {
         return Sets.newHashSet(CLUB, DAGGER, GREATCLUB, HANDAXE, JAVELIN, LIGHT_HAMMER, MACE, QUARTERSTAFF, SICKLE, SPEAR, LIGHT_CROSSBOW, DART, SHORTBOW, SLING, BATTLEAXE, FLAIL, GLAIVE,
                 GREATAXE, GREATSWORD, GREATSWORD, HALBERD, LANCE, LONGSWORD, MAUL, MORNINGSTAR, PIKE, RAPIER, SCIMITAR, SHORTSWORD, TRIDENT, WAR_PICK, WARHAMMER, WHIP,

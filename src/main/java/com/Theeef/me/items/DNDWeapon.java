@@ -21,7 +21,7 @@ public class DNDWeapon extends DNDItem {
     private WeaponType weaponType;
 
     public DNDWeapon(String ID, String name, Material material, int amount, String description, MoneyAmount cost, double weight, int minDamage, int maxDamage, DamageType damageType, List<ItemProperty> properties, WeaponType weaponType) {
-        super(ID, name, material, amount, description, cost, weight);
+        super(ID, name, material, amount, description, cost, weight, ItemType.WEAPON);
 
         if ((properties.contains(ItemProperty.AMMUNITION) || properties.contains(ItemProperty.THROWN)) && !(this instanceof DNDRangedWeapon))
             throw new IllegalArgumentException("Non-ranged weapons cannot have the ItemProperty AMMUNITION or THROWN");
