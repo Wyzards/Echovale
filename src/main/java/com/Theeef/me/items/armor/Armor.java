@@ -1,7 +1,5 @@
-package com.Theeef.me.items.equipment;
+package com.Theeef.me.items.armor;
 
-import com.Theeef.me.items.ArmorSet;
-import com.Theeef.me.items.DNDArmor;
 import com.Theeef.me.items.DNDItem;
 import com.Theeef.me.items.MoneyAmount;
 import com.Theeef.me.util.Util;

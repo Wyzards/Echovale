@@ -1,11 +1,10 @@
 package com.Theeef.me;
 
-import com.Theeef.me.items.DNDArmor;
 import com.Theeef.me.items.DNDItem;
-import com.Theeef.me.items.DNDWeapon;
-import com.Theeef.me.items.StartingEquipment;
-import com.Theeef.me.items.equipment.Armor;
-import com.Theeef.me.items.equipment.Weapons;
+import com.Theeef.me.items.weapons.DNDWeapon;
+import com.Theeef.me.items.equipment.AdventuringGear;
+import com.Theeef.me.items.armor.Armor;
+import com.Theeef.me.items.weapons.Weapons;
 import com.Theeef.me.util.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,8 +45,6 @@ public class Echovale extends JavaPlugin implements Listener {
             for (DNDWeapon weapon : Weapons.values())
                 inventory.addItem(weapon.getItem());
 
-            inventory.addItem(StartingEquipment.COMPONENT_POUCH.getItem());
-
             Bukkit.getScheduler().runTask(this, new Runnable() {
                 @Override
                 public void run() {
@@ -66,7 +63,21 @@ public class Echovale extends JavaPlugin implements Listener {
                     event.getPlayer().openInventory(inventory);
                 }
             });
+        } else if (event.getMessage().equalsIgnoreCase("adventure")) {
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Adventure");
+
+            for (DNDItem item : AdventuringGear.values())
+                inventory.addItem(item.getItem());
+
+            Bukkit.getScheduler().runTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    event.getPlayer().openInventory(inventory);
+                }
+            });
         }
+
+
     }
 
     public ConfigManager getConfigManager() {

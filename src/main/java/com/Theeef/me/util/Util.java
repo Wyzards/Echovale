@@ -10,13 +10,16 @@ public class Util {
         String buffer = "";
         List<String> list = new ArrayList<String>();
 
-        for (String word : string.split(" "))
-            if (buffer.length() + 1 + word.length() <= 40)
-                buffer += " " + word;
-            else {
-                list.add(buffer);
+        for (String word : string.split(" ")) {
+            if (buffer.length() + 1 + word.length() >= 40) {
+                list.add(buffer.trim());
                 buffer = "";
             }
+            buffer += word + " ";
+        }
+
+        if (buffer.length() > 1)
+            list.add(buffer);
 
         return list;
     }
@@ -29,6 +32,9 @@ public class Util {
      * @return cleaned enum name
      */
     public static String cleanEnumName(String toClean) {
+        if (toClean.equals("TWO_HANDED"))
+            return "Two-Handed";
+
         toClean = toClean.toLowerCase().replaceAll("_", " ");
         String toReturn = "";
 

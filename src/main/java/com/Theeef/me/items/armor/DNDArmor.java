@@ -1,6 +1,7 @@
-package com.Theeef.me.items;
+package com.Theeef.me.items.armor;
 
-import com.Theeef.me.items.equipment.Armor;
+import com.Theeef.me.items.DNDItem;
+import com.Theeef.me.items.MoneyAmount;
 import com.Theeef.me.util.Util;
 import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;

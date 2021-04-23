@@ -1,6 +1,7 @@
-package com.Theeef.me.items;
+package com.Theeef.me.items.weapons;
 
 import com.Theeef.me.combat.damage.DamageType;
+import com.Theeef.me.items.*;
 import com.Theeef.me.util.NBTHandler;
 import com.Theeef.me.util.Util;
 import com.google.common.collect.Lists;
@@ -38,39 +39,33 @@ public class DNDWeapon extends DNDItem {
 
     @Override
     public ItemStack getItem() {
-        ItemStack item = new ItemStack(getMaterial(), getAmount());
+        if (this instanceof DNDRangedWeapon || this instanceof DNDVersatileWeapon)
+            return super.getItem();
+
+        ItemStack item = super.getItem();
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.RESET + getName());
-        List<String> lore = Lists.newArrayList();
+        List<String> lore = meta.getLore();
+
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Type: " + ChatColor.WHITE + Util.cleanEnumName(getWeaponType().name()));
 
         if (getMaxDamage() > 0 && getDamageType() != null)
             lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().name().toLowerCase());
-        lore.add(ChatColor.GRAY + "Type: " + ChatColor.WHITE + Util.cleanEnumName(getWeaponType().name()));
-        lore.add("");
-        lore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + getCost().amountString());
-        lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + getWeight() + " pounds");
-
-        if (getDescription() != null) {
-            lore.add("");
-            lore.addAll(Util.fitForLore(getDescription()));
-        }
-
-        for (int i = 0; i < lore.size(); i++)
-            lore.set(i, ChatColor.GRAY + lore.get(i));
 
         if (properties.size() > 0) {
-            lore.add("");
             List<String> propertyList = Util.fitForLore(propertyList());
+
             if (propertyList.size() > 1)
                 for (int i = 1; i < propertyList.size(); i++)
                     propertyList.set(i, ChatColor.WHITE + propertyList.get(i));
+
+            lore.addAll(propertyList);
         }
 
         meta.setLore(lore);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
 
-        return NBTHandler.addString(item, "itemID", getID());
+        return item;
     }
 
     public String propertyList() {

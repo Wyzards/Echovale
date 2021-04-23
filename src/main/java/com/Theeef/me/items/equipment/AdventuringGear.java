@@ -33,7 +33,7 @@ public class AdventuringGear {
     public static DNDItem EMBLEM = new DNDItem("EMBLEM", "Emblem", Material.OAK_BUTTON, 1, null, MoneyAmount.fromGold(5), 0, DNDItem.ItemType.HOLY_SYMBOL, DNDItem.ItemType.ADVENTURING_GEAR);
     public static DNDItem RELIQUARY = new DNDItem("RELIQUARY", "Reliquary", Material.END_PORTAL_FRAME, 1, null, MoneyAmount.fromGold(5), 2, DNDItem.ItemType.HOLY_SYMBOL, DNDItem.ItemType.ADVENTURING_GEAR);
 
-    public Set<DNDItem> values() {
-        return Sets.newHashSet(ARROW, BLOWGUN_NEEDLE, CROSSBOW_BOLT, SLING_BULLET, CRYSTAL, ORB, ROD, STAFF, WAND, SPRIG_OF_MISTLETOE, TOTEM, WOODEN_STAFF, YEW_WAND, AMULET, EMBLEM, RELIQUARY;
+    public static Set<DNDItem> values() {
+        return Sets.newHashSet(ARROW, BLOWGUN_NEEDLE, CROSSBOW_BOLT, SLING_BULLET, CRYSTAL, ORB, ROD, STAFF, WAND, SPRIG_OF_MISTLETOE, TOTEM, WOODEN_STAFF, YEW_WAND, AMULET, EMBLEM, RELIQUARY);
     }
 }

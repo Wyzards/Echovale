@@ -1,4 +1,4 @@
-package com.Theeef.me.items;
+package com.Theeef.me.items.armor;
 
 import com.google.common.collect.Lists;
 
@@ -28,17 +28,17 @@ public class ArmorSet {
     public static final ArmorSet SPLINT = new ArmorSet("SPLINT", "Splint", "This armor is made of narrow vertical strips of metal riveted to a backing of leather that is worn over cloth padding. Flexible chain mail protects the joints.", 200, 17, 0, 15, true, 60, ArmorSet.ArmorType.HEAVY, ArmorSet.ArmorPiece.values());
     public static final ArmorSet PLATE = new ArmorSet("PLATE", "Plate", "Plate consists of shaped, interlocking metal plates to cover the entire body. A suit of plate includes gauntlets, heavy leather boots, a visored helmet, and thick layers of padding underneath the armor. Buckles and straps distribute the weight over the body.", 750, 18, 0, 15, true, 65, ArmorSet.ArmorType.HEAVY, ArmorSet.ArmorPiece.values());
 
-    private String ID;
-    private String name;
-    private String description;
-    private int goldCost;
-    private int baseAC;
-    private int dexMax;
-    private int strengthRequirement;
-    private boolean stealthDisadvantage;
-    private double weight;
-    private ArmorType armorType;
-    private ArmorPiece[] pieces;
+    private final String ID;
+    private final String name;
+    private final String description;
+    private final int goldCost;
+    private final int baseAC;
+    private final int dexMax;
+    private final int strengthRequirement;
+    private final boolean stealthDisadvantage;
+    private final double weight;
+    private final ArmorType armorType;
+    private final ArmorPiece[] pieces;
 
     public ArmorSet(String ID, String name, String description, int goldCost, int baseAC, int dexMax, int strengthRequirement, boolean stealthDisadvantage, double weight, ArmorType armorType, ArmorPiece... pieces) {
         this.ID = ID;

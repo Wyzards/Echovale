@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DNDItem implements Cloneable, IEquipmentChoice {
@@ -39,7 +40,9 @@ public class DNDItem implements Cloneable, IEquipmentChoice {
         ItemStack item = new ItemStack(this.material, this.amount);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.RESET + name);
-        List<String> lore = Lists.newArrayList(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + cost.amountString(), ChatColor.GRAY + "Weight: " + ChatColor.WHITE + weight + " pounds");
+        List<String> lore = new ArrayList<String>();
+        lore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + cost.amountString());
+        lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + weight + " pounds");
 
         if (description != null) {
             lore.add("");
@@ -78,15 +81,7 @@ public class DNDItem implements Cloneable, IEquipmentChoice {
 
         if (Lists.newArrayList(type).contains(ItemType.HOLY_SYMBOL)) {
             List<String> lore2 = Util.fitForLore(ChatColor.WHITE + "Holy Symbol: " + ChatColor.GRAY + "A holy symbol is a representation of a god or pantheon. A cleric or paladin can use a holy symbol as a spellcasting focus. To use the symbol in this way, the caster must hold it in hand, wear it visibly, or bear it on a shield.");
-            for (int i = 1; i < lore2.size(); i++)
-                lore2.set(i, ChatColor.GRAY + lore2.get(i));
 
-            lore.add("");
-            lore.addAll(lore2);
-        }
-
-        if (Lists.newArrayList(type).contains(ItemType.HOLY_SYMBOL)) {
-            List<String> lore2 = Util.fitForLore(ChatColor.WHITE + "Holy Symbol: " + ChatColor.GRAY + "");
             for (int i = 1; i < lore2.size(); i++)
                 lore2.set(i, ChatColor.GRAY + lore2.get(i));
 
@@ -101,10 +96,12 @@ public class DNDItem implements Cloneable, IEquipmentChoice {
         return NBTHandler.addString(item, "itemID", ID);
     }
 
-    public int getAmount() {
-        return this.amount;
-    }
-
+    /**
+     * Gets the same item type with a different amount
+     *
+     * @param amount the amount
+     * @return the new item
+     */
     public DNDItem getAmount(int amount) {
         try {
             DNDItem item = (DNDItem) this.clone();
@@ -116,6 +113,15 @@ public class DNDItem implements Cloneable, IEquipmentChoice {
         }
 
         throw new NullPointerException("Was not able to modify DNDItem's amount");
+    }
+
+    @Override
+    public List<DNDItem> getChoice() {
+        return Lists.newArrayList(this);
+    }
+
+    public int getAmount() {
+        return this.amount;
     }
 
     public double getWeight() {
@@ -140,11 +146,6 @@ public class DNDItem implements Cloneable, IEquipmentChoice {
 
     public Material getMaterial() {
         return material;
-    }
-
-    @Override
-    public List<DNDItem> getChoice() {
-        return Lists.newArrayList(this);
     }
 
     public enum ItemType {
