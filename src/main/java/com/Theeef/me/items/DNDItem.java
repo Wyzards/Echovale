@@ -2,6 +2,7 @@ package com.Theeef.me.items;
 
 import com.Theeef.me.characters.classes.equipment.EquipmentChoice;
 import com.Theeef.me.characters.classes.equipment.IEquipmentChoice;
+import com.Theeef.me.items.containers.DNDContainerItem;
 import com.Theeef.me.util.NBTHandler;
 import com.Theeef.me.util.Util;
 import com.google.common.collect.Lists;
@@ -18,27 +19,42 @@ public class DNDItem implements Cloneable, IEquipmentChoice {
 
     private String ID;
     private String name;
-    private Material material;
+    private ItemStack item;
     private String description;
     private double weight;
     private MoneyAmount cost;
     private int amount;
     private ItemType[] type;
 
-    public DNDItem(String ID, String name, Material material, int amount, String description, MoneyAmount cost, double weight, ItemType... type) {
+    public DNDItem(String ID, String name, ItemStack item, int amount, String description, MoneyAmount cost, double weight, ItemType... type) {
         this.ID = ID;
         this.name = name;
-        this.material = material;
+        this.item = item;
         this.amount = amount;
         this.description = description;
         this.cost = cost;
         this.weight = weight;
         this.type = type;
+
+        if (this instanceof DNDContainerItem && !Lists.newArrayList(type).contains(ItemType.CONTAINER)) {
+            List<ItemType> list = Lists.newArrayList(this.type);
+            list.add(ItemType.CONTAINER);
+            this.type = (ItemType[]) list.toArray();
+        }
+    }
+
+    public DNDItem(String ID, String name, Material material, int amount, String description, MoneyAmount cost, double weight, ItemType... type) {
+        this(ID, name, new ItemStack(material, amount), amount, description, cost, weight, type);
+    }
+
+    public DNDItem(String ID, Material material, String description, int gold, double weight, ItemType... type) {
+        this(ID, Util.cleanEnumName(ID), material, 1, description, MoneyAmount.fromGold(gold), weight, type);
     }
 
     public ItemStack getItem() {
-        ItemStack item = new ItemStack(this.material, this.amount);
+        ItemStack item = this.item.clone();
         ItemMeta meta = item.getItemMeta();
+        item.setAmount(this.amount);
         meta.setDisplayName(ChatColor.RESET + name);
         List<String> lore = new ArrayList<String>();
         lore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + cost.amountString());
@@ -145,10 +161,10 @@ public class DNDItem implements Cloneable, IEquipmentChoice {
     }
 
     public Material getMaterial() {
-        return material;
+        return item.getType();
     }
 
     public enum ItemType {
-        ARMOR, WEAPON, AMMUNITION, ARCANE_FOCUS, DRUIDIC_FOCUS, HOLY_SYMBOL, ADVENTURING_GEAR, CONTAINER, TOOL, ARTISANS_TOOLS, GAMING_SET, MUSICAL_INSTRUMENT, MOUNTS, DRAWN_VEHICLES, SADDLES, WATER_VEHICLES, FOOD_AND_DRINK;
+        ARMOR, WEAPON, AMMUNITION, ARCANE_FOCUS, DRUIDIC_FOCUS, HOLY_SYMBOL, ADVENTURING_GEAR, CONTAINER, TOOL, ARTISANS_TOOLS, GAMING_SET, MUSICAL_INSTRUMENT, MOUNTS, DRAWN_VEHICLES, SADDLES, WATER_VEHICLES, FOOD_AND_DRINK, CONSUMABLE;
     }
 }

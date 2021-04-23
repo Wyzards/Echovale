@@ -18,8 +18,8 @@ public class DNDContainerItem extends DNDItem {
     private String containerLabel;
     private DNDItem[] items;
 
-    public DNDContainerItem(String ID, String name, Material material, int amount, String description, MoneyAmount cost, double weight, double weightCapacity, double volume, String containerLabel, DNDItem... items) {
-        super(ID, name, material, amount, description, cost, weight);
+    public DNDContainerItem(String ID, String name, Material material, int amount, String description, MoneyAmount cost, double weight, double weightCapacity, double volume, String containerLabel, DNDItem[] items, ItemType... type) {
+        super(ID, name, material, amount, description, cost, weight, type);
 
         this.weightCapacity = weightCapacity;
         this.volume = volume;
