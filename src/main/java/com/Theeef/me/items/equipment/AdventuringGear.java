@@ -53,6 +53,14 @@ public class AdventuringGear {
     public static DNDItem BEDROLL = new DNDItem("BEDROLL", Material.BROWN_BED, null, 1, 7, DNDItem.ItemType.ADVENTURING_GEAR);
     public static DNDItem BELL = new DNDItem("BELL", Material.BELL, null, 1, 0, DNDItem.ItemType.ADVENTURING_GEAR);
     public static DNDItem BLANKET = new DNDItem("BLANKET", "Blanket", Material.WHITE_CARPET, 1, null, MoneyAmount.fromSilver(5), 3, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static DNDItem BLOCK_AND_TACKLE = new DNDItem("BLOCK_AND_TACKLE", "Block and Tackle", Material.TRIPWIRE_HOOK, 1, null, MoneyAmount.fromGold(1), 5, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static DNDItem BOOK = new DNDItem("BOOK", Material.BOOK, null, 25, 5);
+    public static DNDItem GLASS_BOTTLE = new DNDItem("GLASS_BOTTLE", Material.GLASS_BOTTLE, null, 2, 2);
+    public static DNDItem BUCKET = new DNDItem("BUCKET", "Bucket", Material.BUCKET, 1, null, MoneyAmount.fromCopper(5), 2, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static DNDItem BAG_OF_CALTROPS = new DNDItem("BAG_OF_CALTROPS", Material.FLOWER_POT, null, 1, 2);
+    public static DNDItem CANDLE = new DNDItem("CANDLE", "Candle", Material.TORCH, 1, null, MoneyAmount.fromCopper(1), 0, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static DNDItem CROSSBOW_BOLT_CASE = new DNDItem("CROSSBOW_BOLT_CASE", Material.CHEST, null, 1, 1);
+    public static DNDItem SCROLL_CASE = new DNDItem("SCROLL_CASE", Material.LEATHER, null, 1, 1);
 
     public static ItemStack potionItem(Color color) {
         ItemStack item = new ItemStack(Material.POTION);
