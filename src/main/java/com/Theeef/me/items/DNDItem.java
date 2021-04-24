@@ -51,6 +51,14 @@ public class DNDItem implements Cloneable, IEquipmentChoice {
         this(ID, Util.cleanEnumName(ID), material, 1, description, MoneyAmount.fromGold(gold), weight, type);
     }
 
+    public DNDItem(String ID, Material material, int gold, double weight, ItemType... type) {
+        this(ID, material, null, gold, weight, type);
+    }
+
+    public DNDItem(String ID, Material material, MoneyAmount cost, double weight, ItemType... type) {
+        this(ID, Util.cleanEnumName(ID), material, 1, null, cost, weight, type);
+    }
+
     public ItemStack getItem() {
         ItemStack item = this.item.clone();
         ItemMeta meta = item.getItemMeta();

@@ -3,6 +3,7 @@ package com.Theeef.me.items.equipment;
 
 import com.Theeef.me.items.DNDItem;
 import com.Theeef.me.items.MoneyAmount;
+import com.Theeef.me.items.containers.ContainerType;
 import com.Theeef.me.items.containers.DNDContainerItem;
 import com.google.common.collect.Sets;
 import org.bukkit.Color;
@@ -46,13 +47,16 @@ public class AdventuringGear {
     public static DNDItem VIAL_OF_ACID = new DNDItem("VIAL_OF_ACID", "Vial of Acid", potionItem(Color.LIME), 1, null, MoneyAmount.fromGold(25), 1, DNDItem.ItemType.ADVENTURING_GEAR, DNDItem.ItemType.CONSUMABLE);
     public static DNDItem ALCHEMISTS_FIRE = new DNDItem("ALCHEMISTS_FIRE", "Flask of Alchemist's Fire", potionItem(Color.BLACK), 1, null, MoneyAmount.fromGold(50), 1, DNDItem.ItemType.ADVENTURING_GEAR, DNDItem.ItemType.CONSUMABLE);
     public static DNDItem ANTITOXIN = new DNDItem("ANTITOXIN", "Vial of Antitoxin", potionItem(Color.FUCHSIA), 1, null, MoneyAmount.fromGold(50), 0, DNDItem.ItemType.ADVENTURING_GEAR, DNDItem.ItemType.CONSUMABLE);
-    public static DNDContainerItem BACKPACK = new DNDContainerItem("BACKPACK", "Backpack", Material.TRAPPED_CHEST, 1, null, MoneyAmount.fromGold(2), 5, 30, 1, null, null, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static DNDContainerItem BACKPACK = new DNDContainerItem(ContainerType.BACKPACK);
     public static DNDItem BALL_BEARINGS = new DNDItem("BALL_BEARINGS", "Bag of Ball bearings", Material.FLOWER_POT, 1, null, MoneyAmount.fromGold(1), 2, DNDItem.ItemType.ADVENTURING_GEAR, DNDItem.ItemType.CONSUMABLE);
     public static DNDItem BARREL = new DNDItem("BARREL", Material.BARREL, null, 2, 70, DNDItem.ItemType.ADVENTURING_GEAR);
-    public static DNDContainerItem BASKET = new DNDContainerItem("BASKET", "Basket", Material.COMPOSTER, 1, null, MoneyAmount.fromSilver(4), 2, 40, 2, null, null, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static DNDContainerItem BASKET = new DNDContainerItem(ContainerType.BASKET);
     public static DNDItem BEDROLL = new DNDItem("BEDROLL", Material.BROWN_BED, null, 1, 7, DNDItem.ItemType.ADVENTURING_GEAR);
     public static DNDItem BELL = new DNDItem("BELL", Material.BELL, null, 1, 0, DNDItem.ItemType.ADVENTURING_GEAR);
     public static DNDItem BLANKET = new DNDItem("BLANKET", "Blanket", Material.WHITE_CARPET, 1, null, MoneyAmount.fromSilver(5), 3, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static DNDItem CANDLE = new DNDItem("CANDLE", Material.TORCH, MoneyAmount.fromCopper(1), 0, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static DNDItem CROWBAR = new DNDItem("CROWBAR", Material.IRON_SWORD, 2, 5, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static DNDItem STRING = new DNDItem("STRING", Material.STRING, 0, 0, DNDItem.ItemType.ADVENTURING_GEAR);
 
     public static ItemStack potionItem(Color color) {
         ItemStack item = new ItemStack(Material.POTION);

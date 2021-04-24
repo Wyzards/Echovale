@@ -13,18 +13,27 @@ import java.util.List;
 
 public class DNDContainerItem extends DNDItem {
 
-    private double weightCapacity;
-    private double volume;
+    private ContainerType containerType;
     private String containerLabel;
     private DNDItem[] items;
 
-    public DNDContainerItem(String ID, String name, Material material, int amount, String description, MoneyAmount cost, double weight, double weightCapacity, double volume, String containerLabel, DNDItem[] items, ItemType... type) {
-        super(ID, name, material, amount, description, cost, weight, type);
+    public DNDContainerItem(ContainerType type, int amount, String description, MoneyAmount cost, String containerLabel, DNDItem... items) {
+        super(type.getID(), type.getName(), type.getAppearance(), amount, description, cost, type.getWeight(), type.getItemType());
 
-        this.weightCapacity = weightCapacity;
-        this.volume = volume;
-        this.containerLabel = containerLabel;
-        this.items = items;
+        if (items.length > containerType.getSlots())
+            throw new IllegalArgumentException("More items provided in ContainerItem constructor than ContainerType can hold");
+    }
+
+    public DNDContainerItem(ContainerType type, String containerLabel, int goldCost, DNDItem... items) {
+        this(type, 1, null, MoneyAmount.fromGold(goldCost), containerLabel, items);
+    }
+
+    public DNDContainerItem(ContainerType type, String containerLabel, DNDItem... items) {
+        this(type, 1, null, type.getCost(), containerLabel, items);
+    }
+
+    public DNDContainerItem(ContainerType type, DNDItem... items) {
+        this(type, null, items);
     }
 
     @Override
@@ -32,7 +41,7 @@ public class DNDContainerItem extends DNDItem {
         ItemStack item = super.getItem();
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
-        lore.add(ChatColor.GRAY + "Max Weight: " + ChatColor.WHITE + getWeightCapacity() + " pounds");
+        lore.add(ChatColor.GRAY + "Max Weight: " + ChatColor.WHITE + this.containerType.getMaxWeight() + " pounds");
 
         if (getContainerLabel() != null)
             meta.setDisplayName(getContainerLabel());
@@ -67,14 +76,6 @@ public class DNDContainerItem extends DNDItem {
                 return true;
 
         return false;
-    }
-
-    public double getWeightCapacity() {
-        return this.weightCapacity;
-    }
-
-    public double getVolume() {
-        return this.volume;
     }
 
     public String getContainerLabel() {
