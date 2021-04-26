@@ -28,6 +28,10 @@ public class DNDContainerItem extends DNDItem {
         this(type, 1, null, MoneyAmount.fromGold(goldCost), containerLabel, items);
     }
 
+    public DNDContainerItem(ContainerType type, String containerLabel, String description, DNDItem... items) {
+        this(type, 1, description, type.getCost(), containerLabel, items);
+    }
+
     public DNDContainerItem(ContainerType type, String containerLabel, DNDItem... items) {
         this(type, 1, null, type.getCost(), containerLabel, items);
     }

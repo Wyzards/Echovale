@@ -1,5 +1,6 @@
 package com.Theeef.me;
 
+import com.Theeef.me.api.equipment.WeaponProperty;
 import com.Theeef.me.items.DNDItem;
 import com.Theeef.me.items.weapons.DNDWeapon;
 import com.Theeef.me.items.equipment.AdventuringGear;
@@ -25,6 +26,7 @@ public class Echovale extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
 
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "Echovale Enabled");
+        WeaponProperty.fromIndex("ammunition");
     }
 
     public void loadConfig() {

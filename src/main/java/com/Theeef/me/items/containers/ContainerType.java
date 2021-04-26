@@ -17,6 +17,7 @@ public class ContainerType {
     public static ContainerType POUCH = new ContainerType("POUCH", Material.FLOWER_POT, 1, 6, 1.0 / 5.0, MoneyAmount.fromSilver(5), DNDItem.ItemType.CONTAINER);
     public static ContainerType BACKPACK = new ContainerType("BACKPACK", Material.TRAPPED_CHEST, 5, 30, 1, MoneyAmount.fromGold(2), DNDItem.ItemType.CONTAINER, DNDItem.ItemType.ADVENTURING_GEAR);
     public static ContainerType BASKET = new ContainerType("BASKET", Material.COMPOSTER, 2, 40, 2, MoneyAmount.fromSilver(4), DNDItem.ItemType.CONTAINER, DNDItem.ItemType.ADVENTURING_GEAR);
+    public static ContainerType CHEST = new ContainerType("CHEST", Material.CHEST, 25, 300, 12, MoneyAmount.fromGold(5), DNDItem.ItemType.CONTAINER, DNDItem.ItemType.ADVENTURING_GEAR);
 
     private final String ID;
     private final String name;
@@ -56,6 +57,8 @@ public class ContainerType {
             return 5;
         if (this.maxVolume == 1)
             return 18;
+        if (this.maxVolume == 12)
+            return 54;
 
         return 0;
     }
