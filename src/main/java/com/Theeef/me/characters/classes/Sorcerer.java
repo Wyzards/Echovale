@@ -13,9 +13,13 @@ import com.google.common.collect.Lists;
 
 public class Sorcerer extends DNDClass {
 
+//    public Sorcerer() {
+    //super(6, Lists.newArrayList(Weapons.DAGGER, Weapons.DART, Weapons.SLING, Weapons.QUARTERSTAFF, Weapons.LIGHT_CROSSBOW), 2, Lists.newArrayList(Skill.ARCANA, Skill.DECEPTION, Skill.INSIGHT, Skill.INTIMIDATION, Skill.PERSUASION, Skill.RELIGION), Lists.newArrayList(Ability.CON, Ability.CHA), Lists.newArrayList(Weapons.DAGGER.getAmount(2)),
+    //      new EquipmentChoice(Lists.newArrayList(new EquipmentChoice(null, (IEquipmentChoice[]) Weapons.values().toArray())), new EquipmentChoiceList(Weapons.LIGHT_CROSSBOW, AdventuringGear.CROSSBOW_BOLT.getAmount(20))), new EquipmentChoice(null, Armor.BREASTPLATE));
+    //  }
+
     public Sorcerer() {
-        super(6, Lists.newArrayList(Weapons.DAGGER, Weapons.DART, Weapons.SLING, Weapons.QUARTERSTAFF, Weapons.LIGHT_CROSSBOW), 2, Lists.newArrayList(Skill.ARCANA, Skill.DECEPTION, Skill.INSIGHT, Skill.INTIMIDATION, Skill.PERSUASION, Skill.RELIGION), Lists.newArrayList(Ability.CON, Ability.CHA), Lists.newArrayList(Weapons.DAGGER.getAmount(2)),
-                new EquipmentChoice(Lists.newArrayList(new EquipmentChoice(null, (IEquipmentChoice[]) Weapons.values().toArray())), new EquipmentChoiceList(Weapons.LIGHT_CROSSBOW, AdventuringGear.CROSSBOW_BOLT.getAmount(20))), new EquipmentChoice(null, Armor.BREASTPLATE));
+        super(1, null, 1, null, null, null);
     }
 
     @Override

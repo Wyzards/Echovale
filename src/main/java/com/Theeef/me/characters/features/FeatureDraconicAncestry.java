@@ -1,11 +1,9 @@
 package com.Theeef.me.characters.features;
 
+import com.Theeef.me.api.equipment.DamageType;
 import com.Theeef.me.characters.abilities.Ability;
-import com.Theeef.me.combat.damage.DamageType;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -59,7 +57,7 @@ public class FeatureDraconicAncestry extends ChoiceFeature {
 
         @Override
         public String getDescription() {
-            return "Deals " + damageType.name().toLowerCase() + " damage in a " + breathWeapon;
+            return "Deals " + damageType.getName().toLowerCase() + " damage in a " + breathWeapon;
         }
 
         public DamageType getDamageType() {

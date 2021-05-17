@@ -1,5 +1,6 @@
 package com.Theeef.me;
 
+import com.Theeef.me.api.equipment.Weapon;
 import com.Theeef.me.api.equipment.WeaponProperty;
 import com.Theeef.me.items.DNDItem;
 import com.Theeef.me.items.weapons.DNDWeapon;
@@ -14,6 +15,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
 
 public class Echovale extends JavaPlugin implements Listener {
 
@@ -26,17 +30,22 @@ public class Echovale extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
 
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "Echovale Enabled");
-        WeaponProperty.fromIndex("ammunition");
     }
 
     public void loadConfig() {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        configManager = new ConfigManager();
-        configManager.setup();
-        configManager.charactersConfig.options().copyDefaults(true);
-        configManager.saveCharacters();
+        this.configManager = new ConfigManager();
+        this.configManager.setup();
+
+        // Setting up Characters config
+        this.configManager.getCharacters().options().copyDefaults(true);
+        this.configManager.saveCharacters();
+
+        // Setting up Equipment config
+        this.configManager.getEquipmentConfig().options().copyDefaults(true);
+        this.configManager.saveEquipmentConfig();
     }
 
     @EventHandler
@@ -44,8 +53,8 @@ public class Echovale extends JavaPlugin implements Listener {
         if (event.getMessage().equalsIgnoreCase("weapons")) {
             Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Weapons");
 
-            for (DNDWeapon weapon : Weapons.values())
-                inventory.addItem(weapon.getItem());
+            for (Weapon weapon : Weapon.values())
+                inventory.addItem(weapon.getItemStack());
 
             Bukkit.getScheduler().runTask(this, new Runnable() {
                 @Override
@@ -78,8 +87,6 @@ public class Echovale extends JavaPlugin implements Listener {
                 }
             });
         }
-
-
     }
 
     public ConfigManager getConfigManager() {

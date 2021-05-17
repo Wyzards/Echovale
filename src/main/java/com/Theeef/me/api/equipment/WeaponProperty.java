@@ -1,5 +1,10 @@
 package com.Theeef.me.api.equipment;
 
+import com.Theeef.me.APIRequest;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,43 +13,35 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class WeaponProperty {
 
-    private String name;
-    private String desc;
-    private String url;
+    private final String index;
+    private final String name;
+    private final String[] desc;
+    private final String url;
 
-    public WeaponProperty(String name, String desc, String url) {
-        this.name = name;
-        this.desc = desc;
-        this.url = url;
-    }
-
-    public static WeaponProperty fromIndex(String index) {
+    public WeaponProperty(String url) {
+        JSONObject object = null;
         try {
-            URL url = new URL("https://www.dnd5eapi.co/api/weapon-properties/" + index);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-
-            // Map<String, String> parameters = new HashMap<>();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer content = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            in.close();
-
-            System.out.println("CONTENT: " + content);
-        } catch (IOException e) {
+            object = APIRequest.request(url);
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
 
-        return null;
+        this.index = (String) object.get("index");
+        this.name = (String) object.get("name");
+
+        Object[] properties = ((JSONArray) object.get("desc")).toArray();
+        this.desc = Arrays.copyOf(properties, properties.length, String[].class);
+        this.url = url;
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

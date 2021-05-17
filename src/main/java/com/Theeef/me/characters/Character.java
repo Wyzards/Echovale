@@ -1,12 +1,12 @@
 package com.Theeef.me.characters;
 
+import com.Theeef.me.api.equipment.DamageType;
 import com.Theeef.me.characters.abilities.*;
 import com.Theeef.me.characters.backgrounds.Background;
 import com.Theeef.me.characters.classes.DNDClass;
 import com.Theeef.me.characters.classes.HitDice;
 import com.Theeef.me.characters.features.FeatureDraconicAncestry;
 import com.Theeef.me.characters.races.Race;
-import com.Theeef.me.combat.damage.DamageType;
 import com.Theeef.me.items.DNDItem;
 
 import java.util.HashMap;

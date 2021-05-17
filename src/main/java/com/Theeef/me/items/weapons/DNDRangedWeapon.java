@@ -1,17 +1,13 @@
 package com.Theeef.me.items.weapons;
 
-import com.Theeef.me.combat.damage.DamageType;
+import com.Theeef.me.api.equipment.DamageType;
 import com.Theeef.me.items.MoneyAmount;
-import com.Theeef.me.items.weapons.DNDWeapon;
-import com.Theeef.me.util.NBTHandler;
 import com.Theeef.me.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DNDRangedWeapon extends DNDWeapon {
@@ -44,7 +40,7 @@ public class DNDRangedWeapon extends DNDWeapon {
         lore.add(ChatColor.GRAY + "Range: " + ChatColor.WHITE + closeRange + "ft Normal - " + longRange + "ft Long");
 
         if (getMaxDamage() > 0 && getDamageType() != null)
-            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().name().toLowerCase());
+            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().getName().toLowerCase());
 
         if (getProperties().size() > 0) {
             List<String> propertyList = Util.fitForLore(propertyList());

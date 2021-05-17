@@ -1,11 +1,7 @@
 package com.Theeef.me.items.weapons;
 
-import com.Theeef.me.combat.damage.DamageType;
+import com.Theeef.me.api.equipment.DamageType;
 import com.Theeef.me.items.*;
-import com.Theeef.me.items.weapons.DNDRangedVersatileWeapon;
-import com.Theeef.me.items.weapons.DNDRangedWeapon;
-import com.Theeef.me.items.weapons.DNDVersatileWeapon;
-import com.Theeef.me.items.weapons.DNDWeapon;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.bukkit.Material;
@@ -15,6 +11,7 @@ import java.util.Set;
 public class Weapons {
 
     // Simple Weapons
+    /*
     public static DNDWeapon CLUB = new DNDWeapon("CLUB", "Club", Material.WOODEN_SHOVEL, 1, null, MoneyAmount.fromSilver(1), 2, 1, 4, DamageType.BLUDGEONING, Lists.newArrayList(DNDWeapon.ItemProperty.LIGHT), DNDWeapon.WeaponType.SIMPLE_MELEE);
     public static DNDRangedWeapon DAGGER = new DNDRangedWeapon("DAGGER", "Dagger", Material.SHEARS, 1, null, MoneyAmount.fromGold(2), 1, 1, 4, DamageType.PIERCING, Lists.newArrayList(DNDWeapon.ItemProperty.FINESSE, DNDWeapon.ItemProperty.LIGHT, DNDWeapon.ItemProperty.THROWN), 20, 60, DNDWeapon.WeaponType.SIMPLE_MELEE);
     public static DNDWeapon GREATCLUB = new DNDWeapon("GREATCLUB", "Greatclub", Material.DIAMOND_SHOVEL, 1, null, MoneyAmount.fromSilver(2), 10, 1, 8, DamageType.BLUDGEONING, Lists.newArrayList(DNDWeapon.ItemProperty.TWO_HANDED), DNDWeapon.WeaponType.SIMPLE_MELEE);
@@ -54,10 +51,10 @@ public class Weapons {
     public static DNDRangedWeapon HEAVY_CROSSBOW = new DNDRangedWeapon("HEAVY_CROSSBOW", "Heavy Crossbow", Material.CROSSBOW, 1, null, MoneyAmount.fromGold(50), 18, 1, 10, DamageType.PIERCING, Lists.newArrayList(DNDWeapon.ItemProperty.AMMUNITION, DNDWeapon.ItemProperty.HEAVY, DNDWeapon.ItemProperty.LOADING, DNDWeapon.ItemProperty.TWO_HANDED), 30, 120, DNDWeapon.WeaponType.MARTIAL_RANGED);
     public static DNDRangedWeapon LONGBOW = new DNDRangedWeapon("LONGBOW", "Longbow", Material.BOW, 1, null, MoneyAmount.fromGold(10), 2, 1, 8, DamageType.PIERCING, Lists.newArrayList(DNDWeapon.ItemProperty.AMMUNITION, DNDWeapon.ItemProperty.HEAVY, DNDWeapon.ItemProperty.TWO_HANDED), 150, 600, DNDWeapon.WeaponType.MARTIAL_RANGED);
     public static DNDRangedWeapon NET = new DNDRangedWeapon("NET", "Net", Material.COBWEB, 1, null, MoneyAmount.fromGold(1), 3, 0, 0, null, Lists.newArrayList(DNDWeapon.ItemProperty.SPECIAL, DNDWeapon.ItemProperty.THROWN), 5, 15, DNDWeapon.WeaponType.MARTIAL_RANGED);
-
     public static Set<DNDWeapon> values() {
         return Sets.newHashSet(CLUB, DAGGER, GREATCLUB, HANDAXE, JAVELIN, LIGHT_HAMMER, MACE, QUARTERSTAFF, SICKLE, SPEAR, LIGHT_CROSSBOW, DART, SHORTBOW, SLING, BATTLEAXE, FLAIL, GLAIVE,
                 GREATAXE, GREATSWORD, GREATSWORD, HALBERD, LANCE, LONGSWORD, MAUL, MORNINGSTAR, PIKE, RAPIER, SCIMITAR, SHORTSWORD, TRIDENT, WAR_PICK, WARHAMMER, WHIP,
                 BLOWGUN, HAND_CROSSBOW, HEAVY_CROSSBOW, LONGBOW, NET);
     }
+     */
 }

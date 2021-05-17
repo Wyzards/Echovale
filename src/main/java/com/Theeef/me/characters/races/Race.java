@@ -1,15 +1,14 @@
 package com.Theeef.me.characters.races;
 
+import com.Theeef.me.api.equipment.DamageType;
 import com.Theeef.me.characters.abilities.*;
 import com.Theeef.me.characters.feats.Feat;
 import com.Theeef.me.characters.feats.FeatSource;
 import com.Theeef.me.characters.features.Feature;
 import com.Theeef.me.characters.features.FeatureSource;
-import com.Theeef.me.combat.damage.DamageType;
 import com.google.common.collect.Sets;
 import org.bukkit.Material;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Race implements AbilityAlterationSource, SkillProficiencySource, ProficiencySource, FeatSource, FeatureSource, ResistanceSource {

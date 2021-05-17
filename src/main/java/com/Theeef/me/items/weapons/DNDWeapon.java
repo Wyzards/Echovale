@@ -1,13 +1,10 @@
 package com.Theeef.me.items.weapons;
 
-import com.Theeef.me.combat.damage.DamageType;
+import com.Theeef.me.api.equipment.DamageType;
 import com.Theeef.me.items.*;
-import com.Theeef.me.util.NBTHandler;
 import com.Theeef.me.util.Util;
-import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -50,7 +47,7 @@ public class DNDWeapon extends DNDItem {
         lore.add(ChatColor.GRAY + "Type: " + ChatColor.WHITE + Util.cleanEnumName(getWeaponType().name()));
 
         if (getMaxDamage() > 0 && getDamageType() != null)
-            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().name().toLowerCase());
+            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + getMinDamage() + "-" + getMaxDamage() + " " + getDamageType().getName().toLowerCase());
 
         if (properties.size() > 0) {
             List<String> propertyList = Util.fitForLore(propertyList());

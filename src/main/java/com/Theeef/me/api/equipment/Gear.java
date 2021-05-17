@@ -1,4 +1,10 @@
 package com.Theeef.me.api.equipment;
 
-public class Gear {
+import org.bukkit.inventory.ItemStack;
+
+public class Gear implements Equipment {
+    @Override
+    public ItemStack getItemStack() {
+        return null;
+    }
 }

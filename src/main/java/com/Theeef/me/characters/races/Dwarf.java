@@ -1,12 +1,11 @@
 package com.Theeef.me.characters.races;
 
+import com.Theeef.me.api.equipment.DamageType;
 import com.Theeef.me.characters.abilities.*;
 import com.Theeef.me.characters.features.Feature;
-import com.Theeef.me.combat.damage.DamageType;
 import com.google.common.collect.Sets;
 import org.bukkit.Material;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class Dwarf extends Race {
