@@ -1,4 +1,4 @@
-package com.Theeef.me.api.equipment;
+package com.Theeef.me.combat.damage;
 
 import com.Theeef.me.APIRequest;
 import org.json.simple.JSONObject;

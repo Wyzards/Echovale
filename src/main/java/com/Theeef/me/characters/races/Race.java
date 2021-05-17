@@ -1,6 +1,6 @@
 package com.Theeef.me.characters.races;
 
-import com.Theeef.me.api.equipment.DamageType;
+import com.Theeef.me.combat.damage.DamageType;
 import com.Theeef.me.characters.abilities.*;
 import com.Theeef.me.characters.feats.Feat;
 import com.Theeef.me.characters.feats.FeatSource;

@@ -1,6 +1,6 @@
 package com.Theeef.me.characters.races;
 
-import com.Theeef.me.api.equipment.DamageType;
+import com.Theeef.me.combat.damage.DamageType;
 
 import java.util.Set;
 

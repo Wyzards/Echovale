@@ -1,6 +1,6 @@
 package com.Theeef.me.characters.features;
 
-import com.Theeef.me.api.equipment.DamageType;
+import com.Theeef.me.combat.damage.DamageType;
 import com.Theeef.me.characters.abilities.Ability;
 import com.google.common.collect.Sets;
 

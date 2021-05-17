@@ -1,4 +1,4 @@
-package com.Theeef.me.api.equipment;
+package com.Theeef.me.api.equipment.weapons;
 
 import org.json.simple.JSONObject;
 

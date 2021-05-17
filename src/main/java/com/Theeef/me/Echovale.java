@@ -1,12 +1,8 @@
 package com.Theeef.me;
 
-import com.Theeef.me.api.equipment.Weapon;
-import com.Theeef.me.api.equipment.WeaponProperty;
-import com.Theeef.me.items.DNDItem;
-import com.Theeef.me.items.weapons.DNDWeapon;
-import com.Theeef.me.items.equipment.AdventuringGear;
-import com.Theeef.me.items.armor.Armor;
-import com.Theeef.me.items.weapons.Weapons;
+import com.Theeef.me.api.equipment.Gear;
+import com.Theeef.me.api.equipment.MagicItem;
+import com.Theeef.me.api.equipment.weapons.Weapon;
 import com.Theeef.me.util.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,9 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
 
 public class Echovale extends JavaPlugin implements Listener {
 
@@ -56,36 +49,28 @@ public class Echovale extends JavaPlugin implements Listener {
             for (Weapon weapon : Weapon.values())
                 inventory.addItem(weapon.getItemStack());
 
-            Bukkit.getScheduler().runTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    event.getPlayer().openInventory(inventory);
-                }
-            });
+            Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
         } else if (event.getMessage().equalsIgnoreCase("armor")) {
             Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Armor");
 
-            for (DNDItem item : Armor.values())
-                inventory.addItem(item.getItem());
 
-            Bukkit.getScheduler().runTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    event.getPlayer().openInventory(inventory);
-                }
-            });
-        } else if (event.getMessage().equalsIgnoreCase("adventure")) {
-            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Adventure");
+            Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
+        } else if (event.getMessage().equalsIgnoreCase("gear")) {
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Gear");
 
-            for (DNDItem item : AdventuringGear.values())
-                inventory.addItem(item.getItem());
+            for (Gear gear : Gear.values())
+                if (inventory.firstEmpty() != -1)
+                    inventory.addItem(gear.getItemStack());
 
-            Bukkit.getScheduler().runTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    event.getPlayer().openInventory(inventory);
-                }
-            });
+            Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
+        } else if (event.getMessage().equalsIgnoreCase("magic")) {
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Magic Items");
+
+            for (MagicItem magicItem : MagicItem.values())
+                if (inventory.firstEmpty() != -1)
+                    inventory.addItem(magicItem.getItemStack());
+
+            Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
         }
     }
 
