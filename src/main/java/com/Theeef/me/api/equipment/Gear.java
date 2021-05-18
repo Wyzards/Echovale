@@ -4,6 +4,7 @@ import com.Theeef.me.APIRequest;
 import com.Theeef.me.Echovale;
 import com.google.common.collect.Sets;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -39,7 +40,14 @@ public class Gear extends Equipment {
         this.name = (String) json.get("name");
         this.gear_category_url = (String) ((JSONObject) json.get("gear_category")).get("url");
         this.cost = new Cost((JSONObject) json.get("cost"));
-        this.weight = (double) json.get("weight");
+
+        if (json.containsKey("weight")) {
+            if (json.get("weight") instanceof Long)
+                this.weight = (double) (long) json.get("weight");
+            else
+                this.weight = (double) json.get("weight");
+        } else
+            this.weight = 0;
     }
 
     public ItemStack getItemStack() {
@@ -52,7 +60,7 @@ public class Gear extends Equipment {
         lore.add(ChatColor.GRAY + new EquipmentCategory(this.gear_category_url).getName() + " (" + new EquipmentCategory(getEquipmentCategoryUrl()).getName() + ")");
         lore.add("");
         lore.add(ChatColor.GRAY + "Cost: " + this.cost.amountString());
-        lore.add(ChatColor.GRAY + "Weight: " + this.weight);
+        lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + this.weight + " pounds");
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);

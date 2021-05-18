@@ -110,7 +110,8 @@ public class Weapon extends Equipment {
         else if (this.properties.contains("/api/weapon-properties/thrown"))
             lore.add(ChatColor.GRAY + "Thrown Range: " + ChatColor.WHITE + "20 Normal / 60 Long");
 
-        lore.addAll(properties);
+        if (this.properties.size() > 0)
+            lore.addAll(properties);
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
