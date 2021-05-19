@@ -8,35 +8,41 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
 public class APIRequest {
 
-    public static HashMap<String, JSONObject> cachedRequests = new HashMap<String, JSONObject>();
+    public static HashMap<String, JSONObject> cachedRequests = new HashMap<>();
 
-    public static JSONObject request(String path) throws IOException, ParseException {
+    public static JSONObject request(String path) {
         if (cachedRequests.containsKey(path))
             return cachedRequests.get(path);
 
-        URL url = new URL("https://www.dnd5eapi.co" + path);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
+        URL url;
+        JSONObject json = null;
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
+        try {
+            url = new URL("https://www.dnd5eapi.co" + path);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
 
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null)
+                content.append(inputLine);
+
+            in.close();
+
+            JSONParser parser = new JSONParser();
+            json = (JSONObject) parser.parse(content.toString());
+
+            cachedRequests.put(path, json);
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
         }
-        in.close();
-
-        JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject) parser.parse(content.toString());
-
-        cachedRequests.put(path, json);
 
         return json;
     }

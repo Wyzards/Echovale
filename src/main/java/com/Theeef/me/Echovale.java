@@ -2,6 +2,7 @@ package com.Theeef.me;
 
 import com.Theeef.me.api.equipment.Gear;
 import com.Theeef.me.api.equipment.MagicItem;
+import com.Theeef.me.api.equipment.containers.Pack;
 import com.Theeef.me.api.equipment.weapons.Weapon;
 import com.Theeef.me.util.ConfigManager;
 import org.bukkit.Bukkit;
@@ -61,6 +62,14 @@ public class Echovale extends JavaPlugin implements Listener {
             for (Gear gear : Gear.values())
                 if (inventory.firstEmpty() != -1)
                     inventory.addItem(gear.getItemStack());
+
+            Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
+        } else if (event.getMessage().equalsIgnoreCase("pack")) {
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Pack");
+
+            for (Pack pack : Pack.packValues())
+                if (inventory.firstEmpty() != -1)
+                    inventory.addItem(pack.getItemStack());
 
             Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
         } else if (event.getMessage().equalsIgnoreCase("magic")) {

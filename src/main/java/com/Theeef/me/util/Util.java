@@ -1,5 +1,8 @@
 package com.Theeef.me.util;
 
+import com.google.common.collect.Lists;
+import org.bukkit.ChatColor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -7,19 +10,24 @@ import java.util.Locale;
 public class Util {
 
     public static List<String> fitForLore(String string) {
-        String buffer = "";
-        List<String> list = new ArrayList<String>();
+        StringBuilder buffer = new StringBuilder();
+        List<String> list = new ArrayList<>();
 
-        for (String word : string.split(" ")) {
-            if (buffer.length() + 1 + word.length() >= 40) {
-                list.add(buffer.trim());
-                buffer = "";
+        while (string.length() > 0) {
+            // Add first word of string to buffer
+            buffer.append(string.substring(0, string.contains(" ") ? string.indexOf(' ') + 1 : string.length()));
+            // Remove first word from string
+            string = string.contains(" ") ? string.substring(string.indexOf(' ') + 1) : "";
+
+            if (buffer.length() >= 40) {
+                list.add(buffer.toString().trim());
+                string = ChatColor.getLastColors(buffer.toString()) + string;
+                buffer.setLength(0);
             }
-            buffer += word + " ";
         }
 
-        if (buffer.length() > 1)
-            list.add(buffer);
+        if (ChatColor.stripColor(buffer.toString().trim()).length() > 0)
+            list.add(buffer.toString());
 
         return list;
     }

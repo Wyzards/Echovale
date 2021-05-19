@@ -27,12 +27,7 @@ public class DamageType {
     private final String url;
 
     public DamageType(String url) {
-        JSONObject json = null;
-        try {
-            json = APIRequest.request(url);
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
+        JSONObject json = APIRequest.request(url);
 
         this.index = (String) json.get("index");
         this.name = (String) json.get("name");
