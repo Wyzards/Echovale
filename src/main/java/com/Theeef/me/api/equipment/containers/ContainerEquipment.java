@@ -18,7 +18,12 @@ public class ContainerEquipment {
     }
 
     public Equipment getEquipment() {
-        return new Equipment(this.equipmentUrl);
+        if (this.equipmentUrl.startsWith("/api/magic-items/"))
+            return new Equipment(this.equipmentUrl);
+        else
+            return new CommonEquipment(this.equipmentUrl);
+
+        // TODO: Proper method of getting equipment in highest form
     }
 
     public Cost getCost() {

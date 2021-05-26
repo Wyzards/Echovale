@@ -37,7 +37,7 @@ public class Pack extends Gear {
         for (String equipment_url : this.contents_urls.keySet())
             contents.add(new ContainerEquipment(equipment_url, this.contents_urls.get(equipment_url)));
 
-        Container container = new Container(this.container_url, getName(), contents);
+        Container container = new Container(this.container_url, getName(), getCost(), contents);
         return container.getItemStack();
     }
 

@@ -1,6 +1,8 @@
 package com.Theeef.me.api.equipment;
 
+import com.Theeef.me.util.NBTHandler;
 import org.bukkit.ChatColor;
+import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;
 
 import java.awt.*;
@@ -15,12 +17,33 @@ public class Cost {
     // Represents how much a specific item costs, or how much it can sell for
     private final HashMap<MoneyUnit, Long> cost = new HashMap<MoneyUnit, Long>();
 
+    public Cost(JSONObject json) {
+        this(MoneyUnit.valueOf(((String) json.get("unit")).toUpperCase()), (long) json.get("quantity"));
+    }
+
     public Cost(MoneyUnit unit, long quantity) {
         cost.put(unit, quantity);
     }
 
-    public Cost(JSONObject json) {
-        this(MoneyUnit.valueOf(((String) json.get("unit")).toUpperCase()), (long) json.get("quantity"));
+    public static Cost getFromContainer(ItemStack item) {
+        Cost cost = new Cost(MoneyUnit.CP, 0);
+
+        for (MoneyUnit unit : MoneyUnit.values())
+            if (NBTHandler.hasString(item, "containerCost_" + unit.name().toLowerCase()))
+                cost.add(unit, Long.parseLong(NBTHandler.getString(item, "cost_" + unit.name().toLowerCase())));
+            else
+                return null;
+
+        return cost;
+    }
+
+    public static Cost getFromItem(ItemStack item) {
+        Cost cost = new Cost(MoneyUnit.CP, 0);
+
+        for (MoneyUnit unit : MoneyUnit.values())
+            cost.add(unit, Long.parseLong(NBTHandler.getString(item, "cost_" + unit.name().toLowerCase())));
+
+        return cost;
     }
 
     /**
@@ -28,12 +51,12 @@ public class Cost {
      *
      * @return new cost
      */
-    public Cost maximize(boolean useElectrum) {
+    public Cost maximize(boolean useElectrum, boolean usePlatinum) {
         long copper = this.cost.containsKey(MoneyUnit.CP) ? this.cost.get(MoneyUnit.CP) : 0;
-        long silver = this.cost.containsKey(MoneyUnit.CP) ? this.cost.get(MoneyUnit.CP) : 0; // 1 sp worth 10 cp
-        long electrum = this.cost.containsKey(MoneyUnit.CP) ? this.cost.get(MoneyUnit.CP) : 0; // 1 ep worth 5 sp
-        long gold = this.cost.containsKey(MoneyUnit.CP) ? this.cost.get(MoneyUnit.CP) : 0; // 1 gp worth 10 sp
-        long platinum = this.cost.containsKey(MoneyUnit.CP) ? this.cost.get(MoneyUnit.CP) : 0;
+        long silver = this.cost.containsKey(MoneyUnit.SP) ? this.cost.get(MoneyUnit.SP) : 0; // 1 sp worth 10 cp
+        long electrum = this.cost.containsKey(MoneyUnit.EP) ? this.cost.get(MoneyUnit.EP) : 0; // 1 ep worth 5 sp
+        long gold = this.cost.containsKey(MoneyUnit.GP) ? this.cost.get(MoneyUnit.GP) : 0; // 1 gp worth 10 sp
+        long platinum = this.cost.containsKey(MoneyUnit.PP) ? this.cost.get(MoneyUnit.PP) : 0;
 
         silver += copper / 10;
         copper = copper % 10;
@@ -48,8 +71,14 @@ public class Cost {
 
         gold += silver / 10;
         silver = silver % 10;
-        platinum += gold / 10;
-        gold = gold % 10;
+
+        if (usePlatinum) {
+            platinum += gold / 10;
+            gold = gold % 10;
+        } else {
+            gold += platinum * 10;
+            platinum = 0;
+        }
 
         this.cost.put(MoneyUnit.CP, copper);
         this.cost.put(MoneyUnit.SP, silver);
@@ -89,13 +118,19 @@ public class Cost {
         return this;
     }
 
-    public HashMap<MoneyUnit, Long> getCost() {
-        return this.cost;
+    public Cost add(MoneyUnit unit, long amount) {
+        this.cost.put(unit, this.cost.containsKey(unit) ? this.cost.get(unit) + amount : amount);
+
+        return this;
     }
 
     public String amountString() {
-        return (cost.containsKey(MoneyUnit.PP) && cost.get(MoneyUnit.PP) > 0 ? ChatColor.WHITE + Long.toString(cost.get(MoneyUnit.PP)) + "pp " : "") + (cost.containsKey(MoneyUnit.GP) && cost.get(MoneyUnit.GP) > 0 ? ChatColor.GOLD + Long.toString(cost.get(MoneyUnit.GP)) + "gp " : "") + (cost.containsKey(MoneyUnit.EP) && cost.get(MoneyUnit.EP) > 0 ? ChatColor.YELLOW + Long.toString(cost.get(MoneyUnit.EP)) + "ep " : "") + (cost.containsKey(MoneyUnit.SP) && cost.get(MoneyUnit.SP) > 0 ? ChatColor.WHITE + Long.toString(cost.get(MoneyUnit.SP)) + "sp " : "") + (cost.containsKey(MoneyUnit.CP) && cost.get(MoneyUnit.CP) > 0 ? net.md_5.bungee.api.ChatColor.of(new Color(184, 115, 51)) + Long.toString(cost.get(MoneyUnit.CP)) + "cp" :
-                "");
+        String text = (cost.containsKey(MoneyUnit.PP) && cost.get(MoneyUnit.PP) > 0 ? "&f" + Long.toString(cost.get(MoneyUnit.PP)) + "pp " : "") + (cost.containsKey(MoneyUnit.GP) && cost.get(MoneyUnit.GP) > 0 ? "&6" + Long.toString(cost.get(MoneyUnit.GP)) + "gp " : "") + (cost.containsKey(MoneyUnit.EP) && cost.get(MoneyUnit.EP) > 0 ? "&e" + Long.toString(cost.get(MoneyUnit.EP)) + "ep " : "") + (cost.containsKey(MoneyUnit.SP) && cost.get(MoneyUnit.SP) > 0 ? "&f" + Long.toString(cost.get(MoneyUnit.SP)) + "sp " : "") + (cost.containsKey(MoneyUnit.CP) && cost.get(MoneyUnit.CP) > 0 ? net.md_5.bungee.api.ChatColor.of(new Color(184, 115, 51)) + Long.toString(cost.get(MoneyUnit.CP)) + "cp" : "");
+        return ChatColor.translateAlternateColorCodes('&', text);
+    }
+
+    public HashMap<MoneyUnit, Long> getCost() {
+        return this.cost;
     }
 
     public long getQuantity(MoneyUnit unit) {
