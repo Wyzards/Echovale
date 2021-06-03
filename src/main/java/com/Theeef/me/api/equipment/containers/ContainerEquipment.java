@@ -2,6 +2,7 @@ package com.Theeef.me.api.equipment.containers;
 
 import com.Theeef.me.api.equipment.Cost;
 import com.Theeef.me.api.equipment.Equipment;
+import org.bukkit.inventory.ItemStack;
 
 public class ContainerEquipment {
 
@@ -13,17 +14,23 @@ public class ContainerEquipment {
         this.quantity = quantity;
     }
 
+    public ContainerEquipment(String toString) {
+        this(toString.substring(0, toString.indexOf(",")), Long.parseLong(toString.substring(toString.indexOf(",") + 1)));
+    }
+
     public long getQuantity() {
         return this.quantity;
     }
 
-    public Equipment getEquipment() {
-        if (this.equipmentUrl.startsWith("/api/magic-items/"))
-            return new Equipment(this.equipmentUrl);
-        else
-            return new CommonEquipment(this.equipmentUrl);
+    public ItemStack getItemStack() {
+        ItemStack item = getEquipment().getItemStack();
+        item.setAmount(item.getAmount() * ((int) this.quantity));
 
-        // TODO: Proper method of getting equipment in highest form
+        return item;
+    }
+
+    public Equipment getEquipment() {
+        return Equipment.fromString(this.equipmentUrl);
     }
 
     public Cost getCost() {
@@ -36,5 +43,9 @@ public class ContainerEquipment {
         Equipment equipment = getEquipment();
 
         return equipment instanceof CommonEquipment ? ((CommonEquipment) equipment).getWeight() * this.quantity : 0;
+    }
+
+    public String toString() {
+        return this.equipmentUrl + "," + this.quantity;
     }
 }

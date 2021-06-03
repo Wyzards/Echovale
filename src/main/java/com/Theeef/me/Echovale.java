@@ -2,6 +2,7 @@ package com.Theeef.me;
 
 import com.Theeef.me.api.equipment.Gear;
 import com.Theeef.me.api.equipment.MagicItem;
+import com.Theeef.me.api.equipment.containers.ContainerEvents;
 import com.Theeef.me.api.equipment.containers.Pack;
 import com.Theeef.me.api.equipment.weapons.Weapon;
 import com.Theeef.me.util.ConfigManager;
@@ -22,6 +23,7 @@ public class Echovale extends JavaPlugin implements Listener {
         loadConfig();
 
         getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(new ContainerEvents(), this);
 
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "Echovale Enabled");
     }

@@ -60,7 +60,6 @@ public class ConfigManager {
     public void saveCharacters() {
         try {
             charactersConfig.save(charactersFile);
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "The characters.yml file has been saved");
         } catch (IOException e) {
             Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not save the characters.yml file");
         }
@@ -78,7 +77,6 @@ public class ConfigManager {
     public void saveEquipmentConfig() {
         try {
             equipmentConfig.save(equipmentFile);
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "The equipment.yml file has been saved");
         } catch (IOException e) {
             Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not save the equipment.yml file");
         }

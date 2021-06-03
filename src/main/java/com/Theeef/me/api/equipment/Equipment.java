@@ -2,6 +2,9 @@ package com.Theeef.me.api.equipment;
 
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.Echovale;
+import com.Theeef.me.api.equipment.containers.Container;
+import com.Theeef.me.api.equipment.containers.Pack;
+import com.Theeef.me.api.equipment.weapons.Weapon;
 import com.Theeef.me.util.NBTHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -29,6 +32,47 @@ public class Equipment {
         this.name = (String) json.get("name");
         this.equipment_category_url = (String) ((JSONObject) json.get("equipment_category")).get("url");
         this.url = url;
+    }
+
+    public static Equipment fromItem(ItemStack item) {
+        if (NBTHandler.hasString(item, "url"))
+            return Equipment.fromString(NBTHandler.getString(item, "url"));
+        else
+            throw new IllegalArgumentException("Specified item does not have an equipment URL");
+    }
+
+    public static double weighItem(ItemStack item) {
+        // TODO: Could cause issue when trying to weigh a container that is currently open
+        if (Container.isContainer(item)) {
+            return new Container(item).getTotalWeight();
+        } else if (NBTHandler.hasString(item, "weight"))
+            return Double.parseDouble(NBTHandler.getString(item, "weight"));
+        else
+            throw new IllegalArgumentException("ItemStack \"" + item + "\" did not have the weight NBT data.");
+    }
+
+    public static Equipment fromString(String url) {
+        if (url.startsWith("/api/magic-items/"))
+            return new MagicItem(url);
+
+        JSONObject object = APIRequest.request(url);
+
+        if (object.containsKey("equipment_category")) {
+            String equipmentCategory = (String) ((JSONObject) object.get("equipment_category")).get("index");
+
+            if (equipmentCategory.equals("weapon"))
+                return new Weapon(url);
+            else if (equipmentCategory.equals("adventuring-gear")) {
+                String gearCategory = (String) ((JSONObject) object.get("gear_category")).get("index");
+
+                if (gearCategory.equals("equipment-packs"))
+                    return new Pack(url);
+                else
+                    return new Gear(url);
+            }
+        }
+
+        throw new IllegalArgumentException("Could not find proper Equipment Type for url: " + url);
     }
 
     public ItemStack getItemStack() {
