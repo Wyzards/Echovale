@@ -55,7 +55,7 @@ public class Container extends Gear {
     }
 
     public static boolean isContainer(ItemStack item) {
-        return NBTHandler.hasString(item, "contents_0");
+        return item != null && NBTHandler.hasString(item, "contents_0");
     }
 
     private static List<ContainerEquipment> getItemContents(ItemStack item) {
@@ -207,7 +207,6 @@ public class Container extends Gear {
             for (Cost.MoneyUnit moneyUnit : Cost.MoneyUnit.values())
                 NBTHandler.addString(item, "containerCost_" + moneyUnit.name().toLowerCase(), String.valueOf(this.cost.getQuantity(moneyUnit)));
 
-        System.out.println(getName() + ": " + this.contents);
         for (int i = 0; i < this.contents.size(); i++)
             NBTHandler.addString(item, "contents_" + i, this.contents.get(i) == null ? "null" : this.contents.get(i).toString());
 

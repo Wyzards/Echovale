@@ -13,12 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.ItemDespawnEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -54,48 +49,84 @@ public class ContainerEvents implements Listener {
     public void changeContents(InventoryClickEvent event) {
         Container container = getInventoryContainer(event.getInventory());
 
-        if (event.getClickedInventory() != null && container != null) {
-            double weight = weighInventory(event.getInventory());
-            double maxWeight = container.getCapacity();
+        if (event.getClickedInventory() == null || container == null)
+            return;
 
-            if (event.isShiftClick() && event.getClickedInventory().getType() == InventoryType.PLAYER && event.getCurrentItem() != null) {
-                double itemWeight = Equipment.weighItem(event.getCurrentItem());
-                int amountCanMove = (int) ((maxWeight - weight) / itemWeight);
+        if (Container.isContainer(event.getCurrentItem()) && container.getUUID().toString().equals(NBTHandler.getString(event.getCurrentItem(), "uuid"))) {
+            event.setCancelled(true);
+            return;
+        } else if (event.getAction() == InventoryAction.HOTBAR_SWAP) {
+            ItemStack item = event.getView().getBottomInventory().getItem(event.getHotbarButton());
 
-                if (event.getCurrentItem().getAmount() > amountCanMove) {
-                    event.setCancelled(true);
-                    event.getCurrentItem().setAmount(event.getCurrentItem().getAmount() - amountCanMove);
+            if (Container.isContainer(item) && container.getUUID().toString().equals(NBTHandler.getString(item, "uuid")))
+                event.setCancelled(true);
+        }
 
-                    ItemStack item = event.getCurrentItem().clone();
-                    item.setAmount(amountCanMove);
-                    event.getInventory().addItem(item);
+        double weight = weighInventory(event.getInventory());
+        double maxWeight = container.getCapacity();
 
-                    if (amountCanMove == 0)
-                        containerFull((Player) event.getWhoClicked());
-                }
-            } else if (!event.isShiftClick() && event.getClickedInventory().getType() != InventoryType.PLAYER && event.getCursor().hasItemMeta() && (event.getCurrentItem() == null || event.getCurrentItem().isSimilar(event.getCursor()))) {
-                double itemWeight = Equipment.weighItem(event.getCursor());
-                int amountCanMove = (int) ((maxWeight - weight) / itemWeight);
-                int amountMoving = Math.min(64 - (event.getCurrentItem() == null ? 0 : event.getCurrentItem().getAmount()), event.getCursor().getAmount());
+        if (event.getAction() == InventoryAction.HOTBAR_SWAP && event.getClickedInventory().getType() != InventoryType.PLAYER) {
+            ItemStack moving = event.getView().getBottomInventory().getItem(event.getHotbarButton());
+            int amountCanMove = (int) ((maxWeight - weight) / Equipment.weighItem(moving));
 
-                if (amountCanMove <= 0) {
-                    event.setCancelled(true);
+            if (moving.getAmount() > amountCanMove) {
+                event.setCancelled(true);
+
+                moving.setAmount(moving.getAmount() - amountCanMove);
+
+                ItemStack item = moving.clone();
+                item.setAmount(amountCanMove);
+                event.getInventory().setItem(event.getSlot(), item);
+
+                if (amountCanMove == 0)
                     containerFull((Player) event.getWhoClicked());
-                } else if (!event.isRightClick() && amountMoving > amountCanMove) {
-                    ItemStack item = event.getCursor().clone();
-                    item.setAmount(amountCanMove);
-                    event.getCursor().setAmount(event.getCursor().getAmount() - amountCanMove);
-                    event.getClickedInventory().setItem(event.getSlot(), item);
-                    event.setCancelled(true);
-                }
-            } else if (!event.isShiftClick() && event.getClickedInventory().getType() != InventoryType.PLAYER && event.getCursor().hasItemMeta() && event.getCurrentItem() != null) {
-                double currentWeight = Equipment.weighItem(event.getCurrentItem());
-                double cursorWeight = Equipment.weighItem(event.getCursor());
+            }
+        } else if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && event.getClickedInventory().getType() == InventoryType.PLAYER) {
+            double itemWeight = Equipment.weighItem(event.getCurrentItem());
+            int amountCanMove = (int) ((maxWeight - weight) / itemWeight);
 
-                if (weight - currentWeight + cursorWeight > maxWeight) {
-                    event.setCancelled(true);
+            if (event.getCurrentItem().getAmount() > amountCanMove) {
+                event.setCancelled(true);
+                event.getCurrentItem().setAmount(event.getCurrentItem().getAmount() - amountCanMove);
+
+                ItemStack item = event.getCurrentItem().clone();
+                item.setAmount(amountCanMove);
+                event.getInventory().addItem(item);
+
+                if (amountCanMove == 0)
                     containerFull((Player) event.getWhoClicked());
-                }
+            }
+        } else if (event.getAction().name().startsWith("PLACE") && event.getClickedInventory().getType() != InventoryType.PLAYER) {
+            double itemWeight = Equipment.weighItem(event.getCursor());
+            int amountCanMove = (int) ((maxWeight - weight) / itemWeight);
+            int amountMoving = Math.min(64 - (event.getCurrentItem() == null ? 0 : event.getCurrentItem().getAmount()), event.getCursor().getAmount());
+
+            if (amountCanMove <= 0) {
+                event.setCancelled(true);
+                containerFull((Player) event.getWhoClicked());
+            } else if (!event.isRightClick() && amountMoving > amountCanMove) {
+                ItemStack item = event.getCursor().clone();
+                item.setAmount(amountCanMove);
+                event.getCursor().setAmount(event.getCursor().getAmount() - amountCanMove);
+                event.getClickedInventory().setItem(event.getSlot(), item);
+                event.setCancelled(true);
+            }
+        } else if (event.getAction() == InventoryAction.SWAP_WITH_CURSOR && event.getClickedInventory().getType() != InventoryType.PLAYER) {
+            double currentWeight = Equipment.weighItem(event.getCurrentItem()) * event.getCurrentItem().getAmount();
+            double cursorWeight = Equipment.weighItem(event.getCursor()) * event.getCursor().getAmount();
+
+            if (weight - currentWeight + cursorWeight > maxWeight) {
+                event.setCancelled(true);
+                containerFull((Player) event.getWhoClicked());
+            }
+        } else if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD && event.getClickedInventory().getType() != InventoryType.PLAYER) {
+            double currentWeight = Equipment.weighItem(event.getCurrentItem()) * event.getCurrentItem().getAmount();
+            ItemStack switchItem = event.getView().getBottomInventory().getItem(event.getHotbarButton());
+            double switchWeight = Equipment.weighItem(switchItem) * switchItem.getAmount();
+
+            if (weight - currentWeight + switchWeight > maxWeight) {
+                event.setCancelled(true);
+                containerFull((Player) event.getWhoClicked());
             }
         }
     }
@@ -136,7 +167,11 @@ public class ContainerEvents implements Listener {
 
             for (int slot : event.getNewItems().keySet())
                 if (slot < event.getInventory().getSize())
-                    weight += Equipment.weighItem(event.getNewItems().get(slot)) * event.getNewItems().get(slot).getAmount();
+                    if (Container.isContainer(event.getNewItems().get(slot)) && container.getUUID().toString().equals(NBTHandler.getString(event.getNewItems().get(slot), "uuid"))) {
+                        event.setCancelled(true);
+                        return;
+                    } else
+                        weight += Equipment.weighItem(event.getNewItems().get(slot)) * event.getNewItems().get(slot).getAmount();
 
             if (weighInventory(event.getInventory()) + weight > container.getCapacity()) {
                 event.setCancelled(true);
