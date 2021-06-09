@@ -17,9 +17,10 @@ public class Armor extends CommonEquipment {
 
     private final String armor_category;
     private final ArmorClass armor_class;
-    private final int str_minimum;
+    private final long str_minimum;
     private final boolean stealth_disadvantage;
     private final List<ArmorPiece> pieces;
+    private String dataPath;
 
     public Armor(String url) {
         super(url);
@@ -28,7 +29,7 @@ public class Armor extends CommonEquipment {
 
         this.armor_category = (String) json.get("armor_category");
         this.armor_class = new ArmorClass((JSONObject) json.get("armor_class"));
-        this.str_minimum = (int) json.get("str_minimum");
+        this.str_minimum = (long) json.get("str_minimum");
         this.stealth_disadvantage = (boolean) json.get("stealth_disadvantage");
 
         this.pieces = retrieveArmorPieces();
@@ -39,12 +40,15 @@ public class Armor extends CommonEquipment {
         JSONArray armor = (JSONArray) APIRequest.request("/api/equipment-categories/armor").get("equipment");
 
         for (Object armorSetObj : armor)
-            list.add((Armor) Equipment.fromString((String) ((JSONObject) armorSetObj).get("url")));
+            if (!((String) ((JSONObject) armorSetObj).get("url")).startsWith("/api/magic-items/"))
+                list.add((Armor) Equipment.fromString((String) ((JSONObject) armorSetObj).get("url")));
 
         return list;
     }
 
     public ItemStack getItemStack(ArmorPiece piece) {
+        setDataPath(piece);
+
         ItemStack item = super.getItemStack();
         ItemMeta meta = item.getItemMeta();
         List<String> lore = new ArrayList<>();
@@ -61,28 +65,44 @@ public class Armor extends CommonEquipment {
         item.setItemMeta(meta);
 
         NBTHandler.addString(item, "armor_category", this.armor_category);
-        NBTHandler.addString(item, "armor_class_base", this.armor_category);
-        NBTHandler.addString(item, "armor_class_has_dex_bonus", this.armor_category);
-        NBTHandler.addString(item, "armor_class_max_dex_bonus", Integer.toString(this.armor_class.getMaxDexBonus()));
-        NBTHandler.addString(item, "str_minimum", Integer.toString(this.str_minimum));
+        NBTHandler.addString(item, "armor_class_base", Long.toString(this.armor_class.getBase()));
+        NBTHandler.addString(item, "armor_class_has_dex_bonus", Boolean.toString(this.armor_class.hasDexBonus()));
+        NBTHandler.addString(item, "armor_class_max_dex_bonus", Long.toString(this.armor_class.getMaxDexBonus()));
+        NBTHandler.addString(item, "str_minimum", Long.toString(this.str_minimum));
         NBTHandler.addString(item, "stealth_disadvantage", Boolean.toString(this.stealth_disadvantage));
         NBTHandler.addString(item, "armorPiece", piece.name());
 
         return item;
     }
 
+    private void setDataPath(ArmorPiece piece) {
+        if (piece == null)
+            this.dataPath = null;
+        else
+            this.dataPath = super.getDataPath() + "." + piece.name();
+    }
+
     private List<ArmorPiece> retrieveArmorPieces() {
+        setDataPath(null);
         List<ArmorPiece> pieces = new ArrayList<>();
 
-        if (plugin.getConfigManager().getEquipmentConfig().contains("armor." + getIndex() + ".pieces"))
-            for (String string : plugin.getConfigManager().getEquipmentConfig().getStringList("armor." + getIndex() + ".pieces"))
+        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".pieces"))
+            for (String string : plugin.getConfigManager().getEquipmentConfig().getStringList(getDataPath() + ".pieces"))
                 pieces.add(ArmorPiece.valueOf(string));
         else {
-            plugin.getConfigManager().getEquipmentConfig().set("armor." + getIndex() + ".pieces", null);
+            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".pieces", new ArrayList<String>());
             plugin.getConfigManager().saveEquipmentConfig();
         }
 
         return pieces;
+    }
+
+    @Override
+    public String getDataPath() {
+        if (this.dataPath == null)
+            return super.getDataPath();
+        else
+            return this.dataPath;
     }
 
     public List<ArmorPiece> getPieces() {
@@ -97,7 +117,7 @@ public class Armor extends CommonEquipment {
         return this.armor_class;
     }
 
-    public int getStrengthRequirement() {
+    public long getStrengthRequirement() {
         return this.str_minimum;
     }
 

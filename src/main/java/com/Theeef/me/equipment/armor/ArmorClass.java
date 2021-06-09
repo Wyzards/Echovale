@@ -4,21 +4,21 @@ import org.json.simple.JSONObject;
 
 public class ArmorClass {
 
-    private final int base;
+    private final long base;
     private final boolean dex_bonus;
-    private final int max_bonus;
+    private final long max_bonus;
 
     public ArmorClass(JSONObject json) {
-        this.base = (int) json.get("base");
+        this.base = (long) json.get("base");
         this.dex_bonus = (boolean) json.get("dex_bonus");
 
         if (json.get("max_bonus") == null)
             this.max_bonus = 0;
         else
-            this.max_bonus = (int) json.get("max_bonus");
+            this.max_bonus = (long) json.get("max_bonus");
     }
 
-    public int getBase() {
+    public long getBase() {
         return this.base;
     }
 
@@ -26,7 +26,7 @@ public class ArmorClass {
         return this.dex_bonus;
     }
 
-    public int getMaxDexBonus() {
+    public long getMaxDexBonus() {
         return this.max_bonus;
     }
 }
