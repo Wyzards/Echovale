@@ -1,15 +1,20 @@
 package com.Theeef.me;
 
-import com.Theeef.me.api.equipment.Gear;
-import com.Theeef.me.api.equipment.MagicItem;
-import com.Theeef.me.api.equipment.containers.ContainerEvents;
-import com.Theeef.me.api.equipment.containers.Pack;
-import com.Theeef.me.api.equipment.weapons.Weapon;
+import com.Theeef.me.equipment.Equipment;
+import com.Theeef.me.equipment.Gear;
+import com.Theeef.me.equipment.MagicItem;
+import com.Theeef.me.equipment.armor.Armor;
+import com.Theeef.me.equipment.armor.ArmorPiece;
+import com.Theeef.me.equipment.containers.ContainerEvents;
+import com.Theeef.me.equipment.containers.Pack;
+import com.Theeef.me.equipment.weapons.Weapon;
 import com.Theeef.me.util.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,10 +27,19 @@ public class Echovale extends JavaPlugin implements Listener {
     public void onEnable() {
         loadConfig();
 
+        Equipment.changeMaxStackSize();
+
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new ContainerEvents(), this);
 
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "Echovale Enabled");
+    }
+
+    @EventHandler
+    public void click(InventoryClickEvent event) {
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            ((Player) event.getWhoClicked()).updateInventory();
+        }, 1L);
     }
 
     public void loadConfig() {
@@ -54,8 +68,12 @@ public class Echovale extends JavaPlugin implements Listener {
 
             Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
         } else if (event.getMessage().equalsIgnoreCase("armor")) {
-            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Armor");
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Gear");
 
+            for (Armor armor : Armor.values())
+                for (ArmorPiece piece : armor.getPieces())
+                    if (inventory.firstEmpty() != -1)
+                        inventory.addItem(armor.getItemStack(piece));
 
             Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
         } else if (event.getMessage().equalsIgnoreCase("gear")) {

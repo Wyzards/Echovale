@@ -1,6 +1,7 @@
 package com.Theeef.me.util;
 
 import com.Theeef.me.Echovale;
+import com.google.common.base.Charsets;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -8,6 +9,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class ConfigManager {
 
@@ -50,7 +53,12 @@ public class ConfigManager {
             }
         }
 
-        equipmentConfig = YamlConfiguration.loadConfiguration(equipmentFile);
+        this.equipmentConfig = YamlConfiguration.loadConfiguration(this.equipmentFile);
+        InputStream defConfigStream = Echovale.getPlugin(Echovale.class).getResource("equipment.yml");
+
+        if (defConfigStream != null) {
+            this.equipmentConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8)));
+        }
     }
 
     public FileConfiguration getCharacters() {

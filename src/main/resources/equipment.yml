@@ -1,0 +1,821 @@
+armor: []
+containers:
+  - /api/equipment/pouch
+  - /api/equipment/basket
+  - /api/equipment/backpack
+  - /api/equipment/chest
+  - /api/equipment/barrel
+  - /api/equipment/bucket
+  - /api/equipment/sack
+maxStackSize:
+  CHEST: 1
+  MELON: 1
+/api/equipment-categories/weapon:
+  greatsword:
+    material: NETHERITE_SWORD
+  crossbow-hand:
+    material: CROSSBOW
+  net:
+    material: COBWEB
+  maul:
+    material: NETHERITE_AXE
+  scimitar:
+    material: IRON_SWORD
+  blowgun:
+    material: BAMBOO
+  sickle:
+    material: STONE_HOE
+  handaxe:
+    material: IRON_AXE
+  battleaxe:
+    material: DIAMOND_AXE
+  morningstar:
+    material: DIAMOND_SHOVEL
+  crossbow-light:
+    material: CROSSBOW
+  flail:
+    material: DIAMOND_SHOVEL
+  dart:
+    material: END_ROD
+  mace:
+    material: IRON_SHOVEL
+  shortsword:
+    material: IRON_SWORD
+  pike:
+    material: NETHERITE_SHOVEL
+  light-hammer:
+    material: STONE_AXE
+  shortbow:
+    material: BOW
+  javelin:
+    material: IRON_SHOVEL
+  longsword:
+    material: DIAMOND_SWORD
+  war-pick:
+    material: DIAMOND_PICKAXE
+  dagger:
+    material: STONE_SWORD
+  longbow:
+    material: BOW
+  halberd:
+    material: NETHERITE_SHOVEL
+  greatclub:
+    material: DIAMOND_SHOVEL
+  whip:
+    material: STRING
+  greataxe:
+    material: NETHERITE_AXE
+  lance:
+    material: NETHERITE_SHOVEL
+  quarterstaff:
+    material: STICK
+  glaive:
+    material: NETHERITE_SHOVEL
+  trident:
+    material: TRIDENT
+  warhammer:
+    material: DIAMOND_AXE
+  spear:
+    material: IRON_SHOVEL
+  sling:
+    material: KELP
+  crossbow-heavy:
+    material: CROSSBOW
+  rapier:
+    material: DIAMOND_SWORD
+  club:
+    material: WOODEN_SHOVEL
+  frost-brand:
+    material: BARRIER
+  mace-of-terror:
+    material: BARRIER
+  mace-of-disruption:
+    material: BARRIER
+  giant-slayer:
+    material: BARRIER
+  oathbow:
+    material: BARRIER
+  sun-blade:
+    material: BARRIER
+  weapon:
+    material: BARRIER
+  dragon-slayer:
+    material: BARRIER
+  berserker-axe:
+    material: BARRIER
+  trident-of-fish-command:
+    material: BARRIER
+  mace-of-smiting:
+    material: BARRIER
+  dancing-sword:
+    material: BARRIER
+  flame-tongue:
+    material: BARRIER
+  hammer-of-thunderbolts:
+    material: BARRIER
+  sword-of-wounding:
+    material: BARRIER
+  defender:
+    material: BARRIER
+  scimitar-of-speed:
+    material: BARRIER
+  vicious-weapon:
+    material: BARRIER
+  vorpal-sword:
+    material: BARRIER
+  nine-lives-stealer:
+    material: BARRIER
+  sword-of-life-stealing:
+    material: BARRIER
+  holy-avenger:
+    material: BARRIER
+  sword-of-sharpness:
+    material: BARRIER
+  luck-blade:
+    material: BARRIER
+  javelin-of-lightning:
+    material: BARRIER
+  dwarven-thrower:
+    material: BARRIER
+  dagger-of-venom:
+    material: BARRIER
+/api/equipment-categories/wondrous-item:
+  marvelous-pigments:
+    material: BARRIER
+  scarab-of-protection:
+    material: BARRIER
+  talisman-of-the-sphere:
+    material: BARRIER
+  bracers-of-archery:
+    material: BARRIER
+  tome-of-understanding:
+    material: BARRIER
+  orb-of-dragonkind:
+    material: BARRIER
+  cloak-of-elvenkind:
+    material: BARRIER
+  wings-of-flying:
+    material: BARRIER
+  robe-of-scintillating-colors:
+    material: BARRIER
+  helm-of-brilliance:
+    material: BARRIER
+  bowl-of-commanding-water-elementals:
+    material: BARRIER
+  cloak-of-arachnida:
+    material: BARRIER
+  tome-of-clear-thought:
+    material: BARRIER
+  handy-haversack:
+    material: BARRIER
+  brazier-of-commanding-fire-elementals:
+    material: BARRIER
+  dimensional-shackles:
+    material: BARRIER
+  cloak-of-protection:
+    material: BARRIER
+  horn-of-blasting:
+    material: BARRIER
+  manual-of-quickness-of-action:
+    material: BARRIER
+  gem-of-brightness:
+    material: BARRIER
+  manual-of-golems:
+    material: BARRIER
+  bead-of-force:
+    material: BARRIER
+  boots-of-the-winterlands:
+    material: BARRIER
+  bag-of-tricks:
+    material: BARRIER
+  restorative-ointment:
+    material: BARRIER
+  horseshoes-of-a-zephyr:
+    material: BARRIER
+  crystal-ball:
+    material: BARRIER
+  portable-hole:
+    material: BARRIER
+  pipes-of-haunting:
+    material: BARRIER
+  sovereign-glue:
+    material: BARRIER
+  helm-of-teleportation:
+    material: BARRIER
+  gauntlets-of-ogre-power:
+    material: BARRIER
+  slippers-of-spider-climbing:
+    material: BARRIER
+  periapt-of-health:
+    material: BARRIER
+  censer-of-controlling-air-elementals:
+    material: BARRIER
+  robe-of-eyes:
+    material: BARRIER
+  amulet-of-proof-against-detection-and-location:
+    material: BARRIER
+  deck-of-many-things:
+    material: BARRIER
+  elemental-gem:
+    material: BARRIER
+  stone-of-good-luck-(luckstone):
+    material: BARRIER
+  tome-of-leadership-and-influence:
+    material: BARRIER
+  necklace-of-fireballs:
+    material: BARRIER
+  necklace-of-prayer-beads:
+    material: BARRIER
+  winged-boots:
+    material: BARRIER
+  belt-of-dwarvenkind:
+    material: BARRIER
+  bracers-of-defense:
+    material: BARRIER
+  feather-token:
+    material: BARRIER
+  universal-solvent:
+    material: BARRIER
+  cloak-of-the-bat:
+    material: BARRIER
+  dust-of-dryness:
+    material: BARRIER
+  apparatus-of-the-crab:
+    material: BARRIER
+  eyes-of-charming:
+    material: BARRIER
+  efficient-quiver:
+    material: BARRIER
+  cube-of-force:
+    material: BARRIER
+  manual-of-gainful-exercise:
+    material: BARRIER
+  dust-of-sneezing-and-choking:
+    material: BARRIER
+  instant-fortress:
+    material: BARRIER
+  boots-of-levitation:
+    material: BARRIER
+  periapt-of-proof-against-poison:
+    material: BARRIER
+  horseshoes-of-speed:
+    material: BARRIER
+  figurine-of-wondrous-power:
+    material: BARRIER
+  wind-fan:
+    material: BARRIER
+  boots-of-striding-and-springing:
+    material: BARRIER
+  sphere-of-annihilation:
+    material: BARRIER
+  decanter-of-endless-water:
+    material: BARRIER
+  periapt-of-wound-closure:
+    material: BARRIER
+  well-of-many-worlds:
+    material: BARRIER
+  robe-of-useful-items:
+    material: BARRIER
+  robe-of-stars:
+    material: BARRIER
+  helm-of-comprehending-languages:
+    material: BARRIER
+  lantern-of-revealing:
+    material: BARRIER
+  bag-of-holding:
+    material: BARRIER
+  bag-of-beans:
+    material: BARRIER
+  carpet-of-flying:
+    material: BARRIER
+  rope-of-entanglement:
+    material: BARRIER
+  cloak-of-the-manta-ray:
+    material: BARRIER
+  iron-flask:
+    material: BARRIER
+  cape-of-the-mountebank:
+    material: BARRIER
+  hat-of-disguise:
+    material: BARRIER
+  gloves-of-swimming-and-climbing:
+    material: BARRIER
+  eyes-of-the-eagle:
+    material: BARRIER
+  talisman-of-pure-good:
+    material: BARRIER
+  rope-of-climbing:
+    material: BARRIER
+  cubic-gate:
+    material: BARRIER
+  ioun-stone:
+    material: BARRIER
+  folding-boat:
+    material: BARRIER
+  deck-of-illusions:
+    material: BARRIER
+  headband-of-intellect:
+    material: BARRIER
+  robe-of-the-archmagi:
+    material: BARRIER
+  manual-of-bodily-health:
+    material: BARRIER
+  efreeti-bottle:
+    material: BARRIER
+  horn-of-valhalla:
+    material: BARRIER
+  eyes-of-minute-seeing:
+    material: BARRIER
+  gloves-of-missile-snaring:
+    material: BARRIER
+  pipes-of-the-sewers:
+    material: BARRIER
+  cloak-of-displacement:
+    material: BARRIER
+  broom-of-flying:
+    material: BARRIER
+  boots-of-speed:
+    material: BARRIER
+  dust-of-disappearance:
+    material: BARRIER
+  amulet-of-the-planes:
+    material: BARRIER
+  candle-of-invocation:
+    material: BARRIER
+  circlet-of-blasting:
+    material: BARRIER
+  talisman-of-ultimate-evil:
+    material: BARRIER
+  mirror-of-life-trapping:
+    material: BARRIER
+  gem-of-seeing:
+    material: BARRIER
+  necklace-of-adaptation:
+    material: BARRIER
+  mantle-of-spell-resistance:
+    material: BARRIER
+  belt-of-giant-strength:
+    material: BARRIER
+  goggles-of-night:
+    material: BARRIER
+  helm-of-telepathy:
+    material: BARRIER
+  eversmoking-bottle:
+    material: BARRIER
+  iron-bands-of-binding:
+    material: BARRIER
+  bag-of-devouring:
+    material: BARRIER
+  pearl-of-power:
+    material: BARRIER
+  boots-of-elvenkind:
+    material: BARRIER
+  brooch-of-shielding:
+    material: BARRIER
+  medallion-of-thoughts:
+    material: BARRIER
+/api/equipment-categories/ring:
+  ring-of-evasion:
+    material: BARRIER
+  ring-of-mind-shielding:
+    material: BARRIER
+  ring-of-regeneration:
+    material: BARRIER
+  ring-of-free-action:
+    material: BARRIER
+  ring-of-three-wishes:
+    material: BARRIER
+  ring-of-x-ray-vision:
+    material: BARRIER
+  ring-of-resistance:
+    material: BARRIER
+  ring-of-djinni-summoning:
+    material: BARRIER
+  ring-of-protection:
+    material: BARRIER
+  ring-of-water-walking:
+    material: BARRIER
+  ring-of-animal-influence:
+    material: BARRIER
+  ring-of-jumping:
+    material: BARRIER
+  ring-of-spell-storing:
+    material: BARRIER
+  ring-of-feather-falling:
+    material: BARRIER
+  ring-of-elemental-command:
+    material: BARRIER
+  ring-of-the-ram:
+    material: BARRIER
+  ring-of-spell-turning:
+    material: BARRIER
+  ring-of-swimming:
+    material: BARRIER
+  ring-of-shooting-stars:
+    material: BARRIER
+  ring-of-telekinesis:
+    material: BARRIER
+  ring-of-invisibility:
+    material: BARRIER
+  ring-of-warmth:
+    material: BARRIER
+/api/equipment-categories/ammunition:
+  arrow-of-slaying:
+    material: BARRIER
+  ammunition:
+    material: BARRIER
+/api/equipment-categories/rod:
+  rod-of-security:
+    material: BARRIER
+  rod-of-lordly-might:
+    material: BARRIER
+  rod-of-absorption:
+    material: BARRIER
+  immovable-rod:
+    material: BARRIER
+  rod-of-alertness:
+    material: BARRIER
+  rod-of-rulership:
+    material: BARRIER
+/api/equipment-categories/potion:
+  potion-of-mind-reading:
+    material: BARRIER
+  potion-of-gaseous-form:
+    material: BARRIER
+  potion-of-invisibility:
+    material: BARRIER
+  potion-of-water-breathing:
+    material: BARRIER
+  potion-of-growth:
+    material: BARRIER
+  potion-of-resistance:
+    material: BARRIER
+  potion-of-animal-friendship:
+    material: BARRIER
+  oil-of-sharpness:
+    material: BARRIER
+  potion-of-heroism:
+    material: BARRIER
+  potion-of-giant-strength:
+    material: BARRIER
+  potion-of-poison:
+    material: BARRIER
+  potion-of-healing:
+    material: BARRIER
+  potion-of-climbing:
+    material: BARRIER
+  oil-of-slipperiness:
+    material: BARRIER
+  potion-of-speed:
+    material: BARRIER
+  philter-of-love:
+    material: BARRIER
+  potion-of-clairvoyance:
+    material: BARRIER
+  potion-of-diminution:
+    material: BARRIER
+  oil-of-etherealness:
+    material: BARRIER
+  potion-of-flying:
+    material: BARRIER
+/api/equipment-categories/wand:
+  wand-of-paralysis:
+    material: BARRIER
+  wand-of-magic-detection:
+    material: BARRIER
+  wand-of-wonder:
+    material: BARRIER
+  wand-of-polymorph:
+    material: BARRIER
+  wand-of-magic-missiles:
+    material: BARRIER
+  wand-of-lightning-bolts:
+    material: BARRIER
+  wand-of-fireballs:
+    material: BARRIER
+  wand-of-fear:
+    material: BARRIER
+  wand-of-enemy-detection:
+    material: BARRIER
+  wand-of-web:
+    material: BARRIER
+  wand-of-secrets:
+    material: BARRIER
+  wand-of-binding:
+    material: BARRIER
+  wand-of-the-war-mage:
+    material: BARRIER
+/api/equipment-categories/armor:
+  demon-armor:
+    material: BARRIER
+  armor-of-resistance:
+    material: BARRIER
+  plate-armor-of-etherealness:
+    material: BARRIER
+  dragon-scale-mail:
+    material: BARRIER
+  animated-shield:
+    material: BARRIER
+  armor:
+    material: BARRIER
+  dwarven-plate:
+    material: BARRIER
+  mithral-armor:
+    material: BARRIER
+  spellguard-shield:
+    material: BARRIER
+  adamantine-armor:
+    material: BARRIER
+  shield-of-missile-attraction:
+    material: BARRIER
+  armor-of-invulnerability:
+    material: BARRIER
+  arrow-catching-shield:
+    material: BARRIER
+  armor-of-vulnerability:
+    material: BARRIER
+  elven-chain:
+    material: BARRIER
+/api/equipment-categories/staff:
+  staff-of-withering:
+    material: BARRIER
+  staff-of-charming:
+    material: BARRIER
+  staff-of-the-woodlands:
+    material: BARRIER
+  staff-of-striking:
+    material: BARRIER
+  staff-of-frost:
+    material: BARRIER
+  staff-of-power:
+    material: BARRIER
+  staff-of-the-magi:
+    material: BARRIER
+  staff-of-swarming-insects:
+    material: BARRIER
+  staff-of-healing:
+    material: BARRIER
+  staff-of-thunder-and-lightning:
+    material: BARRIER
+  staff-of-the-python:
+    material: BARRIER
+/api/equipment-categories/scroll:
+  spell-scroll:
+    material: EMPTY_MAP
+/api/equipment-categories/adventuring-gear:
+  lamp:
+    material: LANTERN
+  climbers-kit:
+    material: BARRIER
+  basket:
+    material: OAK_BOAT
+  case-crossbow-bolt:
+    material: HOPPER
+  poisoners-kit:
+    material: BARRIER
+  pick-miners:
+    material: IRON_PICKAXE
+  rations-1-day:
+    material: ROTTEN_FLESH
+  rope-silk-50-feet:
+    material: LEAD
+  small-knife:
+    material: SHEARS
+  wooden-staff:
+    material: STICK
+  ball-bearings-bag-of-1000:
+    material: FLOWER_POT
+  bottle-glass:
+    material: GLASS_BOTTLE
+  piton:
+    material: END_ROD
+  sack:
+    material: HOPPER
+  paper-one-sheet:
+    material: PAPER
+  tent-two-person:
+    material: FLOWER_BANNER_PATTERN
+  potion-of-healing:
+    material: POTION
+    potionColor:
+      R: 0
+      G: 0
+      B: 0
+  pot-iron:
+    material: CAULDRON
+  antitoxin-vial:
+    material: POTION
+    potionColor:
+      R: 0
+      G: 0
+      B: 0
+  amulet:
+    material: SUNFLOWER
+  chalk-1-piece:
+    material: SMOOTH_QUARTZ
+  spike-iron:
+    material: END_ROD
+  blowgun-needle:
+    material: END_ROD
+  chest:
+    material: CHEST
+  bedroll:
+    material: BROWN_BED
+  manacles:
+    material: NETHERITE_SCRAP
+  blanket:
+    material: LIGHT_GRAY_CARPET
+  perfume-vial:
+    material: POTION
+    potionColor:
+      R: 0
+      G: 0
+      B: 0
+  torch:
+    material: TORCH
+  vestments:
+    material: LEATHER_CHESTPLATE
+  spellbook:
+    material: WRITTEN_BOOK
+  quiver:
+    material: ARMOR_STAND
+  alms-box:
+    material: BEEHIVE
+  vial:
+    material: GLASS_BOTTLE
+  robes:
+    material: LEATHER_CHESTPLATE
+  string-10-feet:
+    material: STRING
+  block-and-tackle:
+    material: BEEHIVE
+  little-bag-of-sand:
+    material: FLOWER_POT
+  barrel:
+    material: BARREL
+  sprig-of-mistletoe:
+    material: SWEET_BERRIES
+  orb:
+    material: HEART_OF_THE_SEA
+  oil-flask:
+    material: POTION
+    potionColor:
+      R: 0
+      G: 0
+      B: 0
+  bucket:
+    material: BUCKET
+  magnifying-glass:
+    material: GLASS_PANE
+  spyglass:
+    material: BAMBOO
+  abacus:
+    material: LADDER
+  grappling-hook:
+    material: FISHING_ROD
+  clothes-fine:
+    material: LEATHER_CHESTPLATE
+  wand:
+    material: STICK
+  reliquary:
+    material: CHISELED_QUARTZ_BLOCK
+  bell:
+    material: BELL
+  sling-bullet:
+    material: STONE_BUTTON
+  lock:
+    material: TRIPWIRE_HOOK
+  totem:
+    material: TOTEM_OF_UNDYING
+  backpack:
+    material: COMPOSTER
+  candle:
+    material: REDSTONE_TORCH
+  crowbar:
+    material: IRON_SWORD
+  hammer:
+    material: IRON_HOE
+  tinderbox:
+    material: LOOM
+  waterskin:
+    material: RABBIT_FOOT
+  lantern-hooded:
+    material: LANTERN
+  rope-hempen-50-feet:
+    material: LEAD
+  component-pouch:
+    material: FLOWER_POT
+  crystal:
+    material: QUARTZ
+  case-map-or-scroll:
+    material: JUKEBOX
+  whetstone:
+    material: CLAY_BALL
+  herbalism-kit:
+    material: BARRIER
+  scale-merchants:
+    material: BREWING_STAND
+  disguise-kit:
+    material: BARRIER
+  signal-whistle:
+    material: IRON_TRAPDOOR
+  signet-ring:
+    material: GOLD_NUGGET
+  mess-kit:
+    material: BARRIER
+  poison-basic-vial:
+    material: POTION
+    potionColor:
+      R: 0
+      G: 0
+      B: 0
+  mirror-steel:
+    material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  healers-kit:
+    material: BARRIER
+  hunting-trap:
+    material: DETECTOR_RAIL
+  flask-or-tankard:
+    material: BARREL
+  rod:
+    material: BLAZE_ROD
+  acid-vial:
+    material: POTION
+    potionColor:
+      R: 0
+      G: 0
+      B: 0
+  hourglass:
+    material: GLASS
+  parchment-one-sheet:
+    material: MAP
+  ladder-10-foot:
+    material: LADDER
+  ink-1-ounce-bottle:
+    material: POTION
+    potionColor:
+      R: 0
+      G: 0
+      B: 0
+  fishing-tackle:
+    material: FISHING_ROD
+  clothes-travelers:
+    material: LEATHER_CHESTPLATE
+  crossbow-bolt:
+    material: ARROW
+  block-of-incense:
+    material: HONEY_BLOCK
+  chain-10-feet:
+    material: CHAIN
+  lantern-bullseye:
+    material: SOUL_LANTERN
+  clothes-common:
+    material: LEATHER_CHESTPLATE
+  jug-or-pitcher:
+    material: CAULDRON
+  emblem:
+    material: EMERALD
+  soap:
+    material: SMOOTH_QUARTZ
+  ink-pen:
+    material: FEATHER
+  pole-10-foot:
+    material: STICK
+  caltrops:
+    material: END_ROD
+  forgery-kit:
+    material: BARRIER
+  censer:
+    material: SOUL_LANTERN
+  alchemists-fire-flask:
+    material: SPLASH_POTION
+    potionColor:
+      R: 0
+      G: 0
+      B: 0
+  clothes-costume:
+    material: LEATHER_CHESTPLATE
+  staff:
+    material: STICK
+  ram-portable:
+    material: BLACKSTONE_WALL
+  holy-water-flask:
+    material: POTION
+    potionColor:
+      R: 0
+      G: 0
+      B: 0
+  arrow:
+    material: ARROW
+  book:
+    material: WRITTEN_BOOK
+  pouch:
+    material: FLOWER_POT
+  hammer-sledge:
+    material: IRON_HOE
+  yew-wand:
+    material: STICK
+  shovel:
+    material: IRON_SHOVEL
+  sealing-wax:
+    material: BARRIER
