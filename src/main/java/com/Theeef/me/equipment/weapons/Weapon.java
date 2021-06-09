@@ -1,6 +1,7 @@
 package com.Theeef.me.equipment.weapons;
 
 import com.Theeef.me.APIRequest;
+import com.Theeef.me.damage.Damage;
 import com.Theeef.me.equipment.CommonEquipment;
 import com.Theeef.me.util.NBTHandler;
 import com.Theeef.me.util.Util;
