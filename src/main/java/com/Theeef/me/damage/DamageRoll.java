@@ -10,9 +10,9 @@ public class DamageRoll {
         this.max = 0;
 
         if (!dice.contains(" + ")) {
-            if (dice.equals("MOD"))
-                return;
-            else if (dice.contains("d")) {
+            if (dice.equals("MOD")) {
+
+            } else if (dice.contains("d")) {
                 this.min = Integer.parseInt(dice.substring(0, dice.indexOf("d")));
                 this.max = Integer.parseInt(dice.substring(0, dice.indexOf("d"))) * Integer.parseInt(dice.substring(dice.indexOf("d") + 1, dice.contains(" ") ? dice.indexOf(" ") : dice.length()));
             } else {
