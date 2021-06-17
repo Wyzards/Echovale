@@ -82,23 +82,30 @@ public class Armor extends CommonEquipment {
         ItemMeta meta = item.getItemMeta();
         double multiplier = piece.getPercentage(this.pieces);
 
+        lore.add(ChatColor.GRAY + this.getArmorCategory() + " (" + this.getEquipmentCategory().getName() + ")");
+        lore.add("");
         lore.add(ChatColor.GRAY + "Cost: " + getCost().multiply(multiplier, true).amountString());
         lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + piece.weighItem(getWeight(), this.pieces) + " pounds");
         lore.add("");
-        lore.add(ChatColor.GRAY + "Armor Class: " + ChatColor.WHITE + this.armor_class.getBase() + (this.armor_class.hasDexBonus() ? " + DEX Modifier" + (this.armor_class.getMaxDexBonus() > 0 ? " (Max of " + this.armor_class.getMaxDexBonus() + ")" : "") : "") + " with full set equipped");
-        if (this.str_minimum > 0)
-            lore.add(ChatColor.GRAY + "Strength Requirement: " + ChatColor.WHITE + this.str_minimum);
 
-        if (this.stealth_disadvantage) {
+        if (piece == ArmorPiece.SHIELD) {
+            lore.add(ChatColor.GRAY + "Armor Class: " + ChatColor.WHITE + "+" + this.armor_class.getBase() + " while holding");
+        } else {
+            lore.add(ChatColor.GRAY + "Armor Class: " + ChatColor.WHITE + this.armor_class.getBase() + (this.armor_class.hasDexBonus() ? " + DEX Modifier" + (this.armor_class.getMaxDexBonus() > 0 ? " (Max of " + this.armor_class.getMaxDexBonus() + ")" : "") : "") + " with full set equipped");
+            if (this.str_minimum > 0)
+                lore.add(ChatColor.GRAY + "Strength Requirement: " + ChatColor.WHITE + this.str_minimum);
+
+            if (this.stealth_disadvantage) {
+                lore.add("");
+                lore.add(ChatColor.RED + "Wearing this item gives disadvantage on Stealth");
+            }
+
             lore.add("");
-            lore.add(ChatColor.RED + "Wearing this item gives disadvantage on Stealth");
+            lore.add(ChatColor.GRAY + "Set Includes:");
+
+            for (ArmorPiece setPiece : this.pieces)
+                lore.add(ChatColor.WHITE + "- " + retrieveName(getName(), setPiece));
         }
-
-        lore.add("");
-        lore.add(ChatColor.GRAY + "Set Includes:");
-
-        for (ArmorPiece setPiece : this.pieces)
-            lore.add(ChatColor.WHITE + "- " + retrieveName(getName(), setPiece));
 
         assert meta != null;
         meta.setLore(lore);

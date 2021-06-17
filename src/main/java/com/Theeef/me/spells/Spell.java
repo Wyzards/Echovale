@@ -4,11 +4,6 @@ import com.Theeef.me.APIReference;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.classes.DNDClass;
 import com.Theeef.me.classes.Subclass;
-import com.Theeef.me.damage.Damage;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -38,10 +33,10 @@ public class Spell {
     public Spell(String url) {
         JSONObject json = APIRequest.request(url);
         this.index = (String) json.get("index");
-        this.desc = (List<String>) json.get("desc");
-        this.higher_level = (List<String>) json.get("higher_level");
+        this.desc = new ArrayList<>();
+        this.higher_level = new ArrayList<>();
         this.range = (String) json.get("range");
-        this.components = (List<String>) json.get("components");
+        this.components = new ArrayList<>();
         this.material = (String) json.get("material");
         this.ritual = (boolean) json.get("ritual");
         this.duration = (String) json.get("duration");
@@ -49,11 +44,21 @@ public class Spell {
         this.casting_time = (String) json.get("casting_time");
         this.level = (long) json.get("level");
         this.attack_type = (String) json.get("attack_type");
-        this.damage = new SpellDamage((JSONObject) json.get("damage"));
+        this.damage = json.containsKey("damage") ? new SpellDamage((JSONObject) json.get("damage")) : null;
         this.school = new APIReference((JSONObject) json.get("school"));
         this.classes = new ArrayList<>();
         this.subclasses = new ArrayList<>();
         this.url = (String) json.get("url");
+
+        for (Object desc : (JSONArray) json.get("desc"))
+            this.desc.add((String) desc);
+
+        if (json.containsKey("higher_level"))
+            for (Object desc : (JSONArray) json.get("higher_level"))
+                this.higher_level.add((String) desc);
+
+        for (Object component : (JSONArray) json.get("components"))
+            this.components.add((String) component);
 
         for (Object classObj : ((JSONArray) json.get("classes")))
             this.classes.add(new APIReference((JSONObject) classObj));
@@ -71,24 +76,6 @@ public class Spell {
 
         return list;
     }
-
-    public ItemStack itemRep() {
-        ItemStack item = new ItemStack(Material.GLASS, 1);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.RESET + getIndex());
-        List<String> lore = new ArrayList<>();
-
-        lore.addAll(getDescription());
-        lore.add("");
-        lore.addAll(getHigherLevelDescription());
-        lore.add("");
-        lore.addAll(getComponents());
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-
-        return item;
-    }
-
 
     // Referenced getters
     public MagicSchool getSchool() {
