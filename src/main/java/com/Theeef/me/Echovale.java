@@ -8,6 +8,7 @@ import com.Theeef.me.equipment.armor.ArmorPiece;
 import com.Theeef.me.equipment.containers.ContainerEvents;
 import com.Theeef.me.equipment.containers.Pack;
 import com.Theeef.me.equipment.weapons.Weapon;
+import com.Theeef.me.spells.Spell;
 import com.Theeef.me.util.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -100,6 +101,16 @@ public class Echovale extends JavaPlugin implements Listener {
                     inventory.addItem(magicItem.getItemStack());
 
             Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
+        }
+
+        else if(event.getMessage().equalsIgnoreCase("spells")) {
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Spells");
+
+            for(Spell spell : Spell.values())
+                if(inventory.firstEmpty() != -1)
+                    inventory.addItem(spell.itemRep());
+
+                Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
         }
     }
 

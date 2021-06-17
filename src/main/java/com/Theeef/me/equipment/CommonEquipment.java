@@ -52,6 +52,6 @@ public class CommonEquipment extends Equipment {
     }
 
     public Cost getCost() {
-        return this.cost;
+        return this.cost.clone();
     }
 }

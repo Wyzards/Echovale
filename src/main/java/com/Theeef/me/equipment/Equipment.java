@@ -3,6 +3,7 @@ package com.Theeef.me.equipment;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.Echovale;
 import com.Theeef.me.equipment.armor.Armor;
+import com.Theeef.me.equipment.armor.ArmorPiece;
 import com.Theeef.me.equipment.containers.Container;
 import com.Theeef.me.equipment.containers.Pack;
 import com.Theeef.me.equipment.weapons.Weapon;
@@ -49,9 +50,12 @@ public class Equipment {
         // TODO: Could cause issue when trying to weigh a container that is currently open
         if (Container.isContainer(item)) {
             return new Container(item).getTotalWeight();
-        } else if (NBTHandler.hasString(item, "weight"))
-            return Double.parseDouble(NBTHandler.getString(item, "weight"));
-        else
+        } else if (NBTHandler.hasString(item, "weight")) {
+            if (Armor.isArmor(item))
+                return ArmorPiece.getPiece(item).weighItem(item);
+            else
+                return Double.parseDouble(NBTHandler.getString(item, "weight"));
+        } else
             throw new IllegalArgumentException("ItemStack \"" + item + "\" did not have the weight NBT data.");
     }
 

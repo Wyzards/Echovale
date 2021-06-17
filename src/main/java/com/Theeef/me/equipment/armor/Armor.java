@@ -4,6 +4,7 @@ import com.Theeef.me.APIRequest;
 import com.Theeef.me.equipment.CommonEquipment;
 import com.Theeef.me.equipment.Equipment;
 import com.Theeef.me.util.NBTHandler;
+import com.Theeef.me.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -35,6 +36,16 @@ public class Armor extends CommonEquipment {
         this.pieces = retrieveArmorPieces();
     }
 
+    public static List<ArmorPiece> getSetPieces(ItemStack armorItem) {
+        List<ArmorPiece> list = new ArrayList<>();
+
+        for (ArmorPiece piece : ArmorPiece.values())
+            if (NBTHandler.hasString(armorItem, "armorHas" + piece.name()) && Boolean.parseBoolean(NBTHandler.getString(armorItem, "armorHas" + piece.name())))
+                list.add(piece);
+
+        return list;
+    }
+
     public static List<Armor> values() {
         List<Armor> list = new ArrayList<>();
         JSONArray armor = (JSONArray) APIRequest.request("/api/equipment-categories/armor").get("equipment");
@@ -46,24 +57,55 @@ public class Armor extends CommonEquipment {
         return list;
     }
 
+    public static boolean isArmor(ItemStack item) {
+        return NBTHandler.hasString(item, "armorPiece");
+    }
+
     public ItemStack getItemStack(ArmorPiece piece) {
         setDataPath(piece);
 
         ItemStack item = super.getItemStack();
         ItemMeta meta = item.getItemMeta();
+
+        assert meta != null;
+        meta.setDisplayName(ChatColor.RESET + retrieveName(getName(), piece));
+        item.setItemMeta(meta);
+
+        setLore(item, piece);
+        addNBT(item, piece);
+
+        return item;
+    }
+
+    private void setLore(ItemStack item, ArmorPiece piece) {
         List<String> lore = new ArrayList<>();
+        ItemMeta meta = item.getItemMeta();
         double multiplier = piece.getPercentage(this.pieces);
 
         lore.add(ChatColor.GRAY + "Cost: " + getCost().multiply(multiplier, true).amountString());
-        lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + (getWeight() * multiplier) + " pounds");
+        lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + piece.weighItem(getWeight(), this.pieces) + " pounds");
         lore.add("");
-        lore.add(ChatColor.GRAY + "Armor Class: " + ChatColor.WHITE + this.armor_class.getBase() + (this.armor_class.hasDexBonus() ? " + DEX" + (this.armor_class.getMaxDexBonus() > 0 ? " (Max of " + this.armor_class.getMaxDexBonus() + ")" : "") : ""));
-        lore.add(ChatColor.GRAY + "Strength Requirement: " + ChatColor.WHITE + this.str_minimum);
-        lore.add(ChatColor.GRAY + "Stealth Disadvantage: " + ChatColor.WHITE + (this.stealth_disadvantage ? "Yes" : "No"));
+        lore.add(ChatColor.GRAY + "Armor Class: " + ChatColor.WHITE + this.armor_class.getBase() + (this.armor_class.hasDexBonus() ? " + DEX Modifier" + (this.armor_class.getMaxDexBonus() > 0 ? " (Max of " + this.armor_class.getMaxDexBonus() + ")" : "") : "") + " with full set equipped");
+        if (this.str_minimum > 0)
+            lore.add(ChatColor.GRAY + "Strength Requirement: " + ChatColor.WHITE + this.str_minimum);
+
+        if (this.stealth_disadvantage) {
+            lore.add("");
+            lore.add(ChatColor.RED + "Wearing this item gives disadvantage on Stealth");
+        }
+
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Set Includes:");
+
+        for (ArmorPiece setPiece : this.pieces)
+            lore.add(ChatColor.WHITE + "- " + retrieveName(getName(), setPiece));
+
         assert meta != null;
         meta.setLore(lore);
         item.setItemMeta(meta);
+    }
 
+    private void addNBT(ItemStack item, ArmorPiece piece) {
         NBTHandler.addString(item, "armor_category", this.armor_category);
         NBTHandler.addString(item, "armor_class_base", Long.toString(this.armor_class.getBase()));
         NBTHandler.addString(item, "armor_class_has_dex_bonus", Boolean.toString(this.armor_class.hasDexBonus()));
@@ -72,7 +114,14 @@ public class Armor extends CommonEquipment {
         NBTHandler.addString(item, "stealth_disadvantage", Boolean.toString(this.stealth_disadvantage));
         NBTHandler.addString(item, "armorPiece", piece.name());
 
-        return item;
+        for (ArmorPiece setPiece : this.pieces)
+            NBTHandler.addString(item, "armorHas" + setPiece.name(), Boolean.toString(true));
+    }
+
+    private String retrieveName(String setName, ArmorPiece piece) {
+        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".name"))
+            return plugin.getConfigManager().getEquipmentConfig().getString(getDataPath() + ".name");
+        return setName + " " + Util.cleanEnumName(piece.name());
     }
 
     private void setDataPath(ArmorPiece piece) {

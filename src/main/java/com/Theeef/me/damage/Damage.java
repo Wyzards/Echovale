@@ -5,24 +5,19 @@ import org.json.simple.JSONObject;
 public class Damage {
 
     private final String damage_type_url;
-    private final int min;
-    private final int max;
+    private final DamageRoll roll;
 
     public Damage(JSONObject damage) {
-        String damage_dice = (String) damage.get("damage_dice");
-        int diceNum = Integer.parseInt(damage_dice.substring(0, damage_dice.indexOf("d")));
-
-        this.min = diceNum;
-        this.max = diceNum * Integer.parseInt(damage_dice.substring(damage_dice.indexOf("d") + 1)); // diceNum * maxDiceRoll
+        this.roll = new DamageRoll((String) damage.get("damage_dice"));
         this.damage_type_url = (String) ((JSONObject) damage.get("damage_type")).get("url");
     }
 
     public int getMin() {
-        return this.min;
+        return this.roll.getMin();
     }
 
     public int getMax() {
-        return this.max;
+        return this.roll.getMax();
     }
 
     public DamageType getType() {

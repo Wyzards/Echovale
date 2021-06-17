@@ -25,6 +25,11 @@ public class Cost {
         cost.put(unit, quantity);
     }
 
+    public Cost(Cost toCopy) {
+        for (MoneyUnit unit : toCopy.getCost().keySet())
+            this.cost.put(unit, toCopy.getCost().get(unit));
+    }
+
     public static Cost getFromContainer(ItemStack item) {
         Cost cost = new Cost(MoneyUnit.CP, 0);
 
@@ -44,6 +49,10 @@ public class Cost {
             cost.add(unit, Long.parseLong(NBTHandler.getString(item, "cost_" + unit.name().toLowerCase())));
 
         return cost;
+    }
+
+    public Cost clone() {
+        return new Cost(this);
     }
 
     /**
@@ -129,11 +138,11 @@ public class Cost {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
-    public HashMap<MoneyUnit, Long> getCost() {
-        return this.cost;
-    }
-
     public long getQuantity(MoneyUnit unit) {
         return this.cost.containsKey(unit) ? this.cost.get(unit) : 0;
+    }
+
+    public HashMap<MoneyUnit, Long> getCost() {
+        return this.cost;
     }
 }
