@@ -3,6 +3,7 @@ package com.Theeef.me.classes;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.chardata.AbilityScore;
 import com.Theeef.me.chardata.Proficiency;
+import com.Theeef.me.classes.subclasses.Subclass;
 import com.Theeef.me.common.APIReference;
 import com.Theeef.me.common.Choice;
 import org.json.simple.JSONArray;
@@ -90,6 +91,7 @@ public class DNDClass {
         return this.starting_equipment;
     }
 
+    // TODO: Make this return actual leveling info
     public String getClassLevelsUrl() {
         return this.class_levels;
     }
@@ -108,6 +110,7 @@ public class DNDClass {
         return this.spellcasting;
     }
 
+    // TODO: Make this return List<Spell> or List<APIReference> spell
     public String getSpellListUrl() {
         return this.spells;
     }

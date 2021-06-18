@@ -22,7 +22,7 @@ public class Background {
     private final Choice language_options;
     private final List<APIReference> starting_equipment;
     private final List<Choice> starting_equipment_options;
-    private final Feature feature;
+    private final BackgroundFeature feature;
     private final Choice personality_traits;
     private final Choice ideals;
     private final Choice bonds;
@@ -38,7 +38,7 @@ public class Background {
         this.language_options = new Choice((JSONObject) json.get("language_options"));
         this.starting_equipment = new ArrayList<>();
         this.starting_equipment_options = new ArrayList<>();
-        this.feature = new Feature((JSONObject) json.get("feature"));
+        this.feature = new BackgroundFeature((JSONObject) json.get("feature"));
         this.personality_traits = new Choice((JSONObject) json.get("personality_traits"));
         this.ideals = new Choice((JSONObject) json.get("ideals"));
         this.bonds = new Choice((JSONObject) json.get("bonds"));
@@ -103,7 +103,7 @@ public class Background {
         return this.starting_equipment_options;
     }
 
-    public Feature getBackgroundFeature() {
+    public BackgroundFeature getBackgroundFeature() {
         return this.feature;
     }
 

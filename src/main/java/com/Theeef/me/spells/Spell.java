@@ -3,7 +3,7 @@ package com.Theeef.me.spells;
 import com.Theeef.me.common.APIReference;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.classes.DNDClass;
-import com.Theeef.me.classes.Subclass;
+import com.Theeef.me.classes.subclasses.Subclass;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
