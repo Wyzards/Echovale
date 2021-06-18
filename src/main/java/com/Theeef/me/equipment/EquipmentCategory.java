@@ -1,6 +1,6 @@
 package com.Theeef.me.equipment;
 
-import com.Theeef.me.APIReference;
+import com.Theeef.me.common.APIReference;
 import com.Theeef.me.APIRequest;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

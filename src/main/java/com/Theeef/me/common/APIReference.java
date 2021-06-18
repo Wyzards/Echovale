@@ -1,4 +1,4 @@
-package com.Theeef.me;
+package com.Theeef.me.common;
 
 import org.json.simple.JSONObject;
 
@@ -14,6 +14,7 @@ public class APIReference {
         this.url = (String) json.get("url");
     }
 
+    // Get methods
     public String getIndex() {
         return this.index;
     }

@@ -1,6 +1,6 @@
 package com.Theeef.me.chardata;
 
-import com.Theeef.me.APIReference;
+import com.Theeef.me.common.APIReference;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.classes.DNDClass;
 import com.Theeef.me.equipment.EquipmentCategory;
@@ -41,7 +41,19 @@ public class Proficiency {
             this.references.add(new APIReference((JSONObject) referenceObject));
     }
 
-    // APIReference get methods
+    // Get methods
+    public String getIndex() {
+        return this.index;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
     public List<DNDClass> getClasses() {
         List<DNDClass> list = new ArrayList<>();
 
@@ -60,6 +72,10 @@ public class Proficiency {
         return list;
     }
 
+    public String getUrl() {
+        return this.url;
+    }
+
     public List<EquipmentCategory> getReferences() {
         List<EquipmentCategory> list = new ArrayList<>();
 
@@ -67,23 +83,6 @@ public class Proficiency {
             list.add(new EquipmentCategory(reference.getUrl()));
 
         return list;
-    }
-
-    // Get methods
-    public String getIndex() {
-        return this.index;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getUrl() {
-        return this.url;
     }
 
 }

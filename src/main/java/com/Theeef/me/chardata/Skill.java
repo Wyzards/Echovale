@@ -1,6 +1,6 @@
 package com.Theeef.me.chardata;
 
-import com.Theeef.me.APIReference;
+import com.Theeef.me.common.APIReference;
 import com.Theeef.me.APIRequest;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -28,11 +28,6 @@ public class Skill {
             this.desc.add((String) descLine);
     }
 
-    // APIReference getters
-    public AbilityScore getAbilityScore() {
-        return new AbilityScore(this.ability_score.getUrl());
-    }
-
     // Get methods
     public String getIndex() {
         return this.index;
@@ -44,6 +39,10 @@ public class Skill {
 
     public List<String> getDescription() {
         return this.desc;
+    }
+
+    public AbilityScore getAbilityScore() {
+        return new AbilityScore(this.ability_score.getUrl());
     }
 
     public String getUrl() {
