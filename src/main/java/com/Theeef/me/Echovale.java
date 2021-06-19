@@ -1,14 +1,14 @@
 package com.Theeef.me;
 
-import com.Theeef.me.equipment.Equipment;
-import com.Theeef.me.equipment.Gear;
-import com.Theeef.me.equipment.MagicItem;
-import com.Theeef.me.equipment.armor.Armor;
-import com.Theeef.me.equipment.armor.ArmorPiece;
-import com.Theeef.me.equipment.containers.ContainerEvents;
-import com.Theeef.me.equipment.containers.Pack;
-import com.Theeef.me.equipment.weapons.Weapon;
-import com.Theeef.me.spells.Spell;
+import com.Theeef.me.api.equipment.Equipment;
+import com.Theeef.me.api.equipment.Gear;
+import com.Theeef.me.api.equipment.MagicItem;
+import com.Theeef.me.api.equipment.armor.Armor;
+import com.Theeef.me.api.equipment.armor.ArmorPiece;
+import com.Theeef.me.api.equipment.containers.ContainerEvents;
+import com.Theeef.me.api.equipment.containers.Pack;
+import com.Theeef.me.api.equipment.weapons.Weapon;
+import com.Theeef.me.api.spells.Spell;
 import com.Theeef.me.util.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
