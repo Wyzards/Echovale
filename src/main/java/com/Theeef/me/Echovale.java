@@ -101,16 +101,14 @@ public class Echovale extends JavaPlugin implements Listener {
                     inventory.addItem(magicItem.getItemStack());
 
             Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
-        }
-
-        else if(event.getMessage().equalsIgnoreCase("spells")) {
+        } else if (event.getMessage().equalsIgnoreCase("spells")) {
             Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Spells");
 
-            for(Spell spell : Spell.values())
-                if(inventory.firstEmpty() != -1)
-                    inventory.addItem(spell.itemRep());
+            //          for(Spell spell : Spell.values())
+            //            if(inventory.firstEmpty() != -1)
+            //              inventory.addItem(spell.itemRep());
 
-                Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
+            Bukkit.getScheduler().runTask(this, () -> event.getPlayer().openInventory(inventory));
         }
     }
 

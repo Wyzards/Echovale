@@ -26,14 +26,8 @@ public class EquipmentCategory {
             this.equipment.add(new APIReference((JSONObject) equipmentReference));
     }
 
-    // APIReference get methods
-    public List<Equipment> getEquipment() {
-        List<Equipment> list = new ArrayList<>();
-
-        for (APIReference equipmentReference : this.equipment)
-            list.add(Equipment.fromString(equipmentReference.getUrl()));
-
-        return list;
+    public EquipmentCategory(APIReference reference) {
+        this(reference.getUrl());
     }
 
     // Get methods
@@ -43,6 +37,15 @@ public class EquipmentCategory {
 
     public String getName() {
         return this.name;
+    }
+
+    public List<Equipment> getEquipment() {
+        List<Equipment> list = new ArrayList<>();
+
+        for (APIReference equipmentReference : this.equipment)
+            list.add(Equipment.fromString(equipmentReference.getUrl()));
+
+        return list;
     }
 
     public String getUrl() {

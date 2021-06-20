@@ -32,7 +32,6 @@ public class Armor extends CommonEquipment {
         this.armor_class = new ArmorClass((JSONObject) json.get("armor_class"));
         this.str_minimum = (long) json.get("str_minimum");
         this.stealth_disadvantage = (boolean) json.get("stealth_disadvantage");
-
         this.pieces = retrieveArmorPieces();
     }
 

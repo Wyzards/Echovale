@@ -26,11 +26,11 @@ public class Container extends Gear {
     public static HashMap<Container, Inventory> openInventories = new HashMap<Container, Inventory>();
 
     private final UUID uuid;
-    private final List<ContainerEquipment> contents;
+    private final List<EquipmentQuantity> contents;
     private final Cost packCost;
     private final List<ItemStack> containerItems;
 
-    public Container(String containerEquipmentUrl, UUID uuid, String name, Cost cost, List<ContainerEquipment> contents) {
+    public Container(String containerEquipmentUrl, UUID uuid, String name, Cost cost, List<EquipmentQuantity> contents) {
         super(containerEquipmentUrl);
 
         if (name != null)
@@ -47,11 +47,11 @@ public class Container extends Gear {
             throw new IllegalArgumentException("Contents exceeded maximum slots of container");
     }
 
-    public Container(String containerEquipmentUrl, String name, Cost cost, List<ContainerEquipment> contents) {
+    public Container(String containerEquipmentUrl, String name, Cost cost, List<EquipmentQuantity> contents) {
         this(containerEquipmentUrl, UUID.randomUUID(), name, cost, contents);
     }
 
-    public Container(String containerEquipmentUrl, UUID uuid, String name, List<ContainerEquipment> contents) {
+    public Container(String containerEquipmentUrl, UUID uuid, String name, List<EquipmentQuantity> contents) {
         this(containerEquipmentUrl, uuid, name, null, contents);
     }
 
@@ -67,8 +67,8 @@ public class Container extends Gear {
         return item != null && NBTHandler.hasString(item, "contents_0");
     }
 
-    private static List<ContainerEquipment> getItemContents(ItemStack item) {
-        List<ContainerEquipment> list = new ArrayList<>();
+    private static List<EquipmentQuantity> getItemContents(ItemStack item) {
+        List<EquipmentQuantity> list = new ArrayList<>();
         int content = 0;
 
 
@@ -76,7 +76,7 @@ public class Container extends Gear {
             if (NBTHandler.getString(item, "contents_" + content).equals("null"))
                 list.add(null);
             else
-                list.add(new ContainerEquipment(NBTHandler.getString(item, "contents_" + content)));
+                list.add(new EquipmentQuantity(NBTHandler.getString(item, "contents_" + content)));
 
             content++;
         }
@@ -89,14 +89,14 @@ public class Container extends Gear {
         // Get Equipment from Item
         // Get quantity from item (fix this earlier)
 
-        List<ContainerEquipment> equipment = new ArrayList<>();
+        List<EquipmentQuantity> equipment = new ArrayList<>();
 
         for (ItemStack item : items)
             if (item == null)
                 equipment.add(null);
             else {
                 if (NBTHandler.hasString(item, "url"))
-                    equipment.add(new ContainerEquipment(NBTHandler.getString(item, "url"), item.getAmount()));
+                    equipment.add(new EquipmentQuantity(NBTHandler.getString(item, "url"), item.getAmount()));
                 else
                     throw new IllegalArgumentException("ItemStack in contents did not have url NBT tag");
             }
@@ -152,7 +152,7 @@ public class Container extends Gear {
         return this.containerItems;
     }
 
-    public List<ContainerEquipment> getContents() {
+    public List<EquipmentQuantity> getContents() {
         return this.contents;
     }
 
@@ -231,9 +231,9 @@ public class Container extends Gear {
 
             int count = 0;
 
-            for (ContainerEquipment equipment : this.contents)
+            for (EquipmentQuantity equipment : this.contents)
                 if (equipment != null && count <= 8) {
-                    lore.add(ChatColor.GRAY + "- " + ChatColor.WHITE + equipment.getEquipment().getName() + " x" + equipment.getQuantity());
+                    lore.add(ChatColor.GRAY + "- " + ChatColor.WHITE + equipment.getItem().getName() + " x" + equipment.getQuantity());
                     count++;
                 }
 
@@ -263,14 +263,14 @@ public class Container extends Gear {
     private int countContents() {
         int count = 0;
 
-        for (ContainerEquipment equipment : this.contents)
+        for (EquipmentQuantity equipment : this.contents)
             if (equipment != null)
                 count++;
         return count;
     }
 
     public boolean isEmpty() {
-        for (ContainerEquipment equipment : this.contents)
+        for (EquipmentQuantity equipment : this.contents)
             if (equipment != null)
                 return false;
         return true;
@@ -286,7 +286,7 @@ public class Container extends Gear {
     public Cost getTotalCost() {
         Cost cost = super.getCost();
 
-        for (ContainerEquipment content : this.contents)
+        for (EquipmentQuantity content : this.contents)
             if (content != null)
                 cost.add(content.getCost());
 
@@ -296,7 +296,7 @@ public class Container extends Gear {
     public double getTotalWeight() {
         double weight = getWeight();
 
-        for (ContainerEquipment content : this.contents)
+        for (EquipmentQuantity content : this.contents)
             if (content != null)
                 weight += content.getWeight();
 

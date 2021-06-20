@@ -2,6 +2,7 @@ package com.Theeef.me.api.equipment;
 
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.Echovale;
+import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.api.equipment.armor.Armor;
 import com.Theeef.me.api.equipment.armor.ArmorPiece;
 import com.Theeef.me.api.equipment.containers.Container;
@@ -26,7 +27,7 @@ public class Equipment {
 
     private final String index;
     private String name;
-    private final String equipment_category_url;
+    private final APIReference equipment_category;
     private final String url;
 
     public Equipment(String url) {
@@ -35,15 +36,12 @@ public class Equipment {
         assert json != null;
         this.index = (String) json.get("index");
         this.name = (String) json.get("name");
-        this.equipment_category_url = (String) ((JSONObject) json.get("equipment_category")).get("url");
+        this.equipment_category = new APIReference((JSONObject) json.get("equipment_category"));
         this.url = url;
     }
 
     public static Equipment fromItem(ItemStack item) {
-        if (NBTHandler.hasString(item, "url"))
-            return Equipment.fromString(NBTHandler.getString(item, "url"));
-        else
-            throw new IllegalArgumentException("Specified item does not have an equipment URL");
+        return Equipment.fromString(NBTHandler.getString(item, "url"));
     }
 
     public static double weighItem(ItemStack item) {
@@ -122,7 +120,7 @@ public class Equipment {
 
         NBTHandler.addString(item, "index", this.index);
         NBTHandler.addString(item, "name", this.name);
-        NBTHandler.addString(item, "equipment_category_url", this.equipment_category_url);
+        NBTHandler.addString(item, "equipment_category_url", this.equipment_category.getUrl());
         NBTHandler.addString(item, "url", this.url);
 
         return item;
@@ -130,7 +128,7 @@ public class Equipment {
 
     private Color retrievePotionColor() {
         if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".potionColor"))
-            return Color.fromRGB(plugin.getConfigManager().getEquipmentConfig().getInt(getDataPath() + ".potionColor.R"), plugin.getConfigManager().getEquipmentConfig().getInt(this.equipment_category_url + "." + this.index + ".potionColor.G"), plugin.getConfigManager().getEquipmentConfig().getInt(this.equipment_category_url + "." + this.index + ".potionColor.B"));
+            return Color.fromRGB(plugin.getConfigManager().getEquipmentConfig().getInt(getDataPath() + ".potionColor.R"), plugin.getConfigManager().getEquipmentConfig().getInt(this.equipment_category.getUrl() + "." + this.index + ".potionColor.G"), plugin.getConfigManager().getEquipmentConfig().getInt(this.equipment_category.getUrl() + "." + this.index + ".potionColor.B"));
         else {
             plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".potionColor.R", 0);
             plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".potionColor.G", 0);
@@ -160,23 +158,25 @@ public class Equipment {
     }
 
     public String getDataPath() {
-        return this.equipment_category_url + "." + getIndex();
+        return this.equipment_category.getUrl() + "." + getIndex();
     }
 
-    public EquipmentCategory getEquipmentCategory() {
-        return new EquipmentCategory(this.equipment_category_url);
-    }
-
+    // Set method
     public void setName(String name) {
         this.name = name;
     }
 
+    // Getter methods
     public String getIndex() {
         return this.index;
     }
 
     public String getName() {
         return this.name;
+    }
+
+    public EquipmentCategory getEquipmentCategory() {
+        return new EquipmentCategory(this.equipment_category);
     }
 
     public String getUrl() {

@@ -28,11 +28,11 @@ public class ContainerEvents implements Listener {
                 Container container = new Container(((Item) event.getEntity()).getItemStack());
 
                 if (event.getEntity().isDead()) {
-                    for (ContainerEquipment equipment : container.getContents())
+                    for (EquipmentQuantity equipment : container.getContents())
                         if (equipment != null)
                             event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), equipment.getItemStack());
                 } else {
-                    ContainerEquipment drop = null;
+                    EquipmentQuantity drop = null;
 
                     while (drop == null && !container.isEmpty())
                         drop = container.getContents().get((int) (Math.random() * container.getContents().size()));

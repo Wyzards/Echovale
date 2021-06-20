@@ -1,6 +1,7 @@
 package com.Theeef.me.api.equipment;
 
 import com.Theeef.me.APIRequest;
+import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.util.NBTHandler;
 import com.Theeef.me.util.Util;
 import com.google.common.collect.Sets;
@@ -16,7 +17,7 @@ import java.util.Set;
 
 public class Gear extends CommonEquipment {
 
-    private final String gear_category_url;
+    private final APIReference gear_category;
     private final List<String> description;
 
     public Gear(String url) {
@@ -24,7 +25,7 @@ public class Gear extends CommonEquipment {
 
         JSONObject json = APIRequest.request(url);
         assert json != null;
-        this.gear_category_url = (String) ((JSONObject) json.get("gear_category")).get("url");
+        this.gear_category = new APIReference((JSONObject) json.get("gear_category"));
 
         if (json.containsKey("desc")) {
             this.description = new ArrayList<>();
@@ -33,6 +34,17 @@ public class Gear extends CommonEquipment {
                 this.description.add((String) object);
         } else
             this.description = null;
+    }
+
+    public static Set<Gear> values() {
+        Set<Gear> set = Sets.newHashSet();
+        JSONObject json = APIRequest.request("/api/equipment-categories/adventuring-gear");
+        JSONArray equipment = (JSONArray) json.get("equipment");
+
+        for (Object object : equipment)
+            set.add((Gear) fromString(((String) ((JSONObject) object).get("url"))));
+
+        return set;
     }
 
     public ItemStack getItemStack() {
@@ -57,23 +69,17 @@ public class Gear extends CommonEquipment {
         item.setItemMeta(meta);
 
         // NBT Data
-        NBTHandler.addString(item, "gear_category_url", this.gear_category_url);
+        NBTHandler.addString(item, "gear_category_url", this.gear_category.getUrl());
 
         return item;
     }
 
-    public static Set<Gear> values() {
-        Set<Gear> set = Sets.newHashSet();
-        JSONObject json = APIRequest.request("/api/equipment-categories/adventuring-gear");
-        JSONArray equipment = (JSONArray) json.get("equipment");
-
-        for (Object object : equipment)
-            set.add((Gear) fromString(((String) ((JSONObject) object).get("url"))));
-
-        return set;
+    // Getter methods
+    public EquipmentCategory getGearCategory() {
+        return new EquipmentCategory(this.gear_category);
     }
 
-    public EquipmentCategory getGearCategory() {
-        return new EquipmentCategory(this.gear_category_url);
+    public List<String> getDescription() {
+        return this.description;
     }
 }

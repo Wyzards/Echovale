@@ -1,8 +1,9 @@
 package com.Theeef.me.api.equipment.weapons;
 
 import com.Theeef.me.APIRequest;
-import com.Theeef.me.api.mechanics.Damage;
+import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.api.equipment.CommonEquipment;
+import com.Theeef.me.api.mechanics.Damage;
 import com.Theeef.me.util.NBTHandler;
 import com.Theeef.me.util.Util;
 import com.google.common.collect.Sets;
@@ -24,14 +25,12 @@ public class Weapon extends CommonEquipment {
     private final WeaponRange range;
     private final Damage damage;
     private final Damage two_handed_damage;
-    private final List<String> properties;
+    private final List<APIReference> properties;
 
     public Weapon(String url) {
         super(url);
 
         JSONObject json = APIRequest.request(url);
-
-        assert json != null;
         this.weapon_category = (String) json.get("weapon_category");
         this.weapon_range = (String) json.get("weapon_range");
         this.category_range = (String) json.get("category_range");
@@ -40,17 +39,22 @@ public class Weapon extends CommonEquipment {
         this.two_handed_damage = json.containsKey("two_handed_damage") ? new Damage((JSONObject) json.get("two_handed_damage")) : null;
         this.properties = new ArrayList<>();
 
-        // TODO: Would be better to store index / name so as to reduce queries
-        for (Object apiReference : (JSONArray) json.get("properties"))
-            this.properties.add((String) ((JSONObject) apiReference).get("url"));
+        for (Object property : (JSONArray) json.get("properties"))
+            this.properties.add(new APIReference((JSONObject) property));
     }
 
     public ItemStack getItemStack() {
         ItemStack item = super.getItemStack();
-        ItemMeta meta = item.getItemMeta();
-        assert meta != null;
 
-        // Item Lore
+        lore(item);
+        nbt(item);
+
+        return item;
+    }
+
+    // Helper methods
+    private void lore(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + this.category_range + " Weapon");
         lore.add("");
@@ -71,10 +75,23 @@ public class Weapon extends CommonEquipment {
         if (this.properties.size() > 0)
             lore.addAll(Util.fitForLore(propertyString()));
 
+        assert meta != null;
         meta.setLore(lore);
         item.setItemMeta(meta);
+    }
 
-        // NBT Data
+    private String propertyString() {
+        StringBuilder propertyString = new StringBuilder(ChatColor.GRAY + "Properties: " + ChatColor.WHITE);
+
+        for (APIReference property : this.properties)
+            propertyString.append(ChatColor.WHITE).append(new WeaponProperty(property).getName()).append(", ");
+
+        propertyString.setLength(propertyString.length() - 2);
+
+        return propertyString.toString();
+    }
+
+    private void nbt(ItemStack item) {
         NBTHandler.addString(item, "weapon_category", this.weapon_category);
         NBTHandler.addString(item, "weapon_range", this.weapon_range);
         NBTHandler.addString(item, "category_range", this.category_range);
@@ -92,21 +109,43 @@ public class Weapon extends CommonEquipment {
             NBTHandler.addString(item, "two_handed_damage_max", String.valueOf(this.two_handed_damage.getMax()));
             NBTHandler.addString(item, "two_handed_damage_type", this.two_handed_damage.getType().getName());
         }
-
-        return item;
     }
 
-    private String propertyString() {
-        StringBuilder propertyString = new StringBuilder(ChatColor.GRAY + "Properties: " + ChatColor.WHITE);
-
-        for (String propertyUrl : this.properties)
-            propertyString.append(ChatColor.WHITE).append(new WeaponProperty(propertyUrl).getName()).append(", ");
-
-        propertyString.setLength(propertyString.length() - 2);
-
-        return propertyString.toString();
+    // Getter methods
+    public String getWeaponCategory() {
+        return this.weapon_category;
     }
 
+    public String getWeaponRange() {
+        return this.weapon_range;
+    }
+
+    public String getCategoryRange() {
+        return this.category_range;
+    }
+
+    public WeaponRange getRange() {
+        return this.range;
+    }
+
+    public Damage getDamage() {
+        return this.damage;
+    }
+
+    public Damage getTwoHandedDamage() {
+        return this.two_handed_damage;
+    }
+
+    public List<WeaponProperty> getProperties() {
+        List<WeaponProperty> list = new ArrayList<>();
+
+        for (APIReference property : this.properties)
+            list.add(new WeaponProperty(property));
+
+        return list;
+    }
+
+    // Static methods
     public static Set<Weapon> values() {
         Set<Weapon> set = Sets.newHashSet();
         JSONObject json = APIRequest.request("/api/equipment-categories/weapon");

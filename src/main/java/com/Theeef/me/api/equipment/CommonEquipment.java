@@ -18,8 +18,6 @@ public class CommonEquipment extends Equipment {
         super(url);
 
         JSONObject json = APIRequest.request(url);
-
-        assert json != null;
         this.cost = new Cost((JSONObject) json.get("cost"));
 
         if (json.containsKey("weight")) {

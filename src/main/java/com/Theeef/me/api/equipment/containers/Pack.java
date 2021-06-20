@@ -1,6 +1,8 @@
 package com.Theeef.me.api.equipment.containers;
 
 import com.Theeef.me.APIRequest;
+import com.Theeef.me.api.common.APIReference;
+import com.Theeef.me.api.equipment.Equipment;
 import com.Theeef.me.api.equipment.Gear;
 import com.google.common.collect.Sets;
 import org.bukkit.inventory.ItemStack;
@@ -14,33 +16,35 @@ import java.util.Set;
 
 public class Pack extends Gear {
 
-    private final String container_url;
-    private final HashMap<String, Long> contents_urls; // Hashmap of equipment URL w/ quantity, excluding container item
+    private final APIReference container_material; // The equipment the container takes the form of. Ex: backpack, sack, pouch, etc.
+    private final List<EquipmentQuantity> contents;
 
     public Pack(String url) {
         super(url);
 
         JSONObject json = APIRequest.request(url);
+        JSONArray contentsArray = (JSONArray) json.get("contents");
+        this.container_material = new APIReference((JSONObject) ((JSONObject) contentsArray.get(0)).get("item"));
+        this.contents = new ArrayList<>();
 
-        assert json != null;
-        this.contents_urls = new HashMap<>();
-        JSONArray contents = (JSONArray) json.get("contents");
-        this.container_url = (String) ((JSONObject) ((JSONObject) contents.get(0)).get("item")).get("url");
-
-        for (int i = 1; i < contents.size(); i++)
-            this.contents_urls.put((String) ((JSONObject) ((JSONObject) contents.get(i)).get("item")).get("url"), (long) ((JSONObject) contents.get(i)).get("quantity"));
+        for (int i = 1; i < contentsArray.size(); i++)
+            this.contents.add(new EquipmentQuantity((JSONObject) contentsArray.get(i)));
     }
 
     public ItemStack getItemStack() {
-        List<ContainerEquipment> contents = new ArrayList<>();
-
-        for (String equipment_url : this.contents_urls.keySet())
-            contents.add(new ContainerEquipment(equipment_url, this.contents_urls.get(equipment_url)));
-
-        Container container = new Container(this.container_url, getName(), getCost(), contents);
-        return container.getItemStack();
+        return new Container(this.container_material.getUrl(), getName(), getCost(), this.contents).getItemStack();
     }
 
+    // Getter methods
+    public Equipment getContainerMaterial() {
+        return Equipment.fromString(this.container_material.getUrl());
+    }
+
+    public List<EquipmentQuantity> getContents() {
+        return this.contents;
+    }
+
+    // Static methods
     public static Set<Pack> packValues() {
         Set<Pack> set = Sets.newHashSet();
         JSONObject json = APIRequest.request("/api/equipment-categories/equipment-packs/");
