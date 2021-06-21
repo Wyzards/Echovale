@@ -31,8 +31,6 @@ public class Race {
     private final String url;
 
     public Race(String url) {
-        // TODO: VARIANT HUMAN ABILITY BONUSES
-
         JSONObject json = APIRequest.request(url);
         this.index = (String) json.get("index");
         this.name = (String) json.get("name");
@@ -70,6 +68,7 @@ public class Race {
             this.subraces.add(new APIReference((JSONObject) subrace));
     }
 
+    // Getter methods
     public String getIndex() {
         return this.index;
     }

@@ -30,27 +30,6 @@ public class Cost {
             this.cost.put(unit, toCopy.getCost().get(unit));
     }
 
-    public static Cost getFromContainer(ItemStack item) {
-        Cost cost = new Cost(MoneyUnit.CP, 0);
-
-        for (MoneyUnit unit : MoneyUnit.values())
-            if (NBTHandler.hasString(item, "containerCost_" + unit.name().toLowerCase()))
-                cost.add(unit, Long.parseLong(NBTHandler.getString(item, "cost_" + unit.name().toLowerCase())));
-            else
-                return null;
-
-        return cost;
-    }
-
-    public static Cost getFromItem(ItemStack item) {
-        Cost cost = new Cost(MoneyUnit.CP, 0);
-
-        for (MoneyUnit unit : MoneyUnit.values())
-            cost.add(unit, Long.parseLong(NBTHandler.getString(item, "cost_" + unit.name().toLowerCase())));
-
-        return cost;
-    }
-
     public Cost clone() {
         return new Cost(this);
     }
@@ -112,6 +91,17 @@ public class Cost {
         return this;
     }
 
+    public String amountString() {
+        String text = (cost.containsKey(MoneyUnit.PP) && cost.get(MoneyUnit.PP) > 0 ? "&f" + Long.toString(cost.get(MoneyUnit.PP)) + "pp " : "") + (cost.containsKey(MoneyUnit.GP) && cost.get(MoneyUnit.GP) > 0 ? "&6" + Long.toString(cost.get(MoneyUnit.GP)) + "gp " : "") + (cost.containsKey(MoneyUnit.EP) && cost.get(MoneyUnit.EP) > 0 ? "&e" + Long.toString(cost.get(MoneyUnit.EP)) + "ep " : "") + (cost.containsKey(MoneyUnit.SP) && cost.get(MoneyUnit.SP) > 0 ? "&f" + Long.toString(cost.get(MoneyUnit.SP)) + "sp " : "") + (cost.containsKey(MoneyUnit.CP) && cost.get(MoneyUnit.CP) > 0 ? net.md_5.bungee.api.ChatColor.of(new Color(184, 115, 51)) + Long.toString(cost.get(MoneyUnit.CP)) + "cp" : "");
+        return ChatColor.translateAlternateColorCodes('&', text);
+    }
+
+    public long getQuantity(MoneyUnit unit) {
+        return this.cost.containsKey(unit) ? this.cost.get(unit) : 0;
+    }
+
+    // Helper methods
+
     /**
      * Adds another cost to this one
      *
@@ -127,22 +117,34 @@ public class Cost {
         return this;
     }
 
-    public Cost add(MoneyUnit unit, long amount) {
+    private void add(MoneyUnit unit, long amount) {
         this.cost.put(unit, this.cost.containsKey(unit) ? this.cost.get(unit) + amount : amount);
-
-        return this;
     }
 
-    public String amountString() {
-        String text = (cost.containsKey(MoneyUnit.PP) && cost.get(MoneyUnit.PP) > 0 ? "&f" + Long.toString(cost.get(MoneyUnit.PP)) + "pp " : "") + (cost.containsKey(MoneyUnit.GP) && cost.get(MoneyUnit.GP) > 0 ? "&6" + Long.toString(cost.get(MoneyUnit.GP)) + "gp " : "") + (cost.containsKey(MoneyUnit.EP) && cost.get(MoneyUnit.EP) > 0 ? "&e" + Long.toString(cost.get(MoneyUnit.EP)) + "ep " : "") + (cost.containsKey(MoneyUnit.SP) && cost.get(MoneyUnit.SP) > 0 ? "&f" + Long.toString(cost.get(MoneyUnit.SP)) + "sp " : "") + (cost.containsKey(MoneyUnit.CP) && cost.get(MoneyUnit.CP) > 0 ? net.md_5.bungee.api.ChatColor.of(new Color(184, 115, 51)) + Long.toString(cost.get(MoneyUnit.CP)) + "cp" : "");
-        return ChatColor.translateAlternateColorCodes('&', text);
-    }
-
-    public long getQuantity(MoneyUnit unit) {
-        return this.cost.containsKey(unit) ? this.cost.get(unit) : 0;
-    }
-
+    // Getter methods
     public HashMap<MoneyUnit, Long> getCost() {
         return this.cost;
+    }
+
+    // Static methods
+    public static Cost getFromContainer(ItemStack item) {
+        Cost cost = new Cost(MoneyUnit.CP, 0);
+
+        for (MoneyUnit unit : MoneyUnit.values())
+            if (NBTHandler.hasString(item, "containerCost_" + unit.name().toLowerCase()))
+                cost.add(unit, Long.parseLong(NBTHandler.getString(item, "cost_" + unit.name().toLowerCase())));
+            else
+                return null;
+
+        return cost;
+    }
+
+    public static Cost getFromItem(ItemStack item) {
+        Cost cost = new Cost(MoneyUnit.CP, 0);
+
+        for (MoneyUnit unit : MoneyUnit.values())
+            cost.add(unit, Long.parseLong(NBTHandler.getString(item, "cost_" + unit.name().toLowerCase())));
+
+        return cost;
     }
 }

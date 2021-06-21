@@ -31,6 +31,7 @@ public class DamageType {
         this.url = url;
     }
 
+    // Getter methods
     public DamageType(JSONObject json) {
         this((String) json.get("url"));
     }

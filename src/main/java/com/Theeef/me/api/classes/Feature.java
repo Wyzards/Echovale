@@ -37,6 +37,7 @@ public class Feature {
         this(reference.getUrl());
     }
 
+    // Getter methods
     public String getIndex() {
         return this.index;
     }

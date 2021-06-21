@@ -12,6 +12,7 @@ public class WeaponRange {
         this.longRange = range.get("long") == null ? 0 : (long) range.get("long");
     }
 
+    // Getter methods
     public long getNormal() {
         return this.normalRange;
     }

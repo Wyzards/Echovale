@@ -59,6 +59,7 @@ public class Subrace {
             this.racial_trait_options.add(new Choice((JSONObject) traitOption));
     }
 
+    // Getter methods
     public String getIndex() {
         return this.index;
     }

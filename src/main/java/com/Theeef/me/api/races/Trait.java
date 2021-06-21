@@ -48,7 +48,7 @@ public class Trait {
             this.proficiency_choices.add(new Choice((JSONObject) proficiencyChoice));
     }
 
-    // Get methods
+    // Getter methods
     public String getIndex() {
         return this.index;
     }

@@ -30,7 +30,7 @@ public class EquipmentCategory {
         this(reference.getUrl());
     }
 
-    // Get methods
+    // Getter methods
     public String getIndex() {
         return this.index;
     }

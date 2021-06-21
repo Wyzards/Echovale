@@ -36,25 +36,20 @@ public class Gear extends CommonEquipment {
             this.description = null;
     }
 
-    public static Set<Gear> values() {
-        Set<Gear> set = Sets.newHashSet();
-        JSONObject json = APIRequest.request("/api/equipment-categories/adventuring-gear");
-        JSONArray equipment = (JSONArray) json.get("equipment");
-
-        for (Object object : equipment)
-            set.add((Gear) fromString(((String) ((JSONObject) object).get("url"))));
-
-        return set;
-    }
-
     public ItemStack getItemStack() {
         ItemStack item = super.getItemStack();
 
-        ItemMeta meta = item.getItemMeta();
-        assert meta != null;
+        lore(item);
+        NBTHandler.addString(item, "gear_category_url", this.gear_category.getUrl());
 
-        // Lore
+        return item;
+    }
+
+    // Helper methods
+    private void lore(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
         List<String> lore = new ArrayList<>();
+
         lore.add(ChatColor.GRAY + getGearCategory().getName() + " (" + getEquipmentCategory().getName() + ")");
         lore.add("");
 
@@ -65,13 +60,9 @@ public class Gear extends CommonEquipment {
         }
 
         lore.addAll(loreCostWeight());
+        assert meta != null;
         meta.setLore(lore);
         item.setItemMeta(meta);
-
-        // NBT Data
-        NBTHandler.addString(item, "gear_category_url", this.gear_category.getUrl());
-
-        return item;
     }
 
     // Getter methods
@@ -81,5 +72,17 @@ public class Gear extends CommonEquipment {
 
     public List<String> getDescription() {
         return this.description;
+    }
+
+    // Static methods
+    public static Set<Gear> values() {
+        Set<Gear> set = Sets.newHashSet();
+        JSONObject json = APIRequest.request("/api/equipment-categories/adventuring-gear");
+        JSONArray equipment = (JSONArray) json.get("equipment");
+
+        for (Object object : equipment)
+            set.add((Gear) fromString(((String) ((JSONObject) object).get("url"))));
+
+        return set;
     }
 }

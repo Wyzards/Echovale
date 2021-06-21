@@ -35,31 +35,6 @@ public class Armor extends CommonEquipment {
         this.pieces = retrieveArmorPieces();
     }
 
-    public static List<ArmorPiece> getSetPieces(ItemStack armorItem) {
-        List<ArmorPiece> list = new ArrayList<>();
-
-        for (ArmorPiece piece : ArmorPiece.values())
-            if (NBTHandler.hasString(armorItem, "armorHas" + piece.name()) && Boolean.parseBoolean(NBTHandler.getString(armorItem, "armorHas" + piece.name())))
-                list.add(piece);
-
-        return list;
-    }
-
-    public static List<Armor> values() {
-        List<Armor> list = new ArrayList<>();
-        JSONArray armor = (JSONArray) APIRequest.request("/api/equipment-categories/armor").get("equipment");
-
-        for (Object armorSetObj : armor)
-            if (!((String) ((JSONObject) armorSetObj).get("url")).startsWith("/api/magic-items/"))
-                list.add((Armor) Equipment.fromString((String) ((JSONObject) armorSetObj).get("url")));
-
-        return list;
-    }
-
-    public static boolean isArmor(ItemStack item) {
-        return NBTHandler.hasString(item, "armorPiece");
-    }
-
     public ItemStack getItemStack(ArmorPiece piece) {
         setDataPath(piece);
 
@@ -76,6 +51,7 @@ public class Armor extends CommonEquipment {
         return item;
     }
 
+    // Helper methods
     private void setLore(ItemStack item, ArmorPiece piece) {
         List<String> lore = new ArrayList<>();
         ItemMeta meta = item.getItemMeta();
@@ -152,18 +128,7 @@ public class Armor extends CommonEquipment {
         return pieces;
     }
 
-    @Override
-    public String getDataPath() {
-        if (this.dataPath == null)
-            return super.getDataPath();
-        else
-            return this.dataPath;
-    }
-
-    public List<ArmorPiece> getPieces() {
-        return this.pieces;
-    }
-
+    // Getter methods
     public String getArmorCategory() {
         return this.armor_category;
     }
@@ -178,5 +143,43 @@ public class Armor extends CommonEquipment {
 
     public boolean givesStealthDisadvantage() {
         return this.stealth_disadvantage;
+    }
+
+    public List<ArmorPiece> getPieces() {
+        return this.pieces;
+    }
+
+    @Override
+    public String getDataPath() {
+        if (this.dataPath == null)
+            return super.getDataPath();
+        else
+            return this.dataPath;
+    }
+
+    // Static methods
+    public static List<ArmorPiece> getSetPieces(ItemStack armorItem) {
+        List<ArmorPiece> list = new ArrayList<>();
+
+        for (ArmorPiece piece : ArmorPiece.values())
+            if (NBTHandler.hasString(armorItem, "armorHas" + piece.name()) && Boolean.parseBoolean(NBTHandler.getString(armorItem, "armorHas" + piece.name())))
+                list.add(piece);
+
+        return list;
+    }
+
+    public static List<Armor> values() {
+        List<Armor> list = new ArrayList<>();
+        JSONArray armor = (JSONArray) APIRequest.request("/api/equipment-categories/armor").get("equipment");
+
+        for (Object armorSetObj : armor)
+            if (!((String) ((JSONObject) armorSetObj).get("url")).startsWith("/api/magic-items/"))
+                list.add((Armor) Equipment.fromString((String) ((JSONObject) armorSetObj).get("url")));
+
+        return list;
+    }
+
+    public static boolean isArmor(ItemStack item) {
+        return NBTHandler.hasString(item, "armorPiece");
     }
 }

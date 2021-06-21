@@ -41,10 +41,12 @@ public class CommonEquipment extends Equipment {
         return item;
     }
 
-    public List<String> loreCostWeight() {
+    // Helper methods
+    protected List<String> loreCostWeight() {
         return Lists.newArrayList(ChatColor.GRAY + "Cost: " + this.cost.amountString(), ChatColor.GRAY + "Weight: " + ChatColor.WHITE + this.weight + " pounds");
     }
 
+    // Getter methods
     public double getWeight() {
         return this.weight;
     }

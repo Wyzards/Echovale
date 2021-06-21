@@ -32,6 +32,7 @@ public class SpellDamage {
         }
     }
 
+    // Getter methods
     public DamageType getDamageType() {
         return this.damage_type;
     }

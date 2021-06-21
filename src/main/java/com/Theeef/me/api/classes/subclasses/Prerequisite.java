@@ -17,7 +17,7 @@ public class Prerequisite {
     }
 
 
-    // Get methods
+    // Getter methods
     public String getIndex() {
         return this.index;
     }

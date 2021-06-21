@@ -34,7 +34,7 @@ public class ContainerEvents implements Listener {
                 } else {
                     EquipmentQuantity drop = null;
 
-                    while (drop == null && !container.isEmpty())
+                    while (drop == null && container.hasContents())
                         drop = container.getContents().get((int) (Math.random() * container.getContents().size()));
 
                     if (drop != null)
@@ -135,30 +135,6 @@ public class ContainerEvents implements Listener {
         }
     }
 
-    private double weighInventory(Inventory inventory) {
-        double weight = 0;
-
-        for (ItemStack item : inventory.getContents())
-            if (item != null) {
-                Equipment equipment = Equipment.fromItem(item);
-
-                if (equipment instanceof CommonEquipment)
-                    weight += ((CommonEquipment) equipment).getWeight() * item.getAmount();
-            }
-
-        return weight;
-    }
-
-    private int countItems(Inventory inventory) {
-        int count = 0;
-
-        for (ItemStack item : inventory.getContents())
-            if (item != null)
-                count++;
-
-        return count;
-    }
-
     @EventHandler
     public void changeContents(InventoryDragEvent event) {
         if (event.getInventory().getHolder() != null)
@@ -184,12 +160,6 @@ public class ContainerEvents implements Listener {
         }
     }
 
-    private void containerFull(Player player) {
-        player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.0f, 0.0f);
-        player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_GENERIC, 1.0f, 0.0f);
-        player.sendMessage(ChatColor.RED + "That container is full");
-    }
-
     @EventHandler
     public void saveContainerContents(InventoryCloseEvent event) {
         if (event.getInventory().getHolder() == null) {
@@ -203,14 +173,6 @@ public class ContainerEvents implements Listener {
                 }
             }
         }
-    }
-
-    private static Container getInventoryContainer(Inventory inventory) {
-        for (Container container : Container.openInventories.keySet())
-            if (Container.openInventories.get(container).equals(inventory))
-                return container;
-
-        return null;
     }
 
     @EventHandler
@@ -227,5 +189,45 @@ public class ContainerEvents implements Listener {
                 }
             }
         }
+    }
+
+    // Helper methods
+    private double weighInventory(Inventory inventory) {
+        double weight = 0;
+
+        for (ItemStack item : inventory.getContents())
+            if (item != null) {
+                Equipment equipment = Equipment.fromItem(item);
+
+                if (equipment instanceof CommonEquipment)
+                    weight += ((CommonEquipment) equipment).getWeight() * item.getAmount();
+            }
+
+        return weight;
+    }
+
+    private int countItems(Inventory inventory) {
+        int count = 0;
+
+        for (ItemStack item : inventory.getContents())
+            if (item != null)
+                count++;
+
+        return count;
+    }
+
+    private void containerFull(Player player) {
+        player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.0f, 0.0f);
+        player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_GENERIC, 1.0f, 0.0f);
+        player.sendMessage(ChatColor.RED + "That container is full");
+    }
+
+    // Static methods
+    private static Container getInventoryContainer(Inventory inventory) {
+        for (Container container : Container.openInventories.keySet())
+            if (Container.openInventories.get(container).equals(inventory))
+                return container;
+
+        return null;
     }
 }

@@ -62,10 +62,10 @@ public class Weapon extends CommonEquipment {
         lore.add("");
 
         if (damage != null)
-            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + damage.getMin() + "-" + damage.getMax() + " " + damage.getType().getName());
+            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + damage.getRoll().getMin() + "-" + damage.getRoll().getMax() + " " + damage.getType().getName());
 
         if (two_handed_damage != null)
-            lore.add(ChatColor.GRAY + "Two-Handed Damage: " + ChatColor.WHITE + two_handed_damage.getMin() + "-" + two_handed_damage.getMax() + " " + two_handed_damage.getType().getName());
+            lore.add(ChatColor.GRAY + "Two-Handed Damage: " + ChatColor.WHITE + two_handed_damage.getRoll().getMin() + "-" + two_handed_damage.getRoll().getMax() + " " + two_handed_damage.getType().getName());
 
         if (range.getLong() != 0)
             lore.add(ChatColor.GRAY + "Range: " + ChatColor.WHITE + range.getNormal() + " Normal / " + range.getLong() + " Long");
@@ -99,14 +99,14 @@ public class Weapon extends CommonEquipment {
         NBTHandler.addString(item, "range_long", String.valueOf(this.range.getLong()));
 
         if (this.damage != null) {
-            NBTHandler.addString(item, "damage_min", String.valueOf(this.damage.getMin()));
-            NBTHandler.addString(item, "damage_max", String.valueOf(this.damage.getMax()));
+            NBTHandler.addString(item, "damage_min", String.valueOf(this.damage.getRoll().getMin()));
+            NBTHandler.addString(item, "damage_max", String.valueOf(this.damage.getRoll().getMax()));
             NBTHandler.addString(item, "damage_type", this.damage.getType().getName());
         }
 
         if (this.two_handed_damage != null) {
-            NBTHandler.addString(item, "two_handed_damage_min", String.valueOf(this.two_handed_damage.getMin()));
-            NBTHandler.addString(item, "two_handed_damage_max", String.valueOf(this.two_handed_damage.getMax()));
+            NBTHandler.addString(item, "two_handed_damage_min", String.valueOf(this.two_handed_damage.getRoll().getMin()));
+            NBTHandler.addString(item, "two_handed_damage_max", String.valueOf(this.two_handed_damage.getRoll().getMax()));
             NBTHandler.addString(item, "two_handed_damage_type", this.two_handed_damage.getType().getName());
         }
     }

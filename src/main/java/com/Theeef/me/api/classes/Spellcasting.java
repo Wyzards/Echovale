@@ -24,7 +24,7 @@ public class Spellcasting {
             this.info.add(new Info((JSONObject) info));
     }
 
-    // Get methods
+    // Getter methods
     public long getLevel() {
         return this.level;
     }

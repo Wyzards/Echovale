@@ -40,6 +40,91 @@ public class Equipment {
         this.url = url;
     }
 
+    public ItemStack getItemStack() {
+        ItemStack item = new ItemStack(retrieveMaterial(), retrieveQuantity());
+        ItemMeta meta = item.getItemMeta();
+
+        if (!plugin.getConfigManager().getEquipmentConfig().contains("maxStackSize." + item.getType().name())) {
+            plugin.getConfigManager().getEquipmentConfig().set("maxStackSize." + item.getType().name(), 64);
+            plugin.getConfigManager().saveEquipmentConfig();
+        }
+
+        if (meta instanceof PotionMeta)
+            ((PotionMeta) meta).setColor(retrievePotionColor());
+
+        assert meta != null;
+        meta.setDisplayName(ChatColor.RESET + this.name);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        item.setItemMeta(meta);
+
+        NBTHandler.addString(item, "index", this.index);
+        NBTHandler.addString(item, "name", this.name);
+        NBTHandler.addString(item, "equipment_category_url", this.equipment_category.getUrl());
+        NBTHandler.addString(item, "url", this.url);
+
+        return item;
+    }
+
+    // Helper methods
+    protected String getDataPath() {
+        return this.equipment_category.getUrl() + "." + getIndex();
+    }
+
+    private Color retrievePotionColor() {
+        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".potionColor"))
+            return Color.fromRGB(plugin.getConfigManager().getEquipmentConfig().getInt(getDataPath() + ".potionColor.R"), plugin.getConfigManager().getEquipmentConfig().getInt(this.equipment_category.getUrl() + "." + this.index + ".potionColor.G"), plugin.getConfigManager().getEquipmentConfig().getInt(this.equipment_category.getUrl() + "." + this.index + ".potionColor.B"));
+        else {
+            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".potionColor.R", 0);
+            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".potionColor.G", 0);
+            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".potionColor.B", 0);
+            plugin.getConfigManager().saveEquipmentConfig();
+        }
+
+        return Color.fromRGB(0, 0, 0);
+    }
+
+    private int retrieveQuantity() {
+        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".quantity"))
+            return plugin.getConfigManager().getEquipmentConfig().getInt(getDataPath() + ".quantity");
+
+        return 1;
+    }
+
+    private Material retrieveMaterial() {
+        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".material"))
+            return Material.valueOf(plugin.getConfigManager().getEquipmentConfig().getString(getDataPath() + ".material"));
+        else {
+            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".material", "BARRIER");
+            plugin.getConfigManager().saveEquipmentConfig();
+        }
+
+        return Material.BARRIER;
+    }
+
+    // Setter method
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Getter methods
+    public String getIndex() {
+        return this.index;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public EquipmentCategory getEquipmentCategory() {
+        return new EquipmentCategory(this.equipment_category);
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    // Static methods
     public static Equipment fromItem(ItemStack item) {
         return Equipment.fromString(NBTHandler.getString(item, "url"));
     }
@@ -98,88 +183,5 @@ public class Equipment {
                 }
 
             }
-    }
-
-    public ItemStack getItemStack() {
-        ItemStack item = new ItemStack(retrieveMaterial(), retrieveQuantity());
-        ItemMeta meta = item.getItemMeta();
-
-        if (!plugin.getConfigManager().getEquipmentConfig().contains("maxStackSize." + item.getType().name())) {
-            plugin.getConfigManager().getEquipmentConfig().set("maxStackSize." + item.getType().name(), 64);
-            plugin.getConfigManager().saveEquipmentConfig();
-        }
-
-        if (meta instanceof PotionMeta)
-            ((PotionMeta) meta).setColor(retrievePotionColor());
-
-        assert meta != null;
-        meta.setDisplayName(ChatColor.RESET + this.name);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-        item.setItemMeta(meta);
-
-        NBTHandler.addString(item, "index", this.index);
-        NBTHandler.addString(item, "name", this.name);
-        NBTHandler.addString(item, "equipment_category_url", this.equipment_category.getUrl());
-        NBTHandler.addString(item, "url", this.url);
-
-        return item;
-    }
-
-    private Color retrievePotionColor() {
-        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".potionColor"))
-            return Color.fromRGB(plugin.getConfigManager().getEquipmentConfig().getInt(getDataPath() + ".potionColor.R"), plugin.getConfigManager().getEquipmentConfig().getInt(this.equipment_category.getUrl() + "." + this.index + ".potionColor.G"), plugin.getConfigManager().getEquipmentConfig().getInt(this.equipment_category.getUrl() + "." + this.index + ".potionColor.B"));
-        else {
-            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".potionColor.R", 0);
-            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".potionColor.G", 0);
-            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".potionColor.B", 0);
-            plugin.getConfigManager().saveEquipmentConfig();
-        }
-
-        return Color.fromRGB(0, 0, 0);
-    }
-
-    private int retrieveQuantity() {
-        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".quantity"))
-            return plugin.getConfigManager().getEquipmentConfig().getInt(getDataPath() + ".quantity");
-
-        return 1;
-    }
-
-    private Material retrieveMaterial() {
-        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".material"))
-            return Material.valueOf(plugin.getConfigManager().getEquipmentConfig().getString(getDataPath() + ".material"));
-        else {
-            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".material", "BARRIER");
-            plugin.getConfigManager().saveEquipmentConfig();
-        }
-
-        return Material.BARRIER;
-    }
-
-    public String getDataPath() {
-        return this.equipment_category.getUrl() + "." + getIndex();
-    }
-
-    // Set method
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    // Getter methods
-    public String getIndex() {
-        return this.index;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public EquipmentCategory getEquipmentCategory() {
-        return new EquipmentCategory(this.equipment_category);
-    }
-
-    public String getUrl() {
-        return this.url;
     }
 }

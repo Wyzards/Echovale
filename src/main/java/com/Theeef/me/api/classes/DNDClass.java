@@ -97,9 +97,9 @@ public class DNDClass {
 
     public List<Level> getClassLevels() {
         List<Level> list = new ArrayList<>();
-        JSONArray json = (JSONArray) APIRequest.requestAware(this.class_levels);
+        JSONArray array = (JSONArray) APIRequest.requestAware(this.class_levels);
 
-        for (Object level : json)
+        for (Object level : array)
             list.add(new Level((JSONObject) level));
 
         return list;

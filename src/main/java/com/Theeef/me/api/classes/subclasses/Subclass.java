@@ -2,6 +2,7 @@ package com.Theeef.me.api.classes.subclasses;
 
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.classes.DNDClass;
+import com.Theeef.me.api.classes.Level;
 import com.Theeef.me.api.common.APIReference;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -42,7 +43,7 @@ public class Subclass {
         this(reference.getUrl());
     }
 
-    // Get methods
+    // Getter methods
     public String getIndex() {
         return this.index;
     }
@@ -67,9 +68,14 @@ public class Subclass {
         return this.spells;
     }
 
-    // TODO: Make this return actual leveling info rather than URL
-    public String getSubclassLevelsUrl() {
-        return this.subclass_levels;
+    public List<Level> getSublassLevels() {
+        List<Level> list = new ArrayList<>();
+        JSONArray array = (JSONArray) APIRequest.requestAware(this.subclass_levels);
+
+        for (Object level : array)
+            list.add(new Level((JSONObject) level));
+
+        return list;
     }
 
     public String getUrl() {

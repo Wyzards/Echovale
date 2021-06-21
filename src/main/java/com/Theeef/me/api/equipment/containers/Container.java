@@ -63,32 +63,16 @@ public class Container extends Gear {
         this(NBTHandler.getString(item, "url"), UUID.fromString(NBTHandler.getString(item, "uuid")), NBTHandler.getString(item, "name"), Cost.getFromContainer(item), getItemContents(item));
     }
 
-    public static boolean isContainer(ItemStack item) {
-        return item != null && NBTHandler.hasString(item, "contents_0");
-    }
+    public ItemStack getItemStack() {
+        ItemStack item = super.getItemStack();
 
-    private static List<EquipmentQuantity> getItemContents(ItemStack item) {
-        List<EquipmentQuantity> list = new ArrayList<>();
-        int content = 0;
+        lore(item);
+        nbt(item);
 
-
-        while (NBTHandler.hasString(item, "contents_" + content)) {
-            if (NBTHandler.getString(item, "contents_" + content).equals("null"))
-                list.add(null);
-            else
-                list.add(new EquipmentQuantity(NBTHandler.getString(item, "contents_" + content)));
-
-            content++;
-        }
-
-        return list;
+        return item;
     }
 
     public void setContents(ItemStack[] items) {
-        // Get list of ContainerEquipment
-        // Get Equipment from Item
-        // Get quantity from item (fix this earlier)
-
         List<EquipmentQuantity> equipment = new ArrayList<>();
 
         for (ItemStack item : items)
@@ -121,23 +105,6 @@ public class Container extends Gear {
             Container.openInventories.put(this, inventory);
             player.openInventory(inventory);
         }
-
-        // TODO: Make it so you can't exceed costs
-        // TODO: MAKE CLOTHES NOT CANCER
-        // TODO: MAKE KITS NOT CANCER
-        // TODO: MAKE CODE NOT GARBAGE
-        // TODO: FIX EQUIPMENT QUANTITIES
-    }
-
-    private Inventory getBaseInventory() {
-        switch (getSlots()) {
-            case 5:
-                return Bukkit.createInventory(null, InventoryType.HOPPER, getName());
-            case 9:
-                return Bukkit.createInventory(null, InventoryType.DISPENSER, getName());
-            default:
-                return Bukkit.createInventory(null, getSlots(), getName());
-        }
     }
 
     public Container getOpenContainer(Container container) {
@@ -148,12 +115,39 @@ public class Container extends Gear {
         return null;
     }
 
-    public List<ItemStack> getContainerItems() {
-        return this.containerItems;
+    public double getCapacity() {
+        if (plugin.getConfigManager().getEquipmentConfig().contains(getEquipmentCategory().getUrl() + "." + getIndex() + ".weightCapacity"))
+            return plugin.getConfigManager().getEquipmentConfig().getDouble(getEquipmentCategory().getUrl() + "." + getIndex() + ".weightCapacity");
+        else {
+            plugin.getConfigManager().getEquipmentConfig().set(getEquipmentCategory().getUrl() + "." + getIndex() + ".weightCapacity", 0);
+            plugin.getConfigManager().saveEquipmentConfig();
+
+            return getCapacity();
+        }
     }
 
-    public List<EquipmentQuantity> getContents() {
-        return this.contents;
+    public boolean hasContents() {
+        for (EquipmentQuantity equipment : this.contents)
+            if (equipment != null)
+                return true;
+        return false;
+    }
+
+    public Cost getCost() {
+        if (this.packCost != null)
+            return this.packCost;
+        else
+            return this.getTotalCost();
+    }
+
+    public double getTotalWeight() {
+        double weight = getWeight();
+
+        for (EquipmentQuantity content : this.contents)
+            if (content != null)
+                weight += content.getWeight();
+
+        return weight;
     }
 
     @Override
@@ -166,19 +160,15 @@ public class Container extends Gear {
             return this.uuid.equals(((Container) obj).getUUID());
     }
 
-    public UUID getUUID() {
-        return this.uuid;
-    }
-
-    // TODO: Proper capacity and volume
-    public double getCapacity() {
-        if (plugin.getConfigManager().getEquipmentConfig().contains(getEquipmentCategory().getUrl() + "." + getIndex() + ".weightCapacity"))
-            return plugin.getConfigManager().getEquipmentConfig().getDouble(getEquipmentCategory().getUrl() + "." + getIndex() + ".weightCapacity");
-        else {
-            plugin.getConfigManager().getEquipmentConfig().set(getEquipmentCategory().getUrl() + "." + getIndex() + ".weightCapacity", 0);
-            plugin.getConfigManager().saveEquipmentConfig();
-
-            return getCapacity();
+    // Helper methods
+    private Inventory getBaseInventory() {
+        switch (getSlots()) {
+            case 5:
+                return Bukkit.createInventory(null, InventoryType.HOPPER, getName());
+            case 9:
+                return Bukkit.createInventory(null, InventoryType.DISPENSER, getName());
+            default:
+                return Bukkit.createInventory(null, getSlots(), getName());
         }
     }
 
@@ -212,13 +202,8 @@ public class Container extends Gear {
         return 9;
     }
 
-    public ItemStack getItemStack() {
-        ItemStack item = super.getItemStack();
+    private void lore(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-
-        assert meta != null;
-
-        // Overriding Gear lore
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + getGearCategory().getName() + " (" + getEquipmentCategory().getName() + ")");
         lore.add("");
@@ -226,7 +211,7 @@ public class Container extends Gear {
         lore.add(ChatColor.GRAY + "Total Weight: " + ChatColor.WHITE + (getWeight() + getTotalWeight()) + " pounds");
         lore.add("");
 
-        if (!isEmpty()) {
+        if (hasContents()) {
             lore.add(ChatColor.GRAY + "Contents");
 
             int count = 0;
@@ -243,11 +228,14 @@ public class Container extends Gear {
 
         lore.add("");
         lore.add(ChatColor.AQUA + "Hold + Right Click" + ChatColor.GRAY + " to view contents");
+
+        assert meta != null;
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
+    }
 
-        // NBT Data
+    private void nbt(ItemStack item) {
         NBTHandler.addString(item, "uuid", this.uuid.toString());
 
         if (this.packCost != null)
@@ -256,8 +244,6 @@ public class Container extends Gear {
 
         for (int i = 0; i < this.contents.size(); i++)
             NBTHandler.addString(item, "contents_" + i, this.contents.get(i) == null ? "null" : this.contents.get(i).toString());
-
-        return item;
     }
 
     private int countContents() {
@@ -269,21 +255,7 @@ public class Container extends Gear {
         return count;
     }
 
-    public boolean isEmpty() {
-        for (EquipmentQuantity equipment : this.contents)
-            if (equipment != null)
-                return false;
-        return true;
-    }
-
-    public Cost getCost() {
-        if (this.packCost != null)
-            return this.packCost;
-        else
-            return this.getTotalCost();
-    }
-
-    public Cost getTotalCost() {
+    private Cost getTotalCost() {
         Cost cost = super.getCost();
 
         for (EquipmentQuantity content : this.contents)
@@ -293,13 +265,42 @@ public class Container extends Gear {
         return cost;
     }
 
-    public double getTotalWeight() {
-        double weight = getWeight();
+    // Getter methods
+    public UUID getUUID() {
+        return this.uuid;
+    }
 
-        for (EquipmentQuantity content : this.contents)
-            if (content != null)
-                weight += content.getWeight();
+    public List<EquipmentQuantity> getContents() {
+        return this.contents;
+    }
 
-        return weight;
+    public Cost getPackCost() {
+        return this.packCost;
+    }
+
+    public List<ItemStack> getContainerItems() {
+        return this.containerItems;
+    }
+
+    // Static methods
+    public static boolean isContainer(ItemStack item) {
+        return item != null && NBTHandler.hasString(item, "contents_0");
+    }
+
+    private static List<EquipmentQuantity> getItemContents(ItemStack item) {
+        List<EquipmentQuantity> list = new ArrayList<>();
+        int content = 0;
+
+
+        while (NBTHandler.hasString(item, "contents_" + content)) {
+            if (NBTHandler.getString(item, "contents_" + content).equals("null"))
+                list.add(null);
+            else
+                list.add(new EquipmentQuantity(NBTHandler.getString(item, "contents_" + content)));
+
+            content++;
+        }
+
+        return list;
     }
 }

@@ -11,6 +11,8 @@ import java.util.List;
 
 public class StartingEquipment {
 
+    // TODO: POTENTIALLY DELETE
+
     private final String index;
     private final APIReference dndclass;
     private final List<APIReference> starting_equipment;
@@ -31,7 +33,7 @@ public class StartingEquipment {
             this.starting_equipment_options.add(new Choice((JSONObject) equipmentChoice));
     }
 
-    // Get methods
+    // Getter methods
     public String getIndex() {
         return this.index;
     }

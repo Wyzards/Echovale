@@ -9,14 +9,6 @@ public enum ArmorPiece {
 
     BOOTS, LEGGINGS, CHESTPLATE, HELMET, SHIELD;
 
-    public static ArmorPiece getPiece(ItemStack item) {
-        return ArmorPiece.valueOf(NBTHandler.getString(item, "armorPiece"));
-    }
-
-    public static double weighItem(ItemStack item) {
-        return ArmorPiece.getPiece(item).weighItem(Double.parseDouble(NBTHandler.getString(item, "weight")), Armor.getSetPieces(item));
-    }
-
     public double weighItem(double setWeight, List<ArmorPiece> setPieces) {
         return Math.round(getPercentage(setPieces) * setWeight);
     }
@@ -43,5 +35,14 @@ public enum ArmorPiece {
             default:
                 return 1.0;
         }
+    }
+
+    // Static methods
+    public static ArmorPiece getPiece(ItemStack item) {
+        return ArmorPiece.valueOf(NBTHandler.getString(item, "armorPiece"));
+    }
+
+    public static double weighItem(ItemStack item) {
+        return ArmorPiece.getPiece(item).weighItem(Double.parseDouble(NBTHandler.getString(item, "weight")), Armor.getSetPieces(item));
     }
 }

@@ -25,7 +25,7 @@ public class Condition {
             this.desc.add((String) descLine);
     }
 
-    // Get methods
+    // Getter methods
     public String getIndex() {
         return this.index;
     }

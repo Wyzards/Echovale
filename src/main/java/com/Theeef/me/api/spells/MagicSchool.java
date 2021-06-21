@@ -18,6 +18,7 @@ public class MagicSchool {
         this.url = (String) json.get("url");
     }
 
+    // Getter methods
     public String getIndex() {
         return this.index;
     }

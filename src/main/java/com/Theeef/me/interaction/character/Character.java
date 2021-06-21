@@ -46,6 +46,7 @@ public class Character {
         this(owner, name, race, subrace, Character.newClassMap(dndclass), newAbilityScoreMap(cha, con, dex, intel, str, wis), background);
     }
 
+    // Helper methods
     private void saveCharacter() {
         // TODO: Save basic character info
         // How to store and retrieve choices?
@@ -69,29 +70,7 @@ public class Character {
         return this.owner.toString() + "." + this.uuid.toString();
     }
 
-    private static HashMap<AbilityScore, Integer> newAbilityScoreMap(int cha, int con, int dex, int intel, int str, int wis) {
-        HashMap<AbilityScore, Integer> map = new HashMap<>();
-        map.put(AbilityScore.CHA, cha);
-        map.put(AbilityScore.CON, con);
-        map.put(AbilityScore.DEX, dex);
-        map.put(AbilityScore.INT, intel);
-        map.put(AbilityScore.STR, str);
-        map.put(AbilityScore.WIS, wis);
-
-        return map;
-    }
-
-    private static HashMap<DNDClass, Integer> newClassMap(DNDClass dndclass) {
-        HashMap<DNDClass, Integer> map = new HashMap<>();
-        map.put(dndclass, 1);
-        return map;
-    }
-
-    private static boolean characterExists(UUID owner, UUID character) {
-        return plugin.getConfigManager().getCharacters().contains(owner.toString() + "." + character.toString());
-    }
-
-    // Get methods
+    // Getter methods
     public UUID getUUID() {
         return this.uuid;
     }
@@ -124,4 +103,26 @@ public class Character {
         return this.background;
     }
 
+    // Static methods
+    private static HashMap<AbilityScore, Integer> newAbilityScoreMap(int cha, int con, int dex, int intel, int str, int wis) {
+        HashMap<AbilityScore, Integer> map = new HashMap<>();
+        map.put(AbilityScore.CHA, cha);
+        map.put(AbilityScore.CON, con);
+        map.put(AbilityScore.DEX, dex);
+        map.put(AbilityScore.INT, intel);
+        map.put(AbilityScore.STR, str);
+        map.put(AbilityScore.WIS, wis);
+
+        return map;
+    }
+
+    private static HashMap<DNDClass, Integer> newClassMap(DNDClass dndclass) {
+        HashMap<DNDClass, Integer> map = new HashMap<>();
+        map.put(dndclass, 1);
+        return map;
+    }
+
+    private static boolean characterExists(UUID owner, UUID character) {
+        return plugin.getConfigManager().getCharacters().contains(owner.toString() + "." + character.toString());
+    }
 }

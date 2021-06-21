@@ -41,11 +41,15 @@ public class MagicItem extends Equipment {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        // TODO: Potentially add description NBT data
-
         return item;
     }
 
+    // Getter methods
+    public List<String> getDescription() {
+        return this.desc;
+    }
+
+    // Static methods
     public static Set<MagicItem> values() {
         Set<MagicItem> set = Sets.newHashSet();
         JSONObject json = APIRequest.request("/api/magic-items/");

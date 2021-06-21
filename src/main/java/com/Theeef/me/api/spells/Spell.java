@@ -67,40 +67,7 @@ public class Spell {
             this.subclasses.add(new APIReference((JSONObject) subclassObj));
     }
 
-    public static List<Spell> values() {
-        List<Spell> list = new ArrayList<>();
-        JSONObject json = APIRequest.request("/api/spells");
-
-        for (Object spellJson : (JSONArray) json.get("results"))
-            list.add(new Spell((String) ((JSONObject) spellJson).get("url")));
-
-        return list;
-    }
-
-    // Referenced getters
-    public MagicSchool getSchool() {
-        return new MagicSchool(this.school.getUrl());
-    }
-
-    public List<DNDClass> getClasses() {
-        List<DNDClass> list = new ArrayList<>();
-
-        for (APIReference reference : this.classes)
-            list.add(new DNDClass(reference.getUrl()));
-
-        return list;
-    }
-
-    public List<Subclass> getSubclasses() {
-        List<Subclass> list = new ArrayList<>();
-
-        for (APIReference reference : this.subclasses)
-            list.add(new Subclass(reference.getUrl()));
-
-        return list;
-    }
-
-    // Raw getter methods
+    // Getter methods
     public String getIndex() {
         return this.index;
     }
@@ -153,7 +120,40 @@ public class Spell {
         return this.damage;
     }
 
+    public MagicSchool getSchool() {
+        return new MagicSchool(this.school.getUrl());
+    }
+
+    public List<DNDClass> getClasses() {
+        List<DNDClass> list = new ArrayList<>();
+
+        for (APIReference reference : this.classes)
+            list.add(new DNDClass(reference.getUrl()));
+
+        return list;
+    }
+
+    public List<Subclass> getSubclasses() {
+        List<Subclass> list = new ArrayList<>();
+
+        for (APIReference reference : this.subclasses)
+            list.add(new Subclass(reference.getUrl()));
+
+        return list;
+    }
+
     public String getUrl() {
         return this.url;
+    }
+
+    // Static methods
+    public static List<Spell> values() {
+        List<Spell> list = new ArrayList<>();
+        JSONObject json = APIRequest.request("/api/spells");
+
+        for (Object spellJson : (JSONArray) json.get("results"))
+            list.add(new Spell((String) ((JSONObject) spellJson).get("url")));
+
+        return list;
     }
 }
