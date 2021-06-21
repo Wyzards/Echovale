@@ -38,6 +38,10 @@ public class Subclass {
             this.spells.add(new SubclassSpell((JSONObject) subclassSpell));
     }
 
+    public Subclass(APIReference reference) {
+        this(reference.getUrl());
+    }
+
     // Get methods
     public String getIndex() {
         return this.index;

@@ -33,6 +33,10 @@ public class Feature {
             this.desc.add((String) descLine);
     }
 
+    public Feature(APIReference reference) {
+        this(reference.getUrl());
+    }
+
     public String getIndex() {
         return this.index;
     }

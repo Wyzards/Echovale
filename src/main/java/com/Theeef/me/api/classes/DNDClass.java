@@ -52,6 +52,10 @@ public class DNDClass {
             this.subclasses.add(new APIReference((JSONObject) subclass));
     }
 
+    public DNDClass(APIReference reference) {
+        this(reference.getUrl());
+    }
+
     // Get methods
     public String getIndex() {
         return this.index;
@@ -91,9 +95,14 @@ public class DNDClass {
         return this.starting_equipment;
     }
 
-    // TODO: Make this return actual leveling info
-    public String getClassLevelsUrl() {
-        return this.class_levels;
+    public List<Level> getClassLevels() {
+        List<Level> list = new ArrayList<>();
+        JSONArray json = (JSONArray) APIRequest.requestAware(this.class_levels);
+
+        for (Object level : json)
+            list.add(new Level((JSONObject) level));
+
+        return list;
     }
 
     // TODO: Add sourcebook targeters
@@ -110,9 +119,14 @@ public class DNDClass {
         return this.spellcasting;
     }
 
-    // TODO: Make this return List<Spell> or List<APIReference> spell
-    public String getSpellListUrl() {
-        return this.spells;
+    public List<APIReference> getSpells() {
+        List<APIReference> list = new ArrayList<>();
+        JSONObject json = APIRequest.request(this.spells);
+
+        for (Object spell : (JSONArray) json.get("results"))
+            list.add(new APIReference((JSONObject) spell));
+
+        return list;
     }
 
     public String getUrl() {

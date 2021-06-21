@@ -1,5 +1,7 @@
 package com.Theeef.me;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -13,14 +15,14 @@ import java.util.HashMap;
 
 public class APIRequest {
 
-    public static HashMap<String, JSONObject> cachedRequests = new HashMap<>();
+    public static HashMap<String, JSONAware> cachedRequests = new HashMap<>();
 
-    public static JSONObject request(String path) {
+    public static JSONAware requestAware(String path) {
         if (cachedRequests.containsKey(path))
             return cachedRequests.get(path);
 
         URL url;
-        JSONObject json = null;
+        JSONAware json = null;
 
         try {
             url = new URL("https://www.dnd5eapi.co" + path);
@@ -45,5 +47,9 @@ public class APIRequest {
         }
 
         return json;
+    }
+
+    public static JSONObject request(String path) {
+        return (JSONObject) requestAware(path);
     }
 }
