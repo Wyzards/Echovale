@@ -2,9 +2,9 @@ package com.Theeef.me.api.equipment.weapons;
 
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.equipment.CommonEquipment;
+import com.Theeef.me.api.equipment.Cost;
+import com.Theeef.me.api.equipment.Equipment;
 import com.Theeef.me.api.mechanics.Damage;
-import com.Theeef.me.util.NBTHandler;
 import com.Theeef.me.util.Util;
 import com.google.common.collect.Sets;
 import org.bukkit.ChatColor;
@@ -17,14 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class Weapon extends CommonEquipment {
+public class Weapon extends Equipment {
 
     private final String weapon_category;
     private final String weapon_range;
     private final String category_range;
+    private final Cost cost;
     private final WeaponRange range;
     private final Damage damage;
     private final Damage two_handed_damage;
+    private final double weight;
     private final List<APIReference> properties;
 
     public Weapon(String url) {
@@ -34,9 +36,11 @@ public class Weapon extends CommonEquipment {
         this.weapon_category = (String) json.get("weapon_category");
         this.weapon_range = (String) json.get("weapon_range");
         this.category_range = (String) json.get("category_range");
+        this.cost = new Cost((JSONObject) json.get("cost"));
         this.range = new WeaponRange((JSONObject) json.get("range"));
         this.damage = json.containsKey("damage") ? new Damage((JSONObject) json.get("damage")) : null;
         this.two_handed_damage = json.containsKey("two_handed_damage") ? new Damage((JSONObject) json.get("two_handed_damage")) : null;
+        this.weight = Equipment.parseWeight(json);
         this.properties = new ArrayList<>();
 
         for (Object property : (JSONArray) json.get("properties"))
@@ -47,7 +51,6 @@ public class Weapon extends CommonEquipment {
         ItemStack item = super.getItemStack();
 
         lore(item);
-        nbt(item);
 
         return item;
     }
@@ -58,7 +61,10 @@ public class Weapon extends CommonEquipment {
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.GRAY + this.category_range + " Weapon");
         lore.add("");
-        lore.addAll(loreCostWeight());
+        if (getCost().getCopperValue() > 0)
+            lore.add(ChatColor.GRAY + "Cost: " + getCost().amountString());
+        if (getWeight() > 0)
+            lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + getWeight() + " pounds");
         lore.add("");
 
         if (damage != null)
@@ -91,26 +97,6 @@ public class Weapon extends CommonEquipment {
         return propertyString.toString();
     }
 
-    private void nbt(ItemStack item) {
-        NBTHandler.addString(item, "weapon_category", this.weapon_category);
-        NBTHandler.addString(item, "weapon_range", this.weapon_range);
-        NBTHandler.addString(item, "category_range", this.category_range);
-        NBTHandler.addString(item, "range_normal", String.valueOf(this.range.getNormal()));
-        NBTHandler.addString(item, "range_long", String.valueOf(this.range.getLong()));
-
-        if (this.damage != null) {
-            NBTHandler.addString(item, "damage_min", String.valueOf(this.damage.getRoll().getMin()));
-            NBTHandler.addString(item, "damage_max", String.valueOf(this.damage.getRoll().getMax()));
-            NBTHandler.addString(item, "damage_type", this.damage.getType().getName());
-        }
-
-        if (this.two_handed_damage != null) {
-            NBTHandler.addString(item, "two_handed_damage_min", String.valueOf(this.two_handed_damage.getRoll().getMin()));
-            NBTHandler.addString(item, "two_handed_damage_max", String.valueOf(this.two_handed_damage.getRoll().getMax()));
-            NBTHandler.addString(item, "two_handed_damage_type", this.two_handed_damage.getType().getName());
-        }
-    }
-
     // Getter methods
     public String getWeaponCategory() {
         return this.weapon_category;
@@ -124,6 +110,11 @@ public class Weapon extends CommonEquipment {
         return this.category_range;
     }
 
+    @Override
+    public Cost getCost() {
+        return this.cost.clone();
+    }
+
     public WeaponRange getRange() {
         return this.range;
     }
@@ -134,6 +125,11 @@ public class Weapon extends CommonEquipment {
 
     public Damage getTwoHandedDamage() {
         return this.two_handed_damage;
+    }
+
+    @Override
+    public double getWeight() {
+        return this.weight;
     }
 
     public List<WeaponProperty> getProperties() {

@@ -2,31 +2,32 @@ package com.Theeef.me.api.equipment.containers;
 
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.equipment.CommonEquipment;
 import com.Theeef.me.api.equipment.Cost;
 import com.Theeef.me.api.equipment.Equipment;
 import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;
 
-public class EquipmentQuantity {
+public class ItemQuantity {
 
     private final APIReference item;
     private final long quantity;
 
     // TODO: Only required b/c of scuffed NBT data, fix later
-    public EquipmentQuantity(String itemUrl, long quantity) {
-        this.item = new APIReference(APIRequest.request(itemUrl));
+    public ItemQuantity(APIReference item, long quantity) {
+        this.item = item;
         this.quantity = quantity;
     }
 
-    public EquipmentQuantity(JSONObject json) {
-        this.item = new APIReference((JSONObject) json.get("item"));
-        this.quantity = (long) json.get("quantity");
+    public ItemQuantity(String itemUrl, long quantity) {
+        this(new APIReference(APIRequest.request(itemUrl)), quantity);
     }
 
-    public EquipmentQuantity(String toString) {
-        this.item = new APIReference(APIRequest.request(toString.substring(0, toString.indexOf(","))));
-        this.quantity = Long.parseLong(toString.substring(toString.indexOf(",") + 1));
+    public ItemQuantity(JSONObject json) {
+        this(new APIReference((JSONObject) json.get("item")), (long) json.get("quantity"));
+    }
+
+    public ItemQuantity(String toString) {
+        this(new APIReference(APIRequest.request(toString.substring(0, toString.indexOf(",")))), Long.parseLong(toString.substring(toString.indexOf(",") + 1)));
     }
 
     public ItemStack getItemStack() {
@@ -39,13 +40,13 @@ public class EquipmentQuantity {
     public Cost getCost() {
         Equipment equipment = getItem();
 
-        return equipment instanceof CommonEquipment ? ((CommonEquipment) equipment).getCost().multiply(this.quantity, false) : new Cost(Cost.MoneyUnit.CP, 0);
+        return equipment.getCost() == null ? null : equipment.getCost().multiply(getQuantity());
     }
 
     public double getWeight() {
         Equipment equipment = getItem();
 
-        return equipment instanceof CommonEquipment ? ((CommonEquipment) equipment).getWeight() * this.quantity : 0;
+        return equipment.getWeight() == 0 ? 0 : equipment.getWeight() * this.quantity;
     }
 
     public String toString() {

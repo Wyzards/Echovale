@@ -21,7 +21,7 @@ import org.json.simple.JSONObject;
 
 import java.lang.reflect.Field;
 
-public class Equipment {
+public abstract class Equipment {
 
     protected static final Echovale plugin = Echovale.getPlugin(Echovale.class);
 
@@ -53,18 +53,19 @@ public class Equipment {
             ((PotionMeta) meta).setColor(retrievePotionColor());
 
         assert meta != null;
-        meta.setDisplayName(ChatColor.RESET + this.name);
+        meta.setDisplayName(ChatColor.RESET + getName());
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
         item.setItemMeta(meta);
 
-        NBTHandler.addString(item, "index", this.index);
-        NBTHandler.addString(item, "name", this.name);
-        NBTHandler.addString(item, "equipment_category_url", this.equipment_category.getUrl());
         NBTHandler.addString(item, "url", this.url);
 
         return item;
     }
+
+    public abstract Cost getCost();
+
+    public abstract double getWeight();
 
     // Helper methods
     protected String getDataPath() {
@@ -126,20 +127,30 @@ public class Equipment {
 
     // Static methods
     public static Equipment fromItem(ItemStack item) {
-        return Equipment.fromString(NBTHandler.getString(item, "url"));
+        return Equipment.fromString(Equipment.getItemUrl(item));
     }
 
-    public static double weighItem(ItemStack item) {
-        // TODO: Could cause issue when trying to weigh a container that is currently open
-        if (Container.isContainer(item)) {
-            return new Container(item).getTotalWeight();
-        } else if (NBTHandler.hasString(item, "weight")) {
-            if (Armor.isArmor(item))
-                return ArmorPiece.getPiece(item).weighItem(item);
+    public static String getItemUrl(ItemStack item) {
+        return NBTHandler.getString(item, "url");
+    }
+
+    public static double parseWeight(JSONObject json) {
+        if (json.containsKey("weight")) {
+            if (json.get("weight") instanceof Long)
+                return (double) (long) json.get("weight");
             else
-                return Double.parseDouble(NBTHandler.getString(item, "weight"));
+                return (double) json.get("weight");
         } else
-            throw new IllegalArgumentException("ItemStack \"" + item + "\" did not have the weight NBT data.");
+            return 0;
+    }
+
+    public static double weighItem(ItemStack item, boolean weighWholeStack) {
+        Equipment equipment = Equipment.fromItem(item);
+
+        if (equipment instanceof Armor)
+            ((Armor) equipment).setPiece(ArmorPiece.getPiece(item));
+
+        return equipment.getWeight() * (weighWholeStack ? item.getAmount() : 1);
     }
 
     public static Equipment fromString(String url) {

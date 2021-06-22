@@ -1,7 +1,7 @@
 package com.Theeef.me.api.equipment.armor;
 
 import com.Theeef.me.APIRequest;
-import com.Theeef.me.api.equipment.CommonEquipment;
+import com.Theeef.me.api.equipment.Cost;
 import com.Theeef.me.api.equipment.Equipment;
 import com.Theeef.me.util.NBTHandler;
 import com.Theeef.me.util.Util;
@@ -11,19 +11,22 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Armor extends CommonEquipment {
+public class Armor extends Equipment {
 
     private final String armor_category;
     private final ArmorClass armor_class;
     private final long str_minimum;
     private final boolean stealth_disadvantage;
+    private final double weight;
+    private final Cost cost;
     private final List<ArmorPiece> pieces;
-    private String dataPath;
+    private ArmorPiece piece; // Used to focus on certain data path, etc.
 
-    public Armor(String url) {
+    public Armor(String url, ArmorPiece piece) {
         super(url);
 
         JSONObject json = APIRequest.request(url);
@@ -32,11 +35,18 @@ public class Armor extends CommonEquipment {
         this.armor_class = new ArmorClass((JSONObject) json.get("armor_class"));
         this.str_minimum = (long) json.get("str_minimum");
         this.stealth_disadvantage = (boolean) json.get("stealth_disadvantage");
+        this.weight = Equipment.parseWeight(json);
+        this.cost = new Cost((JSONObject) json.get("cost"));
         this.pieces = retrieveArmorPieces();
+        this.piece = piece;
+    }
+
+    public Armor(String url) {
+        this(url, null);
     }
 
     public ItemStack getItemStack(ArmorPiece piece) {
-        setDataPath(piece);
+        setPiece(piece); // Used to edit data path, weight, etc.
 
         ItemStack item = super.getItemStack();
         ItemMeta meta = item.getItemMeta();
@@ -45,22 +55,40 @@ public class Armor extends CommonEquipment {
         meta.setDisplayName(ChatColor.RESET + retrieveName(getName(), piece));
         item.setItemMeta(meta);
 
-        setLore(item, piece);
-        addNBT(item, piece);
+        lore(item);
+        NBTHandler.addString(item, "armorPiece", piece.name());
+
+        setPiece(null);
 
         return item;
     }
 
+    @Override
+    public double getWeight() {
+        if (getPiece() == null)
+            return this.weight;
+        else
+            return Math.round(this.weight * getPiece().getPercentage(this.pieces));
+    }
+
+    @Override
+    public Cost getCost() {
+        if (getPiece() == null)
+            return this.cost.clone();
+        else
+            return this.cost.clone().multiply(getPiece().getPercentage(this.pieces));
+    }
+
     // Helper methods
-    private void setLore(ItemStack item, ArmorPiece piece) {
+    private void lore(ItemStack item) {
         List<String> lore = new ArrayList<>();
         ItemMeta meta = item.getItemMeta();
         double multiplier = piece.getPercentage(this.pieces);
 
         lore.add(ChatColor.GRAY + this.getArmorCategory() + " (" + this.getEquipmentCategory().getName() + ")");
         lore.add("");
-        lore.add(ChatColor.GRAY + "Cost: " + getCost().multiply(multiplier, true).amountString());
-        lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + piece.weighItem(getWeight(), this.pieces) + " pounds");
+        lore.add(ChatColor.GRAY + "Cost: " + getCost().amountString());
+        lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + getWeight() + " pounds");
         lore.add("");
 
         if (piece == ArmorPiece.SHIELD) {
@@ -87,34 +115,13 @@ public class Armor extends CommonEquipment {
         item.setItemMeta(meta);
     }
 
-    private void addNBT(ItemStack item, ArmorPiece piece) {
-        NBTHandler.addString(item, "armor_category", this.armor_category);
-        NBTHandler.addString(item, "armor_class_base", Long.toString(this.armor_class.getBase()));
-        NBTHandler.addString(item, "armor_class_has_dex_bonus", Boolean.toString(this.armor_class.hasDexBonus()));
-        NBTHandler.addString(item, "armor_class_max_dex_bonus", Long.toString(this.armor_class.getMaxDexBonus()));
-        NBTHandler.addString(item, "str_minimum", Long.toString(this.str_minimum));
-        NBTHandler.addString(item, "stealth_disadvantage", Boolean.toString(this.stealth_disadvantage));
-        NBTHandler.addString(item, "armorPiece", piece.name());
-
-        for (ArmorPiece setPiece : this.pieces)
-            NBTHandler.addString(item, "armorHas" + setPiece.name(), Boolean.toString(true));
-    }
-
     private String retrieveName(String setName, ArmorPiece piece) {
         if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".name"))
             return plugin.getConfigManager().getEquipmentConfig().getString(getDataPath() + ".name");
         return setName + " " + Util.cleanEnumName(piece.name());
     }
 
-    private void setDataPath(ArmorPiece piece) {
-        if (piece == null)
-            this.dataPath = null;
-        else
-            this.dataPath = super.getDataPath() + "." + piece.name();
-    }
-
     private List<ArmorPiece> retrieveArmorPieces() {
-        setDataPath(null);
         List<ArmorPiece> pieces = new ArrayList<>();
 
         if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".pieces"))
@@ -126,6 +133,11 @@ public class Armor extends CommonEquipment {
         }
 
         return pieces;
+    }
+
+    // Setter methods
+    public void setPiece(ArmorPiece piece) {
+        this.piece = piece;
     }
 
     // Getter methods
@@ -149,23 +161,16 @@ public class Armor extends CommonEquipment {
         return this.pieces;
     }
 
-    @Override
-    public String getDataPath() {
-        if (this.dataPath == null)
-            return super.getDataPath();
-        else
-            return this.dataPath;
+    public ArmorPiece getPiece() {
+        return this.piece;
     }
 
-    // Static methods
-    public static List<ArmorPiece> getSetPieces(ItemStack armorItem) {
-        List<ArmorPiece> list = new ArrayList<>();
-
-        for (ArmorPiece piece : ArmorPiece.values())
-            if (NBTHandler.hasString(armorItem, "armorHas" + piece.name()) && Boolean.parseBoolean(NBTHandler.getString(armorItem, "armorHas" + piece.name())))
-                list.add(piece);
-
-        return list;
+    @Override
+    public String getDataPath() {
+        if (this.piece == null)
+            return super.getDataPath();
+        else
+            return super.getDataPath() + "." + this.piece.name();
     }
 
     public static List<Armor> values() {
@@ -177,9 +182,5 @@ public class Armor extends CommonEquipment {
                 list.add((Armor) Equipment.fromString((String) ((JSONObject) armorSetObj).get("url")));
 
         return list;
-    }
-
-    public static boolean isArmor(ItemStack item) {
-        return NBTHandler.hasString(item, "armorPiece");
     }
 }

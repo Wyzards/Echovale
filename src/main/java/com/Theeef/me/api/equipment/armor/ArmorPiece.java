@@ -3,15 +3,13 @@ package com.Theeef.me.api.equipment.armor;
 import com.Theeef.me.util.NBTHandler;
 import org.bukkit.inventory.ItemStack;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 public enum ArmorPiece {
 
     BOOTS, LEGGINGS, CHESTPLATE, HELMET, SHIELD;
-
-    public double weighItem(double setWeight, List<ArmorPiece> setPieces) {
-        return Math.round(getPercentage(setPieces) * setWeight);
-    }
 
     public double getPercentage(List<ArmorPiece> setPieces) {
         double total = 0;
@@ -19,7 +17,7 @@ public enum ArmorPiece {
         for (ArmorPiece piece : setPieces)
             total += piece.getRawPercentage();
 
-        return getRawPercentage() / total;
+        return getRawPercentage() / BigDecimal.valueOf(total).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
     public double getRawPercentage() {
@@ -40,9 +38,5 @@ public enum ArmorPiece {
     // Static methods
     public static ArmorPiece getPiece(ItemStack item) {
         return ArmorPiece.valueOf(NBTHandler.getString(item, "armorPiece"));
-    }
-
-    public static double weighItem(ItemStack item) {
-        return ArmorPiece.getPiece(item).weighItem(Double.parseDouble(NBTHandler.getString(item, "weight")), Armor.getSetPieces(item));
     }
 }

@@ -2,46 +2,90 @@ package com.Theeef.me.api.equipment.containers;
 
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.equipment.Equipment;
-import com.Theeef.me.api.equipment.Gear;
+import com.Theeef.me.api.equipment.Cost;
+import com.Theeef.me.api.equipment.EquipmentCategory;
+import com.Theeef.me.util.NBTHandler;
 import com.google.common.collect.Sets;
 import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class Pack extends Gear {
+public class Pack extends Container {
 
-    private final APIReference container_material; // The equipment the container takes the form of. Ex: backpack, sack, pouch, etc.
-    private final List<EquipmentQuantity> contents;
+    private final String index;
+    private final String name;
+    private final APIReference equipment_category;
+    private final APIReference gear_category;
+    private final Cost cost;
+    private final List<ItemQuantity> contents; // Default contents, current contents are handled by Container superclass
+    private final String url;
 
-    public Pack(String url) {
-        super(url);
+
+    public Pack(String url, UUID uuid, List<ItemQuantity> contents) {
+        super(getPackMaterial(url), uuid, contents);
 
         JSONObject json = APIRequest.request(url);
         JSONArray contentsArray = (JSONArray) json.get("contents");
-        this.container_material = new APIReference((JSONObject) ((JSONObject) contentsArray.get(0)).get("item"));
+        this.index = (String) json.get("index");
+        this.name = (String) json.get("name");
+        this.equipment_category = new APIReference((JSONObject) json.get("equipment_category"));
+        this.gear_category = new APIReference((JSONObject) json.get("gear_category"));
+        this.cost = new Cost((JSONObject) json.get("cost"));
         this.contents = new ArrayList<>();
+        this.url = url;
 
         for (int i = 1; i < contentsArray.size(); i++)
-            this.contents.add(new EquipmentQuantity((JSONObject) contentsArray.get(i)));
+            this.contents.add(new ItemQuantity((JSONObject) contentsArray.get(i)));
+    }
+
+    public Pack(String url) {
+        this(url, UUID.randomUUID(), new ArrayList<>());
+
+        setContents(this.contents);
     }
 
     public ItemStack getItemStack() {
-        return new Container(this.container_material.getUrl(), getName(), getCost(), this.contents).getItemStack();
+        ItemStack item = super.getItemStack();
+
+        NBTHandler.addString(item, "packUrl", this.url);
+
+        return item;
     }
 
     // Getter methods
-    public Equipment getContainerMaterial() {
-        return Equipment.fromString(this.container_material.getUrl());
+    public String getPackIndex() {
+        return this.index;
     }
 
-    public List<EquipmentQuantity> getContents() {
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    public EquipmentCategory getEquipmentCategory() {
+        return new EquipmentCategory(this.equipment_category);
+    }
+
+    public EquipmentCategory getGearCategory() {
+        return new EquipmentCategory(this.gear_category);
+    }
+
+    @Override
+    public Cost getCost() {
+        if (this.contents.equals(super.getContents()))
+            return this.cost;
+        else
+            return super.getCost();
+    }
+
+    public List<ItemQuantity> getDefaultContents() {
         return this.contents;
+    }
+
+    public String getPackUrl() {
+        return this.url;
     }
 
     // Static methods
@@ -54,5 +98,21 @@ public class Pack extends Gear {
             set.add(new Pack(((String) ((JSONObject) object).get("url"))));
 
         return set;
+    }
+
+    public static boolean isPack(ItemStack item) {
+        return NBTHandler.hasString(item, "packUrl");
+    }
+
+    public static Pack getPackFromItem(ItemStack item) {
+        String url = NBTHandler.getString(item, "packUrl");
+        UUID uuid = Container.getContainerUUID(item);
+        List<ItemQuantity> contents = Container.getItemContents(item);
+
+        return new Pack(url, uuid, contents);
+    }
+
+    private static String getPackMaterial(String packUrl) {
+        return new ItemQuantity((JSONObject) ((JSONArray) APIRequest.request(packUrl).get("contents")).get(0)).getItem().getUrl();
     }
 }

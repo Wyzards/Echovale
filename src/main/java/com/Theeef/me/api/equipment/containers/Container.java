@@ -1,6 +1,7 @@
 package com.Theeef.me.api.equipment.containers;
 
 import com.Theeef.me.api.equipment.Cost;
+import com.Theeef.me.api.equipment.Equipment;
 import com.Theeef.me.api.equipment.Gear;
 import com.Theeef.me.util.NBTHandler;
 import org.bukkit.Bukkit;
@@ -8,14 +9,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Represents any ingame equipment item that has other items inside it.
@@ -26,41 +23,20 @@ public class Container extends Gear {
     public static HashMap<Container, Inventory> openInventories = new HashMap<Container, Inventory>();
 
     private final UUID uuid;
-    private final List<EquipmentQuantity> contents;
-    private final Cost packCost;
-    private final List<ItemStack> containerItems;
+    private final List<ItemQuantity> contents;
+    private final Set<ItemStack> containerItems;
 
-    public Container(String containerEquipmentUrl, UUID uuid, String name, Cost cost, List<EquipmentQuantity> contents) {
-        super(containerEquipmentUrl);
+    protected Container(String url, UUID uuid, List<ItemQuantity> contents) {
+        super(url);
 
-        if (name != null)
-            setName(name);
-        this.contents = contents;
-        this.packCost = cost;
         this.uuid = uuid;
-        this.containerItems = new ArrayList<>();
-
-        if (this.contents.size() == 0)
-            this.contents.add(null);
-
-        if (this.contents.size() > getSlots())
-            throw new IllegalArgumentException("Contents exceeded maximum slots of container");
+        this.contents = contents;
+        this.containerItems = new HashSet<>();
     }
 
-    public Container(String containerEquipmentUrl, String name, Cost cost, List<EquipmentQuantity> contents) {
-        this(containerEquipmentUrl, UUID.randomUUID(), name, cost, contents);
-    }
-
-    public Container(String containerEquipmentUrl, UUID uuid, String name, List<EquipmentQuantity> contents) {
-        this(containerEquipmentUrl, uuid, name, null, contents);
-    }
-
-    public Container(String containerEquipmentUrl) {
-        this(containerEquipmentUrl, UUID.randomUUID(), null, null, new ArrayList<>());
-    }
-
-    public Container(ItemStack item) {
-        this(NBTHandler.getString(item, "url"), UUID.fromString(NBTHandler.getString(item, "uuid")), NBTHandler.getString(item, "name"), Cost.getFromContainer(item), getItemContents(item));
+    // Create new, empty container
+    public Container(String url) {
+        this(url, UUID.randomUUID(), new ArrayList<>());
     }
 
     public ItemStack getItemStack() {
@@ -72,29 +48,31 @@ public class Container extends Gear {
         return item;
     }
 
+    public void setContents(List<ItemQuantity> contents) {
+        this.contents.clear();
+        this.contents.addAll(contents);
+    }
+
     public void setContents(ItemStack[] items) {
-        List<EquipmentQuantity> equipment = new ArrayList<>();
+        List<ItemQuantity> equipment = new ArrayList<>();
 
         for (ItemStack item : items)
             if (item == null)
                 equipment.add(null);
-            else {
-                if (NBTHandler.hasString(item, "url"))
-                    equipment.add(new EquipmentQuantity(NBTHandler.getString(item, "url"), item.getAmount()));
-                else
-                    throw new IllegalArgumentException("ItemStack in contents did not have url NBT tag");
-            }
+            else
+                equipment.add(new ItemQuantity(Equipment.getItemUrl(item), item.getAmount()));
 
         this.contents.clear();
         this.contents.addAll(equipment);
+
+        updateContainerItems();
     }
 
     public void open(Player player, ItemStack item) {
-        this.containerItems.add(item);
-
-        Container container = getOpenContainer(this);
+        Container container = getOpenContainer(getUUID());
 
         if (container != null) {
+            container.containerItems.add(item);
             player.openInventory(Container.openInventories.get(container));
         } else {
             Inventory inventory = getBaseInventory();
@@ -107,9 +85,9 @@ public class Container extends Gear {
         }
     }
 
-    public Container getOpenContainer(Container container) {
+    public Container getOpenContainer(UUID containerUUID) {
         for (Container openContainer : openInventories.keySet())
-            if (container.equals(openContainer))
+            if (openContainer.getUUID().equals(containerUUID))
                 return openContainer;
 
         return null;
@@ -127,40 +105,39 @@ public class Container extends Gear {
     }
 
     public boolean hasContents() {
-        for (EquipmentQuantity equipment : this.contents)
+        for (ItemQuantity equipment : this.contents)
             if (equipment != null)
                 return true;
         return false;
     }
 
-    public Cost getCost() {
-        if (this.packCost != null)
-            return this.packCost;
-        else
-            return this.getTotalCost();
-    }
+    @Override
+    public double getWeight() {
+        double weight = super.getWeight();
 
-    public double getTotalWeight() {
-        double weight = getWeight();
-
-        for (EquipmentQuantity content : this.contents)
+        for (ItemQuantity content : this.contents)
             if (content != null)
                 weight += content.getWeight();
 
         return weight;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        else if (!(obj instanceof Container))
-            return false;
-        else
-            return this.uuid.equals(((Container) obj).getUUID());
+    public Cost getCost() {
+        Cost cost = super.getCost();
+
+        for (ItemQuantity content : this.contents)
+            if (content != null)
+                cost.add(content.getCost());
+
+        return cost;
     }
 
     // Helper methods
+    private void updateContainerItems() {
+        for (ItemStack item : getContainerItems())
+            item.setItemMeta(getItemStack().getItemMeta());
+    }
+
     private Inventory getBaseInventory() {
         switch (getSlots()) {
             case 5:
@@ -208,7 +185,7 @@ public class Container extends Gear {
         lore.add(ChatColor.GRAY + getGearCategory().getName() + " (" + getEquipmentCategory().getName() + ")");
         lore.add("");
         lore.add(ChatColor.GRAY + "Total Cost: " + getCost().maximize(false, false).amountString());
-        lore.add(ChatColor.GRAY + "Total Weight: " + ChatColor.WHITE + (getWeight() + getTotalWeight()) + " pounds");
+        lore.add(ChatColor.GRAY + "Total Weight: " + ChatColor.WHITE + getWeight() + " pounds");
         lore.add("");
 
         if (hasContents()) {
@@ -216,7 +193,7 @@ public class Container extends Gear {
 
             int count = 0;
 
-            for (EquipmentQuantity equipment : this.contents)
+            for (ItemQuantity equipment : this.contents)
                 if (equipment != null && count <= 8) {
                     lore.add(ChatColor.GRAY + "- " + ChatColor.WHITE + equipment.getItem().getName() + " x" + equipment.getQuantity());
                     count++;
@@ -231,16 +208,11 @@ public class Container extends Gear {
 
         assert meta != null;
         meta.setLore(lore);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
     }
 
     private void nbt(ItemStack item) {
-        NBTHandler.addString(item, "uuid", this.uuid.toString());
-
-        if (this.packCost != null)
-            for (Cost.MoneyUnit moneyUnit : Cost.MoneyUnit.values())
-                NBTHandler.addString(item, "containerCost_" + moneyUnit.name().toLowerCase(), String.valueOf(this.packCost.getQuantity(moneyUnit)));
+        NBTHandler.addString(item, "containerUUID", this.uuid.toString());
 
         for (int i = 0; i < this.contents.size(); i++)
             NBTHandler.addString(item, "contents_" + i, this.contents.get(i) == null ? "null" : this.contents.get(i).toString());
@@ -249,20 +221,10 @@ public class Container extends Gear {
     private int countContents() {
         int count = 0;
 
-        for (EquipmentQuantity equipment : this.contents)
+        for (ItemQuantity equipment : this.contents)
             if (equipment != null)
                 count++;
         return count;
-    }
-
-    private Cost getTotalCost() {
-        Cost cost = super.getCost();
-
-        for (EquipmentQuantity content : this.contents)
-            if (content != null)
-                cost.add(content.getCost());
-
-        return cost;
     }
 
     // Getter methods
@@ -270,25 +232,25 @@ public class Container extends Gear {
         return this.uuid;
     }
 
-    public List<EquipmentQuantity> getContents() {
+    public List<ItemQuantity> getContents() {
         return this.contents;
     }
 
-    public Cost getPackCost() {
-        return this.packCost;
-    }
-
-    public List<ItemStack> getContainerItems() {
+    public Set<ItemStack> getContainerItems() {
         return this.containerItems;
     }
 
     // Static methods
     public static boolean isContainer(ItemStack item) {
-        return item != null && NBTHandler.hasString(item, "contents_0");
+        return NBTHandler.hasString(item, "containerUUID");
     }
 
-    private static List<EquipmentQuantity> getItemContents(ItemStack item) {
-        List<EquipmentQuantity> list = new ArrayList<>();
+    public static UUID getContainerUUID(ItemStack item) {
+        return UUID.fromString(NBTHandler.getString(item, "containerUUID"));
+    }
+
+    protected static List<ItemQuantity> getItemContents(ItemStack item) {
+        List<ItemQuantity> list = new ArrayList<>();
         int content = 0;
 
 
@@ -296,11 +258,23 @@ public class Container extends Gear {
             if (NBTHandler.getString(item, "contents_" + content).equals("null"))
                 list.add(null);
             else
-                list.add(new EquipmentQuantity(NBTHandler.getString(item, "contents_" + content)));
+                list.add(new ItemQuantity(NBTHandler.getString(item, "contents_" + content)));
 
             content++;
         }
 
         return list;
+    }
+
+    public static Container getContainerFromItem(ItemStack item) {
+        if (Pack.isPack(item))
+            return Pack.getPackFromItem(item);
+        else {
+            UUID uuid = Container.getContainerUUID(item);
+            String url = Equipment.getItemUrl(item);
+            List<ItemQuantity> contents = getItemContents(item);
+
+            return new Container(url, uuid, contents);
+        }
     }
 }

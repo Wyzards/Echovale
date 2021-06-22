@@ -44,6 +44,16 @@ public class MagicItem extends Equipment {
         return item;
     }
 
+    @Override
+    public Cost getCost() {
+        return null;
+    }
+
+    @Override
+    public double getWeight() {
+        return 0;
+    }
+
     // Getter methods
     public List<String> getDescription() {
         return this.desc;

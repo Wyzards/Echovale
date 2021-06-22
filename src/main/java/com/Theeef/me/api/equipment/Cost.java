@@ -81,12 +81,27 @@ public class Cost {
      * Multiplies this cost by a set multiplier
      *
      * @param multiplier the multiplier
-     * @param round      whether or not to round new double values, as opposed to truncating
-     *                   // TODO: Make it so leftover gets coverted to lower MoneyUnit Ex -> 1.1 silver -> 1 silver, 1 copper
      * @return the total cost
      */
-    public Cost multiply(double multiplier, boolean round) {
-        this.cost.replaceAll((u, v) -> round ? Math.round(this.cost.get(u) * multiplier) : (int) (this.cost.get(u) * multiplier));
+    public Cost multiply(double multiplier) {
+        HashMap<MoneyUnit, Double> cost = new HashMap<>();
+
+        for (MoneyUnit unit : this.cost.keySet())
+            cost.put(unit, (double) this.cost.get(unit));
+
+        cost.replaceAll((u, v) -> this.cost.get(u) * multiplier);
+
+        double platinum = (cost.containsKey(MoneyUnit.PP) ? cost.get(MoneyUnit.PP) : 0);
+        double gold = (cost.containsKey(MoneyUnit.GP) ? cost.get(MoneyUnit.GP) : 0) + (platinum % 1) * 10;
+        double electrum = (cost.containsKey(MoneyUnit.EP) ? cost.get(MoneyUnit.EP) : 0);
+        double silver = (cost.containsKey(MoneyUnit.SP) ? cost.get(MoneyUnit.SP) : 0) + (gold % 1) * 10 + (electrum % 1) * 5;
+        double copper = (cost.containsKey(MoneyUnit.CP) ? cost.get(MoneyUnit.CP) : 0) + (silver % 1) * 10;
+
+        this.cost.put(MoneyUnit.PP, (long) platinum);
+        this.cost.put(MoneyUnit.GP, (long) gold);
+        this.cost.put(MoneyUnit.EP, (long) electrum);
+        this.cost.put(MoneyUnit.SP, (long) silver);
+        this.cost.put(MoneyUnit.CP, (long) copper);
 
         return this;
     }
@@ -98,6 +113,16 @@ public class Cost {
 
     public long getQuantity(MoneyUnit unit) {
         return this.cost.containsKey(unit) ? this.cost.get(unit) : 0;
+    }
+
+    public long getCopperValue() {
+        long cp = this.cost.containsKey(MoneyUnit.CP) ? this.cost.get(MoneyUnit.CP) : 0;
+        long sp = this.cost.containsKey(MoneyUnit.SP) ? this.cost.get(MoneyUnit.SP) : 0;
+        long ep = this.cost.containsKey(MoneyUnit.EP) ? this.cost.get(MoneyUnit.EP) : 0;
+        long gp = this.cost.containsKey(MoneyUnit.GP) ? this.cost.get(MoneyUnit.GP) : 0;
+        long pp = this.cost.containsKey(MoneyUnit.PP) ? this.cost.get(MoneyUnit.PP) : 0;
+
+        return cp + sp * 10 + ep * 50 + gp * 100 + pp * 1000;
     }
 
     // Helper methods
@@ -112,7 +137,7 @@ public class Cost {
         HashMap<MoneyUnit, Long> otherCost = cost.getCost();
 
         for (MoneyUnit unit : otherCost.keySet())
-            this.cost.put(unit, this.cost.containsKey(unit) ? this.cost.get(unit) + otherCost.get(unit) : otherCost.get(unit));
+            this.cost.put(unit, (this.cost.containsKey(unit) ? this.cost.get(unit) : 0) + otherCost.get(unit));
 
         return this;
     }
@@ -127,24 +152,9 @@ public class Cost {
     }
 
     // Static methods
-    public static Cost getFromContainer(ItemStack item) {
-        Cost cost = new Cost(MoneyUnit.CP, 0);
-
-        for (MoneyUnit unit : MoneyUnit.values())
-            if (NBTHandler.hasString(item, "containerCost_" + unit.name().toLowerCase()))
-                cost.add(unit, Long.parseLong(NBTHandler.getString(item, "cost_" + unit.name().toLowerCase())));
-            else
-                return null;
-
-        return cost;
-    }
-
     public static Cost getFromItem(ItemStack item) {
-        Cost cost = new Cost(MoneyUnit.CP, 0);
+        Equipment equipment = Equipment.fromString(Equipment.getItemUrl(item));
 
-        for (MoneyUnit unit : MoneyUnit.values())
-            cost.add(unit, Long.parseLong(NBTHandler.getString(item, "cost_" + unit.name().toLowerCase())));
-
-        return cost;
+        return equipment.getCost();
     }
 }
