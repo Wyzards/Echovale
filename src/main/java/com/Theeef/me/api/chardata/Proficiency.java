@@ -85,4 +85,9 @@ public class Proficiency {
         return list;
     }
 
+    // Static methods
+    public static Proficiency fromIndex(String index) {
+        return new Proficiency("/api/proficiency/" + index);
+    }
+
 }

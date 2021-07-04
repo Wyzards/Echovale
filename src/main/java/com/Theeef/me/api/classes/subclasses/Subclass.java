@@ -82,4 +82,9 @@ public class Subclass {
         return this.url;
     }
 
+    // Static methods
+    public static Subclass fromIndex(String index) {
+        return new Subclass("/api/subclasses/" + index);
+    }
+
 }

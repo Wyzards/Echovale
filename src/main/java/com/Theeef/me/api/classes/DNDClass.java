@@ -122,6 +122,16 @@ public class DNDClass {
         return list;
     }
 
+    public List<Level> getClassLevels(int level) {
+        List<Level> levels = getClassLevels();
+
+        for (int i = levels.size() - 1; i >= 0; i--)
+            if (levels.get(i).getLevel() != level)
+                levels.remove(i);
+
+        return levels;
+    }
+
     // TODO: Add sourcebook targeters
     public List<Subclass> getSubclasses() {
         List<Subclass> list = new ArrayList<>();
@@ -148,5 +158,10 @@ public class DNDClass {
 
     public String getUrl() {
         return this.url;
+    }
+
+    // Static methods
+    public static DNDClass fromIndex(String index) {
+        return new DNDClass("/api/classes/" + index);
     }
 }

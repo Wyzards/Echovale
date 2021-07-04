@@ -21,9 +21,9 @@ public class Subrace {
     private final List<AbilityBonus> ability_bonuses;
     private final List<APIReference> starting_proficiencies;
     private final List<APIReference> languages;
-    private final List<Choice> language_options;
+    private final Choice language_options;
     private final List<APIReference> racial_traits;
-    private final List<Choice> racial_trait_options;
+    private final Choice racial_trait_options;
     private final String url;
 
     public Subrace(String url) {
@@ -35,9 +35,9 @@ public class Subrace {
         this.ability_bonuses = new ArrayList<>();
         this.starting_proficiencies = new ArrayList<>();
         this.languages = new ArrayList<>();
-        this.language_options = new ArrayList<>();
+        this.language_options = json.containsKey("language_options") ? new Choice((JSONObject) json.get("language_options")) : null;
         this.racial_traits = new ArrayList<>();
-        this.racial_trait_options = new ArrayList<>();
+        this.racial_trait_options = json.containsKey("racial_trait_options") ? new Choice((JSONObject) json.get("racial_trait_options")) : null;
         this.url = url;
 
         for (Object abilityBonus : (JSONArray) json.get("ability_bonuses"))
@@ -49,14 +49,8 @@ public class Subrace {
         for (Object language : (JSONArray) json.get("languages"))
             this.languages.add(new APIReference((JSONObject) language));
 
-        for (Object languageOption : (JSONArray) json.get("language_options"))
-            this.language_options.add(new Choice((JSONObject) languageOption));
-
         for (Object trait : (JSONArray) json.get("racial_traits"))
             this.racial_traits.add(new APIReference((JSONObject) trait));
-
-        for (Object traitOption : (JSONArray) json.get("racial_trait_options"))
-            this.racial_trait_options.add(new Choice((JSONObject) traitOption));
     }
 
     // Getter methods
@@ -98,7 +92,7 @@ public class Subrace {
         return list;
     }
 
-    public List<Choice> getLanguageOptions() {
+    public Choice getLanguageOptions() {
         return this.language_options;
     }
 
@@ -111,11 +105,16 @@ public class Subrace {
         return list;
     }
 
-    public List<Choice> getRacialTraitOptions() {
+    public Choice getRacialTraitOptions() {
         return this.racial_trait_options;
     }
 
     public String getUrl() {
         return this.url;
+    }
+
+    // Static methods
+    public static Subrace fromIndex(String index) {
+        return new Subrace("/api/subraces/" + index);
     }
 }

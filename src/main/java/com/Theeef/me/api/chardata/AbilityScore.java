@@ -2,11 +2,13 @@ package com.Theeef.me.api.chardata;
 
 import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.APIRequest;
+import com.google.common.collect.Lists;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AbilityScore {
 
@@ -40,6 +42,16 @@ public class AbilityScore {
             this.skills.add(new APIReference((JSONObject) skillReference));
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof AbilityScore && ((AbilityScore) object).getIndex().equals(getIndex());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getClass(), getIndex());
+    }
+
     // Get methods
     public String getIndex() {
         return this.index;
@@ -70,4 +82,12 @@ public class AbilityScore {
         return this.url;
     }
 
+    // Static methods
+    public static List<AbilityScore> values() {
+        return Lists.newArrayList(CHA, CON, DEX, INT, STR, WIS);
+    }
+
+    public static AbilityScore fromIndex(String index) {
+        return new AbilityScore("/api/ability-scores/" + index);
+    }
 }

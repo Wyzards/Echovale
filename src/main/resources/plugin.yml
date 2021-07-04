@@ -3,3 +3,10 @@ author: Theeef
 version: 1.0
 main: com.Theeef.me.Echovale
 api-version: 1.13
+commands:
+  character:
+    usage: /<command>
+    description: Create a new character
+  characters:
+    usage: /<command>
+    description: View your characters

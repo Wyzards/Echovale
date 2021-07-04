@@ -18,7 +18,7 @@ public class Trait {
     private final String name;
     private final List<String> desc;
     private final List<APIReference> proficiencies;
-    private final List<Choice> proficiency_choices;
+    private final Choice proficiency_choices;
     private final String url;
 
     public Trait(String url) {
@@ -29,7 +29,7 @@ public class Trait {
         this.name = (String) json.get("name");
         this.desc = new ArrayList<>();
         this.proficiencies = new ArrayList<>();
-        this.proficiency_choices = new ArrayList<>();
+        this.proficiency_choices = json.containsKey("proficiency_options") ? new Choice((JSONObject) json.get("proficiency_options")) : null;
         this.url = url;
 
         for (Object race : (JSONArray) json.get("races"))
@@ -43,9 +43,6 @@ public class Trait {
 
         for (Object proficiency : (JSONArray) json.get("proficiencies"))
             this.proficiencies.add(new APIReference((JSONObject) proficiency));
-
-        for (Object proficiencyChoice : (JSONArray) json.get("proficiency_choices"))
-            this.proficiency_choices.add(new Choice((JSONObject) proficiencyChoice));
     }
 
     // Getter methods
@@ -88,7 +85,7 @@ public class Trait {
         return list;
     }
 
-    public List<Choice> getProficiencyChoices() {
+    public Choice getProficiencyChoices() {
         return this.proficiency_choices;
     }
 

@@ -1,6 +1,7 @@
 package com.Theeef.me.api.chardata;
 
 import com.Theeef.me.APIRequest;
+import com.Theeef.me.api.common.APIReference;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -25,6 +26,10 @@ public class Alignment {
 
         for (Object descLine : (JSONArray) json.get("desc"))
             this.desc.add((String) descLine);
+    }
+
+    public Alignment(APIReference reference) {
+        this(reference.getUrl());
     }
 
     // Get methods

@@ -9,6 +9,9 @@ import com.Theeef.me.api.equipment.containers.ContainerEvents;
 import com.Theeef.me.api.equipment.containers.Pack;
 import com.Theeef.me.api.equipment.weapons.Weapon;
 import com.Theeef.me.api.spells.Spell;
+import com.Theeef.me.interaction.character.CharacterCommand;
+import com.Theeef.me.interaction.character.CharacterMenuEvents;
+import com.Theeef.me.interaction.character.CharactersCommand;
 import com.Theeef.me.util.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,8 +33,12 @@ public class Echovale extends JavaPlugin implements Listener {
 
         Equipment.changeMaxStackSize();
 
+        getCommand("character").setExecutor(new CharacterCommand());
+        getCommand("characters").setExecutor(new CharactersCommand());
+
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new ContainerEvents(), this);
+        getServer().getPluginManager().registerEvents(new CharacterMenuEvents(), this);
 
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "Echovale Enabled");
     }

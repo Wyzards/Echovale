@@ -20,10 +20,10 @@ public class Background {
     private final List<APIReference> starting_equipment;
     private final List<Choice> starting_equipment_options;
     private final BackgroundFeature feature;
-    private final Choice personality_traits;
-    private final Choice ideals;
-    private final Choice bonds;
-    private final Choice flaws;
+    private final DescriptionChoice personality_traits;
+    private final IdealsChoice ideals;
+    private final DescriptionChoice bonds;
+    private final DescriptionChoice flaws;
     private final String url;
 
     public Background(String url) {
@@ -35,10 +35,10 @@ public class Background {
         this.starting_equipment = new ArrayList<>();
         this.starting_equipment_options = new ArrayList<>();
         this.feature = new BackgroundFeature((JSONObject) json.get("feature"));
-        this.personality_traits = new Choice((JSONObject) json.get("personality_traits"));
-        this.ideals = new Choice((JSONObject) json.get("ideals"));
-        this.bonds = new Choice((JSONObject) json.get("bonds"));
-        this.flaws = new Choice((JSONObject) json.get("flaws"));
+        this.personality_traits = new DescriptionChoice((JSONObject) json.get("personality_traits"));
+        this.ideals = new IdealsChoice((JSONObject) json.get("ideals"));
+        this.bonds = new DescriptionChoice((JSONObject) json.get("bonds"));
+        this.flaws = new DescriptionChoice((JSONObject) json.get("flaws"));
         this.url = url;
 
         for (Object startingProficiency : (JSONArray) json.get("starting_proficiencies"))
@@ -90,23 +90,28 @@ public class Background {
         return this.feature;
     }
 
-    public Choice getPersonalityTraits() {
+    public DescriptionChoice getPersonalityTraits() {
         return this.personality_traits;
     }
 
-    public Choice getIdeals() {
+    public IdealsChoice getIdeals() {
         return this.ideals;
     }
 
-    public Choice getBonds() {
+    public DescriptionChoice getBonds() {
         return this.bonds;
     }
 
-    public Choice getFlaws() {
+    public DescriptionChoice getFlaws() {
         return this.flaws;
     }
 
     public String getUrl() {
         return this.url;
+    }
+
+    // Static methods
+    public static Background fromIndex(String index) {
+        return new Background("/api/backgrounds/" + index);
     }
 }

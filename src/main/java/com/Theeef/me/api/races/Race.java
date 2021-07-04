@@ -10,7 +10,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Race {
 
@@ -23,8 +25,9 @@ public class Race {
     private final String size;
     private final String size_description;
     private final List<APIReference> starting_proficiencies;
-    private final List<Choice> starting_proficiency_options;
+    private final Choice starting_proficiency_options;
     private final List<APIReference> languages;
+    private final Choice language_options;
     private final String language_desc;
     private final List<APIReference> traits;
     private final List<APIReference> subraces;
@@ -41,8 +44,9 @@ public class Race {
         this.size = (String) json.get("size");
         this.size_description = (String) json.get("size_description");
         this.starting_proficiencies = new ArrayList<>();
-        this.starting_proficiency_options = new ArrayList<>();
+        this.starting_proficiency_options = json.containsKey("starting_proficiency_options") ? new Choice((JSONObject) json.get("starting_proficiency_options")) : null;
         this.languages = new ArrayList<>();
+        this.language_options = json.containsKey("language_options") ? new Choice((JSONObject) json.get("language_options")) : null;
         this.language_desc = (String) json.get("language_desc");
         this.traits = new ArrayList<>();
         this.subraces = new ArrayList<>();
@@ -52,11 +56,7 @@ public class Race {
             this.ability_bonuses.add(new AbilityBonus((JSONObject) abilityBonus));
 
         for (Object proficiency : (JSONArray) json.get("starting_proficiencies"))
-            this.starting_proficiencies.add(new APIReference((JSONObject) json.get(proficiency)));
-
-        if (json.containsKey("starting_proficiency_options"))
-            for (Object proficiencyOption : (JSONArray) json.get("starting_proficiency_options"))
-                this.starting_proficiency_options.add(new Choice((JSONObject) proficiencyOption));
+            this.starting_proficiencies.add(new APIReference((JSONObject) proficiency));
 
         for (Object language : (JSONArray) json.get("languages"))
             this.languages.add(new APIReference((JSONObject) language));
@@ -66,6 +66,10 @@ public class Race {
 
         for (Object subrace : (JSONArray) json.get("subraces"))
             this.subraces.add(new APIReference((JSONObject) subrace));
+    }
+
+    public Race(APIReference reference) {
+        this(reference.getUrl());
     }
 
     // Getter methods
@@ -110,7 +114,7 @@ public class Race {
         return list;
     }
 
-    public List<Choice> getStartingProficiencyOptions() {
+    public Choice getStartingProficiencyOptions() {
         return this.starting_proficiency_options;
     }
 
@@ -121,6 +125,10 @@ public class Race {
             list.add(new Language(language.getUrl()));
 
         return list;
+    }
+
+    public Choice getLanguageOptions() {
+        return this.language_options;
     }
 
     public String getLanguageDescription() {
@@ -147,6 +155,21 @@ public class Race {
 
     public String getUrl() {
         return this.url;
+    }
+
+    // Static methods
+    public static Race fromIndex(String index) {
+        return new Race("/api/races/" + index);
+    }
+
+    public static Set<Race> values() {
+        Set<Race> set = new HashSet<>();
+        JSONArray races = (JSONArray) APIRequest.request("/api/races/").get("results");
+
+        for (Object raceReference : races)
+            set.add(new Race(new APIReference((JSONObject) raceReference)));
+
+        return set;
     }
 
 }
