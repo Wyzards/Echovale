@@ -5,14 +5,11 @@ import com.Theeef.me.api.chardata.Language;
 import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.api.common.AbilityBonus;
-import com.Theeef.me.api.common.Choice;
+import com.Theeef.me.api.common.choice.Choice;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Race {
 
@@ -70,6 +67,16 @@ public class Race {
 
     public Race(APIReference reference) {
         this(reference.getUrl());
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Race && ((Race) object).getIndex().equals(this.index);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getClass(), this.index);
     }
 
     // Getter methods

@@ -68,10 +68,10 @@ public class Weapon extends Equipment {
         lore.add("");
 
         if (damage != null)
-            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + damage.getRoll().getMin() + "-" + damage.getRoll().getMax() + " " + damage.getType().getName());
+            lore.add(ChatColor.GRAY + "Damage: " + ChatColor.WHITE + damage.getDamageDice().getMin() + "-" + damage.getDamageDice().getMax() + " " + damage.getType().getName());
 
         if (two_handed_damage != null)
-            lore.add(ChatColor.GRAY + "Two-Handed Damage: " + ChatColor.WHITE + two_handed_damage.getRoll().getMin() + "-" + two_handed_damage.getRoll().getMax() + " " + two_handed_damage.getType().getName());
+            lore.add(ChatColor.GRAY + "Two-Handed Damage: " + ChatColor.WHITE + two_handed_damage.getDamageDice().getMin() + "-" + two_handed_damage.getDamageDice().getMax() + " " + two_handed_damage.getType().getName());
 
         if (range.getLong() != 0)
             lore.add(ChatColor.GRAY + "Range: " + ChatColor.WHITE + range.getNormal() + " Normal / " + range.getLong() + " Long");

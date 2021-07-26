@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Proficiency {
 
@@ -39,6 +40,10 @@ public class Proficiency {
 
         for (Object referenceObject : (JSONArray) json.get("references"))
             this.references.add(new APIReference((JSONObject) referenceObject));
+    }
+
+    public Proficiency(APIReference reference) {
+        this(reference.getUrl());
     }
 
     // Get methods
@@ -76,18 +81,23 @@ public class Proficiency {
         return this.url;
     }
 
-    public List<EquipmentCategory> getReferences() {
-        List<EquipmentCategory> list = new ArrayList<>();
+    public List<APIReference> getReferences() {
+        return this.references;
+    }
 
-        for (APIReference reference : this.references)
-            list.add(new EquipmentCategory(reference.getUrl()));
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Proficiency && ((Proficiency) object).getIndex().equals(this.index);
+    }
 
-        return list;
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getClass(), this.index);
     }
 
     // Static methods
     public static Proficiency fromIndex(String index) {
-        return new Proficiency("/api/proficiency/" + index);
+        return new Proficiency("/api/proficiencies/" + index);
     }
 
 }

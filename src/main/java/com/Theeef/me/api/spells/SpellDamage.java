@@ -1,5 +1,6 @@
 package com.Theeef.me.api.spells;
 
+import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.api.mechanics.DamageRoll;
 import com.Theeef.me.api.mechanics.DamageType;
 import org.json.simple.JSONObject;
@@ -8,12 +9,12 @@ import java.util.HashMap;
 
 public class SpellDamage {
 
-    private final DamageType damage_type;
+    private final APIReference damage_type;
     private final HashMap<Integer, DamageRoll> damage_at_slot_level;
     private final HashMap<Integer, DamageRoll> damage_at_character_level;
 
     public SpellDamage(JSONObject json) {
-        this.damage_type = json.containsKey("damage_type") ? new DamageType((JSONObject) json.get("damage_type")) : null;
+        this.damage_type = json.containsKey("damage_type") ? new APIReference((JSONObject) json.get("damage_type")) : null;
         this.damage_at_slot_level = json.containsKey("damage_at_slot_level") ? new HashMap<Integer, DamageRoll>() : null;
         this.damage_at_character_level = json.containsKey("damage_at_character_level") ? new HashMap<Integer, DamageRoll>() : null;
 
@@ -34,7 +35,7 @@ public class SpellDamage {
 
     // Getter methods
     public DamageType getDamageType() {
-        return this.damage_type;
+        return new DamageType(this.damage_type);
     }
 
     public DamageRoll getDamageAtSlotLevel(int level) {

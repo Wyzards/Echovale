@@ -135,7 +135,7 @@ public class Container extends Gear {
     // Helper methods
     private void updateContainerItems() {
         for (ItemStack item : getContainerItems())
-            item.setItemMeta(getItemStack().getItemMeta());
+            item.setItemMeta(this.getItemStack().getItemMeta());
     }
 
     private Inventory getBaseInventory() {

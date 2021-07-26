@@ -35,8 +35,9 @@ public class Subclass {
         for (Object descLine : (JSONArray) json.get("desc"))
             this.desc.add((String) descLine);
 
-        for (Object subclassSpell : (JSONArray) json.get("spells"))
-            this.spells.add(new SubclassSpell((JSONObject) subclassSpell));
+        if (json.containsKey("spells"))
+            for (Object subclassSpell : (JSONArray) json.get("spells"))
+                this.spells.add(new SubclassSpell((JSONObject) subclassSpell));
     }
 
     public Subclass(APIReference reference) {

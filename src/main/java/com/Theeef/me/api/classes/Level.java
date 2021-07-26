@@ -1,9 +1,7 @@
 package com.Theeef.me.api.classes;
 
-import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.classes.subclasses.Subclass;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.common.Choice;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

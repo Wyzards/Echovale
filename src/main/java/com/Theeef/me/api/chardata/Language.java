@@ -1,11 +1,13 @@
 package com.Theeef.me.api.chardata;
 
 import com.Theeef.me.APIRequest;
+import com.Theeef.me.api.common.APIReference;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Language {
 
@@ -27,6 +29,20 @@ public class Language {
 
         for (Object speakerObj : (JSONArray) json.get("typical_speakers"))
             this.typical_speakers.add((String) speakerObj);
+    }
+
+    public Language(APIReference reference) {
+        this(reference.getUrl());
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Language && ((Language) object).getIndex().equals(this.index);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getClass(), this.index);
     }
 
     // Get methods

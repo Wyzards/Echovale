@@ -1,6 +1,7 @@
 package com.Theeef.me.api.mechanics;
 
 import com.Theeef.me.APIRequest;
+import com.Theeef.me.api.common.APIReference;
 import org.json.simple.JSONObject;
 
 public class DamageType {
@@ -31,10 +32,14 @@ public class DamageType {
         this.url = url;
     }
 
-    // Getter methods
+    public DamageType(APIReference reference) {
+        this(reference.getUrl());
+    }
+
     public DamageType(JSONObject json) {
         this((String) json.get("url"));
     }
+    // Getter methods
 
     public String getIndex() {
         return this.index;

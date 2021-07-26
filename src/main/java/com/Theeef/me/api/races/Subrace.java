@@ -5,12 +5,14 @@ import com.Theeef.me.api.chardata.Language;
 import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.api.common.AbilityBonus;
-import com.Theeef.me.api.common.Choice;
+import com.Theeef.me.api.common.choice.Choice;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Subrace {
 
@@ -23,7 +25,6 @@ public class Subrace {
     private final List<APIReference> languages;
     private final Choice language_options;
     private final List<APIReference> racial_traits;
-    private final Choice racial_trait_options;
     private final String url;
 
     public Subrace(String url) {
@@ -37,7 +38,6 @@ public class Subrace {
         this.languages = new ArrayList<>();
         this.language_options = json.containsKey("language_options") ? new Choice((JSONObject) json.get("language_options")) : null;
         this.racial_traits = new ArrayList<>();
-        this.racial_trait_options = json.containsKey("racial_trait_options") ? new Choice((JSONObject) json.get("racial_trait_options")) : null;
         this.url = url;
 
         for (Object abilityBonus : (JSONArray) json.get("ability_bonuses"))
@@ -51,6 +51,10 @@ public class Subrace {
 
         for (Object trait : (JSONArray) json.get("racial_traits"))
             this.racial_traits.add(new APIReference((JSONObject) trait));
+    }
+
+    public Subrace(APIReference reference) {
+        this(reference.getUrl());
     }
 
     // Getter methods
@@ -105,15 +109,21 @@ public class Subrace {
         return list;
     }
 
-    public Choice getRacialTraitOptions() {
-        return this.racial_trait_options;
-    }
-
     public String getUrl() {
         return this.url;
     }
 
     // Static methods
+    public static Set<Subrace> values() {
+        Set<Subrace> set = new HashSet<>();
+        JSONArray results = (JSONArray) APIRequest.request("/api/subraces/").get("results");
+
+        for (Object result : results)
+            set.add(new Subrace((String) ((JSONObject) result).get("url")));
+
+        return set;
+    }
+
     public static Subrace fromIndex(String index) {
         return new Subrace("/api/subraces/" + index);
     }

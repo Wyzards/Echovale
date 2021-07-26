@@ -8,7 +8,6 @@ import com.Theeef.me.api.equipment.armor.ArmorPiece;
 import com.Theeef.me.api.equipment.containers.ContainerEvents;
 import com.Theeef.me.api.equipment.containers.Pack;
 import com.Theeef.me.api.equipment.weapons.Weapon;
-import com.Theeef.me.api.spells.Spell;
 import com.Theeef.me.interaction.character.CharacterCommand;
 import com.Theeef.me.interaction.character.CharacterMenuEvents;
 import com.Theeef.me.interaction.character.CharactersCommand;

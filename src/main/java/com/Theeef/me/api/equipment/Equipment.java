@@ -41,7 +41,7 @@ public abstract class Equipment {
     }
 
     public ItemStack getItemStack() {
-        ItemStack item = new ItemStack(retrieveMaterial(), retrieveQuantity());
+        ItemStack item = new ItemStack(retrieveMaterial(), 1);
         ItemMeta meta = item.getItemMeta();
 
         if (!plugin.getConfigManager().getEquipmentConfig().contains("maxStackSize." + item.getType().name())) {
@@ -83,13 +83,6 @@ public abstract class Equipment {
         }
 
         return Color.fromRGB(0, 0, 0);
-    }
-
-    private int retrieveQuantity() {
-        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".quantity"))
-            return plugin.getConfigManager().getEquipmentConfig().getInt(getDataPath() + ".quantity");
-
-        return 1;
     }
 
     private Material retrieveMaterial() {
@@ -144,13 +137,13 @@ public abstract class Equipment {
             return 0;
     }
 
-    public static double weighItem(ItemStack item, boolean weighWholeStack) {
+    public static double weighItem(ItemStack item) {
         Equipment equipment = Equipment.fromItem(item);
 
         if (equipment instanceof Armor)
             ((Armor) equipment).setPiece(ArmorPiece.getPiece(item));
 
-        return equipment.getWeight() * (weighWholeStack ? item.getAmount() : 1);
+        return equipment.getWeight();
     }
 
     public static Equipment fromString(String url) {

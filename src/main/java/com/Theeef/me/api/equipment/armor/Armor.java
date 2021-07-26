@@ -75,8 +75,12 @@ public class Armor extends Equipment {
     public Cost getCost() {
         if (getPiece() == null)
             return this.cost.clone();
-        else
-            return this.cost.clone().multiply(getPiece().getPercentage(this.pieces));
+        else {
+            double percentage = getPiece().getPercentage(this.pieces);
+            System.out.println("SET: " + getName() + " PIECE: " + getPiece().name() + " PERCENTAGE: " + percentage);
+
+            return this.cost.clone().multiply(percentage);
+        }
     }
 
     // Helper methods

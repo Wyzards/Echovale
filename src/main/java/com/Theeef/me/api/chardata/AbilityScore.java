@@ -42,6 +42,10 @@ public class AbilityScore {
             this.skills.add(new APIReference((JSONObject) skillReference));
     }
 
+    public AbilityScore(APIReference reference) {
+        this(reference.getUrl());
+    }
+
     @Override
     public boolean equals(Object object) {
         return object instanceof AbilityScore && ((AbilityScore) object).getIndex().equals(getIndex());

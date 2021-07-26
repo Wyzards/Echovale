@@ -3,16 +3,17 @@ package com.Theeef.me.api.classes;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.chardata.AbilityScore;
 import com.Theeef.me.api.chardata.Proficiency;
-import com.Theeef.me.api.classes.equipment.EquipmentChoice;
-import com.Theeef.me.api.classes.equipment.EquipmentList;
+import com.Theeef.me.api.common.choice.CountedReference;
 import com.Theeef.me.api.classes.subclasses.Subclass;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.common.Choice;
+import com.Theeef.me.api.common.choice.Choice;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DNDClass {
 
@@ -22,8 +23,8 @@ public class DNDClass {
     private final List<Choice> proficiency_choices;
     private final List<APIReference> proficiencies;
     private final List<APIReference> saving_throws;
-    private final List<EquipmentList> starting_equipment;
-    private final List<EquipmentChoice> starting_equipment_options;
+    private final List<CountedReference> starting_equipment;
+    private final List<Choice> starting_equipment_options;
     private final String class_levels;
     private final List<APIReference> subclasses;
     private final Spellcasting spellcasting;
@@ -42,7 +43,7 @@ public class DNDClass {
         this.starting_equipment_options = new ArrayList<>();
         this.class_levels = (String) json.get("class_levels");
         this.subclasses = new ArrayList<>();
-        this.spellcasting = new Spellcasting((JSONObject) json.get("spellcasting"));
+        this.spellcasting = json.containsKey("spellcasting") ? new Spellcasting((JSONObject) json.get("spellcasting")) : null;
         this.spells = (String) json.get("spells");
         this.url = url;
 
@@ -56,10 +57,10 @@ public class DNDClass {
             this.saving_throws.add(new APIReference((JSONObject) savingThrow));
 
         for (Object equipment : (JSONArray) json.get("starting_equipment"))
-            this.starting_equipment.add(new EquipmentList((JSONObject) equipment));
+            this.starting_equipment.add(CountedReference.fromJSON((JSONObject) equipment));
 
         for (Object equipmentChoice : (JSONArray) json.get("starting_equipment_options"))
-            this.starting_equipment_options.add(new EquipmentChoice((JSONObject) equipmentChoice));
+            this.starting_equipment_options.add(new Choice((JSONObject) equipmentChoice));
 
         for (Object subclass : (JSONArray) json.get("subclasses"))
             this.subclasses.add(new APIReference((JSONObject) subclass));
@@ -104,11 +105,11 @@ public class DNDClass {
         return list;
     }
 
-    public List<EquipmentList> getStartingEquipment() {
+    public List<CountedReference> getStartingEquipment() {
         return this.starting_equipment;
     }
 
-    public List<EquipmentChoice> getStartingEquipmentOptions() {
+    public List<Choice> getStartingEquipmentOptions() {
         return this.starting_equipment_options;
     }
 
@@ -161,6 +162,15 @@ public class DNDClass {
     }
 
     // Static methods
+    public static Set<DNDClass> values() {
+        Set<DNDClass> set = new HashSet<>();
+
+        for (Object classObject : (JSONArray) APIRequest.request("/api/classes/").get("results"))
+            set.add(new DNDClass((String) ((JSONObject) classObject).get("url")));
+
+        return set;
+    }
+
     public static DNDClass fromIndex(String index) {
         return new DNDClass("/api/classes/" + index);
     }

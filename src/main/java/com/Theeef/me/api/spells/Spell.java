@@ -9,10 +9,12 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Spell {
 
     private final String index;
+    private final String name;
     private final List<String> desc;
     private final List<String> higher_level;
     private final String range;
@@ -33,6 +35,7 @@ public class Spell {
     public Spell(String url) {
         JSONObject json = APIRequest.request(url);
         this.index = (String) json.get("index");
+        this.name = (String) json.get("name");
         this.desc = new ArrayList<>();
         this.higher_level = new ArrayList<>();
         this.range = (String) json.get("range");
@@ -67,9 +70,27 @@ public class Spell {
             this.subclasses.add(new APIReference((JSONObject) subclassObj));
     }
 
+    public Spell(APIReference reference) {
+        this(reference.getUrl());
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Spell && ((Spell) object).getIndex().equals(this.index);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass(), this.index);
+    }
+
     // Getter methods
     public String getIndex() {
         return this.index;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public List<String> getDescription() {

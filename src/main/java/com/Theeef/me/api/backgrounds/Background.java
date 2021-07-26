@@ -3,7 +3,7 @@ package com.Theeef.me.api.backgrounds;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.common.Choice;
+import com.Theeef.me.api.common.choice.Choice;
 import com.Theeef.me.api.equipment.Equipment;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

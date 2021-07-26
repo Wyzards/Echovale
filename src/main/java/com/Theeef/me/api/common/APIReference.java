@@ -2,6 +2,8 @@ package com.Theeef.me.api.common;
 
 import org.json.simple.JSONObject;
 
+import java.util.Objects;
+
 public class APIReference {
 
     private final String index;
@@ -12,6 +14,26 @@ public class APIReference {
         this.index = (String) json.get("index");
         this.name = (String) json.get("name");
         this.url = (String) json.get("url");
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof APIReference))
+            return false;
+
+        APIReference reference = (APIReference) object;
+
+        return reference.getIndex().equals(this.index) && reference.getName().equals(this.name) && reference.getUrl().equals(this.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getClass(), this.index, this.name, this.url);
+    }
+
+    @Override
+    public String toString() {
+        return index + ", " + name + ", " + url;
     }
 
     // Get methods

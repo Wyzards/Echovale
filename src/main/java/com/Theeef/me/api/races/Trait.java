@@ -3,12 +3,11 @@ package com.Theeef.me.api.races;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.common.Choice;
+import com.Theeef.me.api.common.choice.Choice;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Trait {
 
@@ -19,6 +18,8 @@ public class Trait {
     private final List<String> desc;
     private final List<APIReference> proficiencies;
     private final Choice proficiency_choices;
+    private final APIReference parent;
+    private final TraitSpecific trait_specific;
     private final String url;
 
     public Trait(String url) {
@@ -30,6 +31,8 @@ public class Trait {
         this.desc = new ArrayList<>();
         this.proficiencies = new ArrayList<>();
         this.proficiency_choices = json.containsKey("proficiency_options") ? new Choice((JSONObject) json.get("proficiency_options")) : null;
+        this.parent = json.containsKey("parent") ? new APIReference((JSONObject) json.get("parent")) : null;
+        this.trait_specific = json.containsKey("trait_specific") ? new TraitSpecific((JSONObject) json.get("trait_specific")) : null;
         this.url = url;
 
         for (Object race : (JSONArray) json.get("races"))
@@ -43,6 +46,20 @@ public class Trait {
 
         for (Object proficiency : (JSONArray) json.get("proficiencies"))
             this.proficiencies.add(new APIReference((JSONObject) proficiency));
+    }
+
+    public Trait(APIReference reference) {
+        this(reference.getUrl());
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Trait && ((Trait) object).getIndex().equals(this.index);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getClass(), this.index);
     }
 
     // Getter methods
@@ -89,8 +106,27 @@ public class Trait {
         return this.proficiency_choices;
     }
 
+    public Trait getParent() {
+        return this.parent == null ? null : new Trait(this.parent);
+    }
+
+    public TraitSpecific getTraitSpecific() {
+        return this.trait_specific;
+    }
+
     public String getUrl() {
         return this.url;
+    }
+
+    // Static Methods
+    public static Set<Trait> values() {
+        Set<Trait> set = new HashSet<>();
+        JSONArray results = (JSONArray) APIRequest.request("/api/traits/").get("results");
+
+        for (Object result : results)
+            set.add(new Trait((String) ((JSONObject) result).get("url")));
+
+        return set;
     }
 
 }
