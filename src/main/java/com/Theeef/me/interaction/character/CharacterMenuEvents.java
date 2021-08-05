@@ -1,13 +1,9 @@
 package com.Theeef.me.interaction.character;
 
 import com.Theeef.me.APIRequest;
-import com.Theeef.me.api.chardata.Language;
-import com.Theeef.me.api.chardata.Proficiency;
-import com.Theeef.me.api.classes.DNDClass;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.common.choice.ChoiceResult;
-import com.Theeef.me.api.races.Race;
-import com.Theeef.me.api.races.Subrace;
+import com.Theeef.me.api.common.choice.*;
+import com.Theeef.me.api.equipment.Equipment;
 import com.Theeef.me.api.races.Trait;
 import com.Theeef.me.api.spells.Spell;
 import com.Theeef.me.util.NBTHandler;
@@ -23,8 +19,8 @@ import java.util.UUID;
 public class CharacterMenuEvents implements Listener {
 
     @EventHandler
-    public void clickSelectClassMenu(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() == null && event.getView().getTitle().equals("Select A Class") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
+    public void clickMultiOptionsInfoPage(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() == null && event.getView().getTitle().equals("Items") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
             event.setCancelled(true);
 
             CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
@@ -33,9 +29,31 @@ public class CharacterMenuEvents implements Listener {
             if (item == null)
                 return;
 
-            if (NBTHandler.hasString(item, "class")) {
-                creator.setClass(new DNDClass(NBTHandler.getString(item, "class")));
-                creator.classMenu();
+            ChoiceMenu menu = ChoiceMenu.getMenuFromItem(item);
+            ChoiceResult result = menu.getChoiceResult(); // This result's options contains this multiOption
+            MultipleOption multiOption = (MultipleOption) result.getChoice().getOptions().get(Integer.parseInt(NBTHandler.getString(item, "optionIndex")));
+
+            if (event.getSlot() < multiOption.getItems().size() && multiOption.getItems().get(event.getSlot()).getOptionType() == Option.OptionType.CHOICE) {
+                ChoiceMenu newMenu = new ChoiceMenu("Starting Equipment", event.getInventory(), result.getChoiceOptionResult(multiOption).getChoiceOptionResult(multiOption.getItems().get(event.getSlot())), Equipment.class);
+                newMenu.open((Player) event.getWhoClicked());
+            }
+        }
+    }
+
+    @EventHandler
+    public void clickStartingEquipmentMenu(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() == null && event.getView().getTitle().equals("Starting Equipment") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
+            event.setCancelled(true);
+
+            CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
+            ItemStack item = event.getCurrentItem();
+
+            if (item == null)
+                return;
+
+            if (event.getSlot() >= creator.getDNDClass().getStartingEquipment().size() && event.getSlot() <= creator.getDNDClass().getStartingEquipment().size() + creator.getDNDClass().getStartingEquipmentOptions().size()) {
+                ChoiceMenu menu = new ChoiceMenu("Starting Equipment", "starting equipment", creator.getStartingEquipmentChoiceResult().get(event.getSlot() - creator.getDNDClass().getStartingEquipment().size()), Equipment.class);
+                menu.open(creator.getPlayer());
             }
         }
     }
@@ -45,57 +63,59 @@ public class CharacterMenuEvents implements Listener {
         if (event.getInventory().getHolder() == null && event.getView().getTitle().startsWith("Choice: ") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
             CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
             ItemStack item = event.getCurrentItem();
-            String previousPage = event.getInventory().getItem(event.getInventory().getSize() - 9) == null ? null : NBTHandler.getString(event.getInventory().getItem(event.getInventory().getSize() - 9), "goesTo");
-            String nextPage = event.getInventory().getItem(event.getInventory().getSize() - 1) == null ? null : NBTHandler.getString(event.getInventory().getItem(event.getInventory().getSize() - 9), "goesTo");
-
             event.setCancelled(true);
 
             if (item == null)
                 return;
 
-            ChoiceResult result = null;
-            Object option = null;
-            Class<?> type = null;
-            APIReference specificReference = NBTHandler.hasString(item, "specificReference") ? new APIReference(APIRequest.request(NBTHandler.getString(item, "specificReference"))) : null;
+            ChoiceMenu menu = ChoiceMenu.getMenuFromItem(item);
 
-            // Check for various types, get choiceResults from creator then reconstruct inventory
-            if (NBTHandler.hasString(item, "trait")) {
-                type = Trait.class;
-                option = new Trait(NBTHandler.getString(item, "trait"));
-                Trait parent = ((Trait) option).getParent();
+            if (event.getSlot() < menu.getChoiceResult().getChoice().getOptions().size()) {
+                Option option = menu.getChoiceResult().getChoice().getOptions().get(event.getSlot());
 
-                if (parent != null)
-                    result = creator.getSubtraitChoices().get(parent);
-            } else if (NBTHandler.hasString(item, "language")) {
-                type = Language.class;
-                option = new Language(NBTHandler.getString(item, "language"));
-                assert previousPage != null;
-                result = previousPage.equals("subrace") ? creator.getSubraceLanguageChoiceResult() : creator.getRaceLanguageChoiceResult();
-            } else if (NBTHandler.hasString(item, "proficiency")) {
-                type = Proficiency.class;
-                option = new Proficiency(NBTHandler.getString(item, "proficiency"));
-                result = creator.getRaceProfChoiceResult();
-            } else if (NBTHandler.hasString(item, "spell")) {
-                type = Spell.class;
-                option = new Spell(NBTHandler.getString(item, "spell"));
-                result = creator.getTraitSpellChoices().get(new Trait(specificReference));
-            } else if (NBTHandler.hasString(item, "race"))
-                creator.setRace(new Race(NBTHandler.getString(item, "race")));
-            else if (NBTHandler.hasString(item, "subrace"))
-                creator.setSubrace(new Subrace(NBTHandler.getString(item, "subrace")));
-            else if (NBTHandler.hasString(item, "class"))
-                creator.setClass(new DNDClass(NBTHandler.getString(item, "class")));
+                switch (option.getOptionType()) {
+                    case CHOICE:
+                        ChoiceResult optionResult = menu.getChoiceResult().getChoiceOptionResult((ChoiceOption) option);
 
-            if (result != null) {
-                if (result.alreadyChosen(option)) {
-                    result.unchoose(option);
-                } else
-                    result.choose(option);
+                        if (optionResult == null)
+                            optionResult = new ChoiceResult(((ChoiceOption) option).getChoice());
 
-                ChoiceMenu menu = new ChoiceMenu(event.getView().getTitle().substring(8), previousPage, nextPage, result.getChoice(), result, type, specificReference);
-                menu.open(creator.getPlayer());
+                        if (menu.getChoiceResult().alreadyChosen(option) && event.getClick().isRightClick()) {
+                            ChoiceMenu choiceMenu = new ChoiceMenu("Starting Equipment", menu, optionResult, Equipment.class);
+                            choiceMenu.open((Player) event.getWhoClicked());
+                        } else
+                            chooseClick(menu, option, creator);
+
+                        break;
+                    case MULTIPLE:
+                        if (event.getClick().isRightClick())
+                            menu.multiOptionInfo(menu.getChoiceResult(), event.getSlot(), creator);
+                        else
+                            chooseClick(menu, option, creator);
+                        break;
+                    case SINGLE:
+                        if (NBTHandler.hasString(item, "race"))
+                            creator.setRace((SingleOption) option);
+                        else if (NBTHandler.hasString(item, "subrace"))
+                            creator.setSubrace((SingleOption) option);
+                        else if (NBTHandler.hasString(item, "class"))
+                            creator.setClass((SingleOption) option);
+                        else
+                            chooseClick(menu, option, creator);
+                        break;
+                }
             }
         }
+    }
+
+
+    private void chooseClick(ChoiceMenu menu, Option option, CharacterCreator creator) {
+        if (menu.getChoiceResult().alreadyChosen(option))
+            menu.getChoiceResult().unchoose(option);
+        else if (!menu.getChoiceResult().isComplete())
+            menu.getChoiceResult().choose(option);
+
+        menu.open(creator.getPlayer());
     }
 
     @EventHandler
@@ -113,7 +133,7 @@ public class CharacterMenuEvents implements Listener {
                 Trait trait = new Trait(NBTHandler.getString(item, "trait"));
 
                 if (trait.getTraitSpecific() != null && trait.getTraitSpecific().getSpellOptions() != null) {
-                    ChoiceMenu<Spell> menu = new ChoiceMenu<Spell>("Select " + trait.getTraitSpecific().getSpellOptions().getChoiceAmount() + (trait.getTraitSpecific().getSpellOptions().getChoiceAmount() > 1 ? " Spells " : " Spell"), "subrace traits", null, trait.getTraitSpecific().getSpellOptions(), creator.getTraitSpellChoices().get(trait), Spell.class, new APIReference(APIRequest.request(trait.getUrl())));
+                    ChoiceMenu<Spell> menu = new ChoiceMenu<Spell>("Select " + trait.getTraitSpecific().getSpellOptions().getChoiceAmount() + (trait.getTraitSpecific().getSpellOptions().getChoiceAmount() > 1 ? " Spells " : " Spell"), "subrace traits", creator.getTraitSpellChoices().get(trait), Spell.class, new APIReference(APIRequest.request(trait.getUrl())));
                     menu.open(creator.getPlayer());
                 }
             }
@@ -135,9 +155,8 @@ public class CharacterMenuEvents implements Listener {
             if (NBTHandler.hasString(item, "trait")) {
                 Trait trait = new Trait(NBTHandler.getString(item, "trait"));
 
-                if (trait.getTraitSpecific() != null && trait.getTraitSpecific().getSubtraitOptions() != null) {
+                if (trait.getTraitSpecific() != null && trait.getTraitSpecific().getSubtraitOptions() != null)
                     creator.subtraitsMenu(trait, "racial traits");
-                }
             }
         }
     }
@@ -172,7 +191,14 @@ public class CharacterMenuEvents implements Listener {
                 return;
 
             if (NBTHandler.hasString(item, "goesTo"))
-                creator.goToPage(NBTHandler.getString(item, "goesTo"));
+                if (NBTHandler.hasString(item, "parentInventory")) {
+                    ChoiceMenu menu = ChoiceMenu.getMenuFromItem(item);
+                    event.getWhoClicked().openInventory(menu.getParentInventory());
+                } else if (NBTHandler.getString(item, "goesTo").equals("previous choice menu")) {
+                    ChoiceMenu.getMenuFromItem(item).open((Player) event.getWhoClicked());
+                    System.out.println("THING");
+                } else
+                    creator.goToPage(NBTHandler.getString(item, "goesTo"));
         }
     }
 }

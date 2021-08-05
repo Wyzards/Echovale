@@ -7,9 +7,9 @@ import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.chardata.Skill;
 import com.Theeef.me.api.classes.DNDClass;
 import com.Theeef.me.api.classes.subclasses.Subclass;
+import com.Theeef.me.api.common.AbilityBonus;
 import com.Theeef.me.api.common.Info;
 import com.Theeef.me.api.common.choice.*;
-import com.Theeef.me.api.common.AbilityBonus;
 import com.Theeef.me.api.equipment.Equipment;
 import com.Theeef.me.api.monsters.Action;
 import com.Theeef.me.api.races.Race;
@@ -30,32 +30,34 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class CharacterCreator {
 
     public static HashMap<UUID, CharacterCreator> charactersBeingCreated = new HashMap<UUID, CharacterCreator>();
 
     private final UUID player;
-    private ChoiceResult<Race> raceChoiceResult;
-    private ChoiceResult<Subrace> subraceChoiceResult;
-    private ChoiceResult<DNDClass> classChoiceResult;
-    private DNDClass dndclass;
-    private ChoiceResult<Proficiency> raceProfChoiceResult;
-    private ChoiceResult<Language> raceLanguageChoiceResult;
-    private ChoiceResult<Language> subraceLanguageChoiceResult;
-    private List<ChoiceResult<>> startingEquipmentChoiceResult;
+    private ChoiceResult raceChoiceResult;
+    private ChoiceResult subraceChoiceResult;
+    private ChoiceResult classChoiceResult;
+    private ChoiceResult raceProfChoiceResult;
+    private ChoiceResult raceLanguageChoiceResult;
+    private ChoiceResult subraceLanguageChoiceResult;
+    private List<ChoiceResult> startingEquipmentChoiceResult;
 
     // TODO: Figure out a better way to store spellChoices
-    private final HashMap<Trait, ChoiceResult<Spell>> traitSpellChoices;
-    private final HashMap<Trait, ChoiceResult<Trait>> subtraitChoices;
+    private final HashMap<Trait, ChoiceResult> traitSpellChoices;
+    private final HashMap<Trait, ChoiceResult> subtraitChoices;
 
     public CharacterCreator(Player player) {
         this.player = player.getUniqueId();
         this.subtraitChoices = new HashMap<>();
         this.traitSpellChoices = new HashMap<>();
-        this.raceChoiceResult = new ChoiceResult<Race>(new Choice("race", 1, new ResourceListOptionSet("/api/races")));
-        this.classChoiceResult = new ChoiceResult<DNDClass>(new Choice("class", 1, new ResourceListOptionSet("/api/classes")));
+        this.raceChoiceResult = new ChoiceResult(new Choice("race", 1, new ResourceListOptionSet("/api/races")));
+        this.classChoiceResult = new ChoiceResult(new Choice("class", 1, new ResourceListOptionSet("/api/classes")));
 
         CharacterCreator.charactersBeingCreated.put(this.player, this);
 
@@ -105,6 +107,7 @@ public class CharacterCreator {
                 break;
             case "spellcasting":
                 spellcastingMenu();
+                break;
             default:
                 throw new NullPointerException(page + " DIDNT KNOW HOW TO DIRECT");
         }
@@ -112,26 +115,42 @@ public class CharacterCreator {
 
     // Menu
     public void spellcastingMenu() {
-        Inventory inventory = Bukkit.createInventory(null, 27, this.dndclass.getName() + " Spellcasting");
+        Inventory inventory = Bukkit.createInventory(null, 27, getDNDClass().getName() + " Spellcasting");
         ItemStack infoItem = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta meta = infoItem.getItemMeta();
         meta.setDisplayName(ChatColor.AQUA + "Spellcasting");
-        meta.setLore(Lists.newArrayList(ChatColor.GRAY + this.dndclass.getName() + " unlocks spellcasting at level " + this.dndclass.getSpellcasting().getLevel(), ChatColor.GRAY + "Spellcasting Ability: " + ChatColor.WHITE + this.dndclass.getSpellcasting().getSpellcastingAbility().getFullName()));
+        meta.setLore(Lists.newArrayList(ChatColor.GRAY + getDNDClass().getName() + " unlocks spellcasting at level " + getDNDClass().getSpellcasting().getLevel(), "", ChatColor.GRAY + "Spellcasting Ability: " + ChatColor.WHITE + getDNDClass().getSpellcasting().getSpellcastingAbility().getFullName()));
         infoItem.setItemMeta(meta);
 
         inventory.addItem(infoItem);
 
-        for (Info info : this.dndclass.getSpellcasting().getInfo())
+        for (Info info : getDNDClass().getSpellcasting().getInfo())
             inventory.addItem(CharacterCreator.infoItem(Material.MAP, info));
 
         inventory.setItem(inventory.getSize() - 9, CharacterCreator.previousPage("class"));
+
+        getPlayer().openInventory(inventory);
     }
 
     public void startingEquipmentMenu() {
         Inventory inventory = Bukkit.createInventory(null, 27, "Starting Equipment");
 
-        for (CountedReference equipment : this.dndclass.getStartingEquipment())
-            inventory.addItem(Equipment.fromRe)
+        for (CountedReference equipment : getDNDClass().getStartingEquipment())
+            inventory.addItem(Equipment.fromCountedReference(equipment));
+
+        for (int i = 0; i < getDNDClass().getStartingEquipmentOptions().size(); i++)
+            inventory.addItem(equipmentChoiceItem(i));
+
+        inventory.setItem(inventory.getSize() - 9, previousPage("class"));
+
+        getPlayer().openInventory(inventory);
+
+        new BukkitRunnable() {
+            public void run() {
+                if (getPlayer().getOpenInventory().getTitle().equals("Starting Equipment"))
+                    startingEquipmentMenu();
+            }
+        }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
     }
 
     public void classLevelsMenu() {
@@ -139,12 +158,12 @@ public class CharacterCreator {
     }
 
     public void selectClassMenu() {
-        ChoiceMenu menu = new ChoiceMenu("Select Your Class", "class", this.classChoiceResult.getChoice(), this.classChoiceResult, DNDClass.class);
+        ChoiceMenu menu = new ChoiceMenu("Select Your Class", "class", this.classChoiceResult, DNDClass.class);
         menu.open(getPlayer());
     }
 
     public void subtraitsMenu(Trait parentTrait, String returnTo) {
-        ChoiceMenu<Trait> menu = new ChoiceMenu<Trait>(parentTrait.getName(), returnTo, parentTrait.getTraitSpecific().getSubtraitOptions(), new ChoiceResult<Trait>(parentTrait.getTraitSpecific().getSubtraitOptions()), Trait.class);
+        ChoiceMenu menu = new ChoiceMenu(parentTrait.getName(), returnTo, this.subtraitChoices.get(parentTrait), Trait.class);
         menu.open(getPlayer());
     }
 
@@ -167,17 +186,17 @@ public class CharacterCreator {
     }
 
     public void subraceLanguageOptionsMenu() {
-        ChoiceMenu<Language> menu = new ChoiceMenu<Language>("Choose " + getSubrace().getLanguageOptions().getChoiceAmount() + (getSubrace().getLanguageOptions().getChoiceAmount() > 1 ? " Languages" : " Language"), "subrace", getSubrace().getLanguageOptions(), this.subraceLanguageChoiceResult, Language.class);
+        ChoiceMenu menu = new ChoiceMenu("Choose " + getSubrace().getLanguageOptions().getChoiceAmount() + (getSubrace().getLanguageOptions().getChoiceAmount() > 1 ? " Languages" : " Language"), "subrace", this.subraceLanguageChoiceResult, Language.class);
         menu.open(getPlayer());
     }
 
     public void raceLanguageOptionsMenu() {
-        ChoiceMenu<Language> menu = new ChoiceMenu<Language>("Choose " + getRace().getLanguageOptions().getChoiceAmount() + (getRace().getLanguageOptions().getChoiceAmount() > 1 ? " Languages" : " Language"), "race", getRace().getLanguageOptions(), this.raceLanguageChoiceResult, Language.class);
+        ChoiceMenu menu = new ChoiceMenu("Choose " + getRace().getLanguageOptions().getChoiceAmount() + (getRace().getLanguageOptions().getChoiceAmount() > 1 ? " Languages" : " Language"), "race", this.raceLanguageChoiceResult, Language.class);
         menu.open(getPlayer());
     }
 
     public void selectSubraceMenu() {
-        ChoiceMenu menu = new ChoiceMenu("Select Your Subrace", "subrace", this.subraceChoiceResult.getChoice(), this.subraceChoiceResult, Subrace.class);
+        ChoiceMenu menu = new ChoiceMenu("Select Your Subrace", "subrace", this.subraceChoiceResult, Subrace.class);
         menu.open(getPlayer());
     }
 
@@ -240,7 +259,7 @@ public class CharacterCreator {
     }
 
     public void raceProficiencyOptionsMenu() {
-        ChoiceMenu<Proficiency> menu = new ChoiceMenu<Proficiency>("Choose " + getRace().getStartingProficiencyOptions().getChoiceAmount() + (getRace().getStartingProficiencyOptions().getChoiceAmount() > 1 ? " Proficiencies" : " Proficiency"), "race", getRace().getStartingProficiencyOptions(), this.raceProfChoiceResult, Proficiency.class);
+        ChoiceMenu menu = new ChoiceMenu("Choose " + getRace().getStartingProficiencyOptions().getChoiceAmount() + (getRace().getStartingProficiencyOptions().getChoiceAmount() > 1 ? " Proficiencies" : " Proficiency"), "race", this.raceProfChoiceResult, Proficiency.class);
         menu.open(getPlayer());
     }
 
@@ -265,15 +284,15 @@ public class CharacterCreator {
     public void classMenu() {
         Inventory inventory;
 
-        if (this.dndclass == null)
+        if (getDNDClass() == null)
             inventory = Bukkit.createInventory(null, 27, "Class");
         else {
-            inventory = Bukkit.createInventory(null, 9 * 5, "Class");
+            inventory = Bukkit.createInventory(null, 9 * 5, "Class: " + getDNDClass().getName());
 
-            int align = (((this.dndclass.getStartingEquipment().size() > 0 || this.dndclass.getStartingEquipmentOptions() != null) ? 1 : 0) + 1 + (this.dndclass.getSpellcasting() != null ? 1 : 0));
+            int align = (((getDNDClass().getStartingEquipment().size() > 0 || getDNDClass().getStartingEquipmentOptions() != null) ? 1 : 0) + 1 + (getDNDClass().getSpellcasting() != null ? 1 : 0));
             int count = 0;
 
-            if (this.dndclass.getStartingEquipment().size() > 0 || this.dndclass.getStartingEquipment() != null) {
+            if (getDNDClass().getStartingEquipment().size() > 0 || getDNDClass().getStartingEquipment() != null) {
                 if (align % 2 != 0)
                     inventory.setItem(27 + (9 - align) / 2 + count, startingEquipmentItem());
                 else
@@ -281,7 +300,7 @@ public class CharacterCreator {
                 count++;
             }
 
-            if (this.dndclass.getSpellcasting() != null) {
+            if (getDNDClass().getSpellcasting() != null) {
                 if (align % 2 != 0)
                     inventory.setItem(27 + (9 - align) / 2 + count, spellcastingItem());
                 else
@@ -305,7 +324,7 @@ public class CharacterCreator {
 
         new BukkitRunnable() {
             public void run() {
-                if (getPlayer().getOpenInventory().getTitle().equals("Class"))
+                if (getPlayer().getOpenInventory().getTitle().equals("Class") || getDNDClass() != null && getPlayer().getOpenInventory().getTitle().equals("Class: " + getDNDClass().getName()))
                     classMenu();
             }
         }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
@@ -317,7 +336,7 @@ public class CharacterCreator {
         if (getRace() == null)
             inventory = Bukkit.createInventory(null, 27, "Race");
         else
-            inventory = Bukkit.createInventory(null, 9 * 5, "Race");
+            inventory = Bukkit.createInventory(null, 9 * 5, "Race: " + getRace().getName());
 
         inventory.setItem(13, selectRaceItem());
         inventory.setItem(inventory.getSize() - 1, nextPage("class"));
@@ -371,23 +390,72 @@ public class CharacterCreator {
 
         new BukkitRunnable() {
             public void run() {
-                if (getPlayer().getOpenInventory().getTitle().equals("Race"))
+                if (getPlayer().getOpenInventory().getTitle().equals("Race") || getRace() != null && getPlayer().getOpenInventory().getTitle().equals("Race: " + getRace().getName()))
                     raceMenu();
             }
         }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
     }
 
     public void selectRaceMenu() {
-        ChoiceMenu menu = new ChoiceMenu("Select Your Race", "race", this.raceChoiceResult.getChoice(), this.raceChoiceResult, Race.class);
+        ChoiceMenu menu = new ChoiceMenu("Select Your Race", "race", this.raceChoiceResult, Race.class);
         menu.open(getPlayer());
     }
 
     // Object based Items
+    public ItemStack equipmentChoiceItem(int index) {
+        ChoiceResult result = this.startingEquipmentChoiceResult.get(index);
+        ItemStack item = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "Equipment Choice");
+        List<String> lore = new ArrayList<>();
+
+        if (!result.isComplete()) {
+            if (result.getChoice().getOptionSet() instanceof ArrayOptionSet) {
+                lore.add(ChatColor.GRAY + "Select " + result.getChoice().getChoiceAmount() + (result.getChoice().getChoiceAmount() > 1 ? " options" : " option") + " from the following:");
+
+                for (Option option : result.getChoice().getOptions())
+                    lore.add(ChatColor.WHITE + "- " + option.getDescription());
+            } else if (result.getChoice().getOptionSet() instanceof ResourceListOptionSet)
+                lore.add(ChatColor.GRAY + "Select " + result.getChoice().getChoiceAmount() + (result.getChoice().getChoiceAmount() > 1 ? " items" : "item") + " from " + ((ResourceListOptionSet) result.getChoice().getOptionSet()).getReferenceList().get("name"));
+        } else {
+            if (result.getChosen().size() == 1) {
+                lore.add(ChatColor.GRAY + "Selected: " + ChatColor.WHITE + result.getChosen().get(0).getDescription());
+
+                if (result.getChosen().get(0).getOptionType() == Option.OptionType.SINGLE) {
+                    item.setItemMeta(meta);
+                    ItemStack equipmentItem = Equipment.fromCountedReference(((SingleOption) result.getChosen().get(0)).getItem());
+                    item.setType(equipmentItem.getType());
+                    item.setAmount(equipmentItem.getAmount());
+                    meta = item.getItemMeta();
+                    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                }
+            } else {
+                lore.add(ChatColor.GRAY + "Selected:");
+
+                for (Option option : result.getChosen())
+                    lore.add(ChatColor.WHITE + "- " + option.getDescription());
+            }
+        }
+
+
+        lore.add("");
+
+        if (result.isComplete())
+            lore.add(ChatColor.WHITE + "Click to change your choice");
+        else
+            lore.add(ChatColor.WHITE + "Click to choose");
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+
+        return new ChoiceMenuItem(item, this.startingEquipmentChoiceResult.get(index)).getItem();
+    }
+
     public ItemStack spellcastingItem() {
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.AQUA + "Spellcasting");
-        List<String> lore = Lists.newArrayList(ChatColor.GRAY + "This class gains the ability to cast spells at level " + this.dndclass.getSpellcasting().getLevel(), "", ChatColor.GRAY + "Spellcasting Ability: " + ChatColor.WHITE + this.dndclass.getSpellcasting().getSpellcastingAbility().getFullName(), "", ChatColor.WHITE + "Click for more info");
+        List<String> lore = Lists.newArrayList(ChatColor.GRAY + "This class gains the ability to cast spells at level " + getDNDClass().getSpellcasting().getLevel(), "", ChatColor.GRAY + "Spellcasting Ability: " + ChatColor.WHITE + getDNDClass().getSpellcasting().getSpellcastingAbility().getFullName(), "", ChatColor.WHITE + "Click for more info");
 
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -405,13 +473,13 @@ public class CharacterCreator {
 
         lore.add(ChatColor.GRAY + "Equipment: ");
 
-        for (CountedReference reference : this.dndclass.getStartingEquipment())
+        for (CountedReference reference : getDNDClass().getStartingEquipment())
             lore.add(ChatColor.WHITE + "- " + reference.getReference().getName() + (reference.getCount() > 1 ? " x" + reference.getCount() : ""));
 
         if (lore.size() > 1)
-            lore.add(ChatColor.WHITE + "- and " + this.dndclass.getStartingEquipmentOptions().size() + " other choices...");
+            lore.add(ChatColor.WHITE + "- and " + getDNDClass().getStartingEquipmentOptions().size() + " other choices...");
         else
-            lore.add(ChatColor.WHITE + "- " + this.dndclass.getStartingEquipmentOptions().size() + " choices");
+            lore.add(ChatColor.WHITE + "- " + getDNDClass().getStartingEquipmentOptions().size() + " choices");
 
         lore.add("");
         lore.add(ChatColor.WHITE + "Click to choose your starting equipment");
@@ -435,18 +503,19 @@ public class CharacterCreator {
         return NBTHandler.addString(item, "goesTo", "class levels");
     }
 
-    public ItemStack traitSpellItem(ChoiceResult<Spell> result, Spell spell) {
-        ItemStack item = new ItemStack(result.alreadyChosen(spell) ? Material.ENCHANTED_BOOK : Material.WRITABLE_BOOK);
+    public ItemStack traitSpellItem(ChoiceResult result, SingleOption spellOption) {
+        Spell spell = Spell.fromIndex(spellOption.getItem().getReference().getIndex());
+        ItemStack item = new ItemStack(result.alreadyChosen(spellOption) ? Material.ENCHANTED_BOOK : Material.WRITABLE_BOOK);
         ItemMeta meta = item.getItemMeta();
         List<String> lore = new ArrayList<>();
-        meta.setDisplayName(ChatColor.RESET + spell.getName());
+        meta.setDisplayName(ChatColor.RESET + spellOption.getItem().getReference().getName());
 
-        for (String desc : spell.getDescription())
+        for (String desc : spell.getDescription()) {
             lore.addAll(Util.fitForLore(ChatColor.GRAY + desc));
+            lore.add("");
+        }
 
-        lore.add("");
-
-        if (result.alreadyChosen(spell))
+        if (result.alreadyChosen(spellOption))
             lore.add(ChatColor.WHITE + "Click to unchoose this spell");
         else
             lore.add(ChatColor.WHITE + "Click to choose this spell");
@@ -455,12 +524,12 @@ public class CharacterCreator {
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
 
-        return NBTHandler.addString(item, "spell", spell.getUrl());
+        return item;
     }
 
     public ItemStack selectClassItem() {
-        if (this.dndclass != null) {
-            ItemStack item = classItem(this.dndclass);
+        if (getDNDClass() != null) {
+            ItemStack item = classItem(getDNDClass());
             ItemMeta meta = item.getItemMeta();
             assert meta != null;
             List<String> lore = meta.getLore();
@@ -525,25 +594,23 @@ public class CharacterCreator {
         List<String> lore = new ArrayList<>();
 
         if (!this.raceProfChoiceResult.isComplete()) {
-            lore.add(ChatColor.GRAY + "Select " + this.raceProfChoiceResult.decisionsLeft() + (this.raceProfChoiceResult.decisionsLeft() > 1 ? " proficiencies" : " proficiency") + " from the following:");
+            lore.add(ChatColor.GRAY + "Select " + this.raceProfChoiceResult.getChoice().getChoiceAmount() + (this.raceProfChoiceResult.getChoice().getChoiceAmount() > 1 ? " proficiencies" : " proficiency") + " from the following:");
 
-            List<Proficiency> options = new ArrayList<Proficiency>();
+            List<Option> options = new ArrayList<>();
 
-            for (Option option : getRace().getStartingProficiencyOptions().getChoices())
-                options.add(new Proficiency(((SingleOption) option).getItem().getReference()));
+            for (Option option : getRace().getStartingProficiencyOptions().getOptions())
+                options.add((SingleOption) option);
 
-            options.removeAll(getAllProficiencies());
-
-            for (Proficiency proficiency : options)
-                lore.add(ChatColor.WHITE + "- " + proficiency.getName());
+            for (Option proficiency : options)
+                lore.add(ChatColor.WHITE + "- " + proficiency.getDescription());
 
             lore.add("");
         }
 
         if (this.raceProfChoiceResult.getChosen().size() > 0) {
             lore.add(ChatColor.GRAY + "Selected Proficiencies:");
-            for (Proficiency proficiency : this.raceProfChoiceResult.getChosen())
-                lore.add(ChatColor.WHITE + "- " + proficiency.getName());
+            for (Option proficiency : this.raceProfChoiceResult.getChosen())
+                lore.add(ChatColor.WHITE + "- " + proficiency.getDescription());
 
             lore.add("");
 
@@ -574,9 +641,7 @@ public class CharacterCreator {
             meta.setLore(lore);
             item.setItemMeta(meta);
 
-            NBTHandler.addString(item, "goesTo", "select subrace");
-
-            return item;
+            return NBTHandler.addString(item, "goesTo", "select subrace");
         }
 
         ItemStack item = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
@@ -623,8 +688,12 @@ public class CharacterCreator {
         meta.setDisplayName(ChatColor.WHITE + trait.getName());
         List<String> lore = new ArrayList<>();
 
-        for (String desc : trait.getDescription())
+        for (String desc : trait.getDescription()) {
+            if (!trait.getDescription().get(0).equals(desc))
+                lore.add("");
+
             lore.addAll(Util.fitForLore(ChatColor.GRAY + desc));
+        }
 
         if (trait.getTraitSpecific() != null) {
             TraitSpecific specific = trait.getTraitSpecific();
@@ -641,17 +710,17 @@ public class CharacterCreator {
             }
 
             if (specific.getSubtraitOptions() != null) {
-                ChoiceResult<Trait> choiceResult = this.subtraitChoices.get(trait);
+                ChoiceResult choiceResult = this.subtraitChoices.get(trait);
 
                 if (choiceResult.getChosen().size() == 1) {
                     lore.add("");
-                    lore.add(ChatColor.GRAY + "Selected: " + ChatColor.WHITE + choiceResult.getChosen().get(0).getName());
+                    lore.add(ChatColor.GRAY + "Selected: " + ChatColor.WHITE + choiceResult.getChosen().get(0).getDescription());
                 } else if (choiceResult.getChosen().size() > 1) {
                     lore.add("");
                     lore.add(ChatColor.GRAY + "Selected:");
 
-                    for (Trait subtrait : choiceResult.getChosen())
-                        lore.add(ChatColor.WHITE + "- " + subtrait.getName());
+                    for (Option subtrait : choiceResult.getChosen())
+                        lore.add(ChatColor.WHITE + "- " + subtrait.getDescription());
                 }
 
                 lore.add("");
@@ -663,17 +732,17 @@ public class CharacterCreator {
             }
 
             if (specific.getSpellOptions() != null) {
-                ChoiceResult<Spell> choiceResult = this.traitSpellChoices.get(trait);
+                ChoiceResult choiceResult = this.traitSpellChoices.get(trait);
 
                 if (choiceResult.getChosen().size() == 1) {
                     lore.add("");
-                    lore.add(ChatColor.GRAY + "Selected: " + ChatColor.WHITE + choiceResult.getChosen().get(0).getName());
+                    lore.add(ChatColor.GRAY + "Selected: " + ChatColor.WHITE + choiceResult.getChosen().get(0).getDescription());
                 } else if (choiceResult.getChosen().size() > 1) {
                     lore.add("");
                     lore.add(ChatColor.GRAY + "Selected:");
 
-                    for (Spell spell : choiceResult.getChosen())
-                        lore.add(ChatColor.WHITE + "- " + spell.getName());
+                    for (Option spell : choiceResult.getChosen())
+                        lore.add(ChatColor.WHITE + "- " + spell.getDescription());
                 }
 
                 lore.add("");
@@ -706,16 +775,17 @@ public class CharacterCreator {
         return item;
     }
 
-    public ItemStack subtraitItem(Trait subtrait) {
+    public ItemStack subtraitItem(SingleOption subtraitOption) {
+        Trait subtrait = new Trait(subtraitOption.getItem().getReference().getUrl());
         ItemStack item = traitItem(subtrait);
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
 
-        ChoiceResult<Trait> result = subtrait.getParent() == null ? null : this.subtraitChoices.get(subtrait.getParent());
+        ChoiceResult result = subtrait.getParent() == null ? null : this.subtraitChoices.get(subtrait.getParent());
         lore.add("");
 
         if (result != null) {
-            if (result.alreadyChosen(subtrait)) {
+            if (result.alreadyChosen(subtraitOption)) {
                 item.setType(Material.LIME_STAINED_GLASS_PANE);
                 lore.add(ChatColor.WHITE + "Click to unchoose this subtrait");
             } else {
@@ -745,8 +815,12 @@ public class CharacterCreator {
 
             lore.add(ChatColor.WHITE + trait.getName());
 
-            for (String desc : trait.getDescription())
+            for (String desc : trait.getDescription()) {
+                if (!trait.getDescription().get(0).equals(desc))
+                    lore.add("");
+
                 lore.addAll(Util.fitForLore(ChatColor.GRAY + desc));
+            }
         }
 
         lore.add("");
@@ -778,8 +852,12 @@ public class CharacterCreator {
 
             lore.add(ChatColor.WHITE + trait.getName());
 
-            for (String desc : trait.getDescription())
+            for (String desc : trait.getDescription()) {
+                if (!trait.getDescription().get(0).equals(desc))
+                    lore.add("");
+
                 lore.addAll(Util.fitForLore(ChatColor.GRAY + desc));
+            }
         }
 
         lore.add("");
@@ -800,9 +878,9 @@ public class CharacterCreator {
         List<String> lore = new ArrayList<>();
 
         if (!this.subraceLanguageChoiceResult.isComplete()) {
-            lore.add(ChatColor.GRAY + "Select " + this.subraceLanguageChoiceResult.decisionsLeft() + (this.subraceLanguageChoiceResult.decisionsLeft() > 1 ? " languages" : " language") + " from the following:");
+            lore.add(ChatColor.GRAY + "Select " + this.subraceLanguageChoiceResult.getChoice().getChoiceAmount() + (this.subraceLanguageChoiceResult.getChoice().getChoiceAmount() > 1 ? " languages" : " language") + " from the following:");
 
-            for (Option option : getSubrace().getLanguageOptions().getChoices())
+            for (Option option : getSubrace().getLanguageOptions().getOptions())
                 lore.add(ChatColor.WHITE + "- " + ((SingleOption) option).getItem().getReference().getName());
 
             lore.add("");
@@ -810,8 +888,8 @@ public class CharacterCreator {
 
         if (this.subraceLanguageChoiceResult.getChosen().size() > 0) {
             lore.add(ChatColor.GRAY + "Selected Languages:");
-            for (Language language : this.subraceLanguageChoiceResult.getChosen())
-                lore.add(ChatColor.WHITE + "- " + language.getName());
+            for (Option language : this.subraceLanguageChoiceResult.getChosen())
+                lore.add(ChatColor.WHITE + "- " + language.getDescription());
 
             lore.add("");
 
@@ -837,9 +915,9 @@ public class CharacterCreator {
         List<String> lore = new ArrayList<>();
 
         if (!this.raceLanguageChoiceResult.isComplete()) {
-            lore.add(ChatColor.GRAY + "Select " + this.raceLanguageChoiceResult.decisionsLeft() + (this.raceLanguageChoiceResult.decisionsLeft() > 1 ? " languages" : " language") + " from the following:");
+            lore.add(ChatColor.GRAY + "Select " + this.raceLanguageChoiceResult.getChoice().getChoiceAmount() + (this.raceLanguageChoiceResult.getChoice().getChoiceAmount() > 1 ? " languages" : " language") + " from the following:");
 
-            for (Option option : getRace().getLanguageOptions().getChoices())
+            for (Option option : getRace().getLanguageOptions().getOptions())
                 lore.add(ChatColor.WHITE + "- " + ((SingleOption) option).getItem().getReference().getName());
 
             lore.add("");
@@ -847,8 +925,8 @@ public class CharacterCreator {
 
         if (this.raceLanguageChoiceResult.getChosen().size() > 0) {
             lore.add(ChatColor.GRAY + "Selected Languages:");
-            for (Language language : this.raceLanguageChoiceResult.getChosen())
-                lore.add(ChatColor.WHITE + "- " + language.getName());
+            for (Option language : this.raceLanguageChoiceResult.getChosen())
+                lore.add(ChatColor.WHITE + "- " + language.getDescription());
 
             lore.add("");
 
@@ -872,47 +950,26 @@ public class CharacterCreator {
         return Bukkit.getOfflinePlayer(this.player).isOnline();
     }
 
-    private Set<Language> getAllLanguages() {
-        Set<Language> set = new HashSet<>();
-
-        if (getRace() != null)
-            set.addAll(getRace().getLanguages());
-        if (getSubrace() != null)
-            set.addAll(getSubrace().getLanguages());
-        if (this.raceLanguageChoiceResult != null)
-            set.addAll(this.raceLanguageChoiceResult.getChosen());
-        if (this.subraceLanguageChoiceResult != null)
-            set.addAll(this.subraceLanguageChoiceResult.getChosen());
-
-        return set;
-    }
-
-    private Set<Proficiency> getAllProficiencies() {
-        Set<Proficiency> set = new HashSet<>();
-
-        if (getRace() != null)
-            set.addAll(getRace().getStartingProficiencies());
-        if (getSubrace() != null)
-            set.addAll(getSubrace().getStartingProficiencies());
-        if (this.raceProfChoiceResult != null)
-            set.addAll(this.raceProfChoiceResult.getChosen());
-
-        return set;
-    }
-
     // Setter Methods
-    public void setClass(DNDClass dndclass) {
-        if (this.dndclass == null || !this.dndclass.equals(dndclass)) {
-            this.startingEquipmentChoiceResult.clear();
+    public void setClass(SingleOption classOption) {
+        DNDClass dndclass = DNDClass.fromIndex((classOption).getItem().getReference().getIndex());
+
+        if (getDNDClass() == null || !getDNDClass().equals(dndclass)) {
+            this.startingEquipmentChoiceResult = new ArrayList<>();
 
             for (Choice choice : dndclass.getStartingEquipmentOptions())
-                this.startingEquipmentChoiceResult.add(new ChoiceResult<>(choice));
+                this.startingEquipmentChoiceResult.add(new ChoiceResult(choice));
+
+            if (this.classChoiceResult.isComplete())
+                this.classChoiceResult.clearChoices();
         }
 
-        this.dndclass = dndclass;
+        this.classChoiceResult.choose(classOption);
     }
 
-    public void setSubrace(Subrace subrace) {
+    public void setSubrace(SingleOption subraceOption) {
+        Subrace subrace = subraceOption == null ? null : Subrace.fromIndex((subraceOption).getItem().getReference().getIndex());
+
         if (subrace == null || (getSubrace() != null && !subrace.equals(subrace))) {
             if (subrace == null && this.subraceChoiceResult != null)
                 this.subraceChoiceResult.clearChoices();
@@ -926,15 +983,15 @@ public class CharacterCreator {
         }
 
         if (subrace != null)
-            this.subraceChoiceResult.choose(subrace);
+            this.subraceChoiceResult.choose(subraceOption);
 
         if (getSubrace() != null) {
             for (Trait trait : getSubrace().getRacialTraits())
                 if (trait.getTraitSpecific() != null) {
                     if (trait.getTraitSpecific().getSubtraitOptions() != null)
-                        this.subtraitChoices.put(trait, new ChoiceResult<Trait>(trait.getTraitSpecific().getSubtraitOptions()));
+                        this.subtraitChoices.put(trait, new ChoiceResult(trait.getTraitSpecific().getSubtraitOptions()));
                     if (trait.getTraitSpecific().getSpellOptions() != null)
-                        this.traitSpellChoices.put(trait, new ChoiceResult<Spell>(trait.getTraitSpecific().getSpellOptions()));
+                        this.traitSpellChoices.put(trait, new ChoiceResult(trait.getTraitSpecific().getSpellOptions()));
                 }
 
             if (getSubrace().getLanguageOptions() != null)
@@ -942,7 +999,9 @@ public class CharacterCreator {
         }
     }
 
-    public void setRace(Race race) {
+    public void setRace(SingleOption raceOption) {
+        Race race = Race.fromIndex(raceOption.getItem().getReference().getIndex());
+
         if (getRace() == null || !race.equals(getRace())) {
             setSubrace(null);
             this.raceProfChoiceResult = null;
@@ -957,63 +1016,71 @@ public class CharacterCreator {
         }
 
         if (race != null)
-            this.subraceChoiceResult = race.getSubraces().size() > 0 ? new ChoiceResult<Subrace>(new Choice("subrace", 1, new ResourceListOptionSet(race.getUrl() + "/subraces"))) : null;
+            this.subraceChoiceResult = race.getSubraces().size() > 0 ? new ChoiceResult(new Choice("subrace", 1, new ResourceListOptionSet(race.getUrl() + "/subraces"))) : null;
 
-        this.raceChoiceResult.choose(race);
+        this.raceChoiceResult.choose(raceOption);
 
         for (Trait trait : getRace().getTraits())
             if (trait.getTraitSpecific() != null && trait.getTraitSpecific().getSubtraitOptions() != null)
                 this.subtraitChoices.put(trait, new ChoiceResult(trait.getTraitSpecific().getSubtraitOptions()));
 
         if (getRace().getStartingProficiencyOptions() != null)
-            this.raceProfChoiceResult = new ChoiceResult<Proficiency>(getRace().getStartingProficiencyOptions());
+            this.raceProfChoiceResult = new ChoiceResult(getRace().getStartingProficiencyOptions());
 
         if (getRace().getLanguageOptions() != null)
-            this.raceLanguageChoiceResult = new ChoiceResult<Language>(getRace().getLanguageOptions());
+            this.raceLanguageChoiceResult = new ChoiceResult(getRace().getLanguageOptions());
     }
 
     // Getter methods
-    public HashMap<Trait, ChoiceResult<Spell>> getTraitSpellChoices() {
+    public List<ChoiceResult> getStartingEquipmentChoiceResult() {
+        return this.startingEquipmentChoiceResult;
+    }
+
+    public DNDClass getDNDClass() {
+        return this.classChoiceResult.isComplete() ? new DNDClass(((SingleOption) this.classChoiceResult.getChosen().get(0)).getItem().getReference()) : null;
+    }
+
+    public HashMap<Trait, ChoiceResult> getTraitSpellChoices() {
         return this.traitSpellChoices;
     }
 
-    public ChoiceResult<Race> getRaceChoiceResult() {
+    public ChoiceResult getRaceChoiceResult() {
         return this.raceChoiceResult;
     }
 
-    public ChoiceResult<Subrace> getSubraceChoiceResult() {
+    public ChoiceResult getSubraceChoiceResult() {
         return this.subraceChoiceResult;
     }
 
-    public ChoiceResult<DNDClass> getClassChoiceResult() {
+    public ChoiceResult getClassChoiceResult() {
         return this.classChoiceResult;
     }
 
-    public ChoiceResult<Proficiency> getRaceProfChoiceResult() {
+    public ChoiceResult getRaceProfChoiceResult() {
         return this.raceProfChoiceResult;
     }
 
-    public ChoiceResult<Language> getSubraceLanguageChoiceResult() {
+    public ChoiceResult getSubraceLanguageChoiceResult() {
         return this.subraceLanguageChoiceResult;
     }
 
-    public ChoiceResult<Language> getRaceLanguageChoiceResult() {
+    public ChoiceResult getRaceLanguageChoiceResult() {
         return this.raceLanguageChoiceResult;
     }
 
     public Race getRace() {
-        return this.raceChoiceResult.isComplete() ? this.raceChoiceResult.getChosen().get(0) : null;
+        return this.raceChoiceResult.isComplete() ? new Race(((SingleOption) this.raceChoiceResult.getChosen().get(0)).getItem().getReference()) : null;
     }
 
     public Subrace getSubrace() {
-        return this.subraceChoiceResult == null ? null : (this.subraceChoiceResult.isComplete() ? this.subraceChoiceResult.getChosen().get(0) : null);
+        return this.subraceChoiceResult == null ? null : (this.subraceChoiceResult.isComplete() ? new Subrace(((SingleOption) this.subraceChoiceResult.getChosen().get(0)).getItem().getReference()) : null);
     }
 
     public Player getPlayer() {
         return Bukkit.getPlayer(this.player);
     }
 
-    public HashMap<Trait, ChoiceResult<Trait>> getSubtraitChoices() {
+    public HashMap<Trait, ChoiceResult> getSubtraitChoices() {
         return this.subtraitChoices;
     }
 
@@ -1024,8 +1091,12 @@ public class CharacterCreator {
         meta.setDisplayName(ChatColor.AQUA + info.getName());
         List<String> lore = new ArrayList<>();
 
-        for (String infoDesc : info.getDescription())
+        for (String infoDesc : info.getDescription()) {
+            if (!info.getDescription().get(0).equals(infoDesc))
+                lore.add("");
+
             lore.addAll(Util.fitForLore(ChatColor.GRAY + infoDesc));
+        }
 
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -1050,7 +1121,7 @@ public class CharacterCreator {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        return NBTHandler.addString(item, "language", language.getUrl());
+        return item;
     }
 
     public static ItemStack racialTraitChoiceItem(Choice choice) {
@@ -1061,7 +1132,7 @@ public class CharacterCreator {
         meta.setDisplayName(ChatColor.AQUA + "Racial Trait Options");
         lore.add(ChatColor.GRAY + "Select " + choice.getChoiceAmount() + " racial " + (choice.getChoiceAmount() == 1 ? "trait" : "traits") + " from the following:");
 
-        for (Option option : choice.getChoices())
+        for (Option option : choice.getOptions())
             lore.add(ChatColor.WHITE + "- " + ((SingleOption) option).getItem().getReference().getName());
 
         lore.add("");
@@ -1094,10 +1165,17 @@ public class CharacterCreator {
         List<String> lore = new ArrayList<>();
         meta.setDisplayName(ChatColor.AQUA + proficiency.getName());
 
-        if (proficiency.getType().equals("Skills"))
-            for (String desc : new Skill(proficiency.getReferences().get(0).getUrl()).getDescription())
+        if (proficiency.getType().equals("Skills")) {
+            Skill skill = new Skill(proficiency.getReferences().get(0).getUrl());
+
+            for (String desc : skill.getDescription()) {
+                if (!skill.getDescription().get(0).equals(desc))
+                    lore.add("");
+
                 lore.addAll(Util.fitForLore(ChatColor.GRAY + desc));
 
+            }
+        }
         lore.add("");
 
         if (isProficientAlready)
@@ -1108,7 +1186,7 @@ public class CharacterCreator {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        return NBTHandler.addString(item, "proficiency", proficiency.getUrl());
+        return item;
     }
 
     private static ItemStack startingProficienciesItem(List<Proficiency> proficiencies) {
@@ -1141,9 +1219,9 @@ public class CharacterCreator {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        NBTHandler.addString(item, "goesTo", "subrace");
+        NBTHandler.addString(item, "subrace", subrace.getUrl());
 
-        return NBTHandler.addString(item, "subrace", subrace.getUrl());
+        return NBTHandler.addString(item, "goesTo", "subrace");
     }
 
     public static ItemStack nextPage(String goesTo) {
@@ -1155,6 +1233,12 @@ public class CharacterCreator {
         item.setItemMeta(meta);
 
         return NBTHandler.addString(item, "goesTo", goesTo);
+    }
+
+    public static ItemStack previousPage(int choiceMenuCode) {
+        ItemStack item = previousPage("previous choice menu");
+
+        return NBTHandler.addString(item, "choiceMenuKey", Integer.toString(choiceMenuCode));
     }
 
     public static ItemStack previousPage(String goesTo) {
@@ -1206,9 +1290,9 @@ public class CharacterCreator {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        NBTHandler.addString(item, "goesTo", "class");
+        NBTHandler.addString(item, "class", dndclass.getUrl());
 
-        return NBTHandler.addString(item, "class", dndclass.getUrl());
+        return NBTHandler.addString(item, "goesTo", "class");
     }
 
     public static ItemStack raceItem(Race race) {
@@ -1232,9 +1316,9 @@ public class CharacterCreator {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        NBTHandler.addString(item, "goesTo", "race");
+        NBTHandler.addString(item, "race", race.getUrl());
 
-        return NBTHandler.addString(item, "race", race.getUrl());
+        return NBTHandler.addString(item, "goesTo", "race");
     }
 
     // Static Methods

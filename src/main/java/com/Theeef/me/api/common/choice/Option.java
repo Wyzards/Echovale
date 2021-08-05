@@ -1,6 +1,7 @@
 package com.Theeef.me.api.common.choice;
 
 import com.Theeef.me.api.classes.subclasses.Prerequisite;
+import com.Theeef.me.api.common.Indexable;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -18,6 +19,23 @@ public abstract class Option {
     public Option(OptionType option_type, List<Prerequisite> prerequisites) {
         this.option_type = option_type;
         this.prerequisites = prerequisites;
+    }
+
+    public abstract String getDescription();
+
+    @Override
+    public abstract boolean equals(Object object);
+
+    @Override
+    public abstract int hashCode();
+
+    // Getter methods
+    public OptionType getOptionType() {
+        return this.option_type;
+    }
+
+    public List<Prerequisite> getPrerequisites() {
+        return this.prerequisites;
     }
 
     // Static Methods
@@ -38,5 +56,4 @@ public abstract class Option {
         else
             return new SingleOption(new ArrayList<>(), CountedReference.fromJSON(json));
     }
-
 }

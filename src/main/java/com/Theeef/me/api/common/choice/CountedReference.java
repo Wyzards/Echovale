@@ -3,6 +3,8 @@ package com.Theeef.me.api.common.choice;
 import com.Theeef.me.api.common.APIReference;
 import org.json.simple.JSONObject;
 
+import java.util.Objects;
+
 public class CountedReference {
 
     private final long count;
@@ -11,6 +13,16 @@ public class CountedReference {
     public CountedReference(long count, APIReference of) {
         this.count = count;
         this.of = of;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof CountedReference && ((CountedReference) object).getReference().equals(this.of) && ((CountedReference) object).getCount() == this.count;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass(), this.of, this.count);
     }
 
     // Getter methods

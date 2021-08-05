@@ -56,11 +56,11 @@ public class Gear extends Equipment {
 
         lore.add(ChatColor.GRAY + getGearCategory().getName() + " (" + getEquipmentCategory().getName() + ")");
 
-        if (this.description != null) {
-            lore.add("");
-            for (String string : this.description)
+        if (this.description != null)
+            for (String string : this.description) {
+                lore.add("");
                 lore.addAll(Util.fitForLore(ChatColor.GRAY + string));
-        }
+            }
 
         if (getCost().getCopperValue() > 0 || getWeight() > 0)
             lore.add("");

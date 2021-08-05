@@ -35,8 +35,10 @@ public class MagicItem extends Equipment {
 
         List<String> lore = new ArrayList<>();
 
-        for (String string : this.desc)
+        for (String string : this.desc) {
+            lore.add("");
             lore.addAll(Util.fitForLore(string));
+        }
 
         meta.setLore(lore);
         item.setItemMeta(meta);

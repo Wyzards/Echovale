@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Choice {
 
@@ -35,6 +36,16 @@ public class Choice {
             throw new IllegalArgumentException("Could not find a valid OptionSet type for choice " + json);
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Choice && ((Choice) object).getChoiceAmount() == this.choose && ((Choice) object).getType().equals(this.type) && ((Choice) object).getOptionSet().equals(this.getOptionSet());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass(), this.choose, this.type, this.from);
+    }
+
     // Geter methods
     public long getChoiceAmount() {
         return this.choose;
@@ -44,7 +55,11 @@ public class Choice {
         return this.type;
     }
 
-    public List<Option> getChoices() {
+    public List<Option> getOptions() {
         return this.from.getOptions();
+    }
+
+    public OptionSet getOptionSet() {
+        return this.from;
     }
 }

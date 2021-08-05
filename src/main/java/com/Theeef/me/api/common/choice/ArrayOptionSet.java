@@ -1,6 +1,7 @@
 package com.Theeef.me.api.common.choice;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ArrayOptionSet extends OptionSet {
 
@@ -14,6 +15,16 @@ public class ArrayOptionSet extends OptionSet {
 
     public List<Option> getOptions() {
         return this.options;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ArrayOptionSet && ((ArrayOptionSet) object).getOptions().equals(this.options);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass(), this.options);
     }
 
 }

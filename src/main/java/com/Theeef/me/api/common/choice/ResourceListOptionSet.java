@@ -31,4 +31,23 @@ public class ResourceListOptionSet extends OptionSet {
         return list;
     }
 
+    public JSONObject getReferenceList() {
+        return APIRequest.request(this.url);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ResourceListOptionSet && ((ResourceListOptionSet) object).getUrl().equals(this.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    // Getter methods
+    public String getUrl() {
+        return this.url;
+    }
+
 }

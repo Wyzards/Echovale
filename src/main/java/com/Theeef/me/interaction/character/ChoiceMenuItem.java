@@ -13,7 +13,7 @@ import java.util.List;
 public class ChoiceMenuItem {
 
     private final ItemStack item;
-    private final List<ChoiceResult> results;
+    private final List<ChoiceResult> results; // The results the choice item is waiting to be completed
 
     public ChoiceMenuItem(ItemStack item, List<ChoiceResult> results) {
         this.item = item;

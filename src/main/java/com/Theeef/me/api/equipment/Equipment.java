@@ -3,8 +3,8 @@ package com.Theeef.me.api.equipment;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.Echovale;
 import com.Theeef.me.api.common.APIReference;
+import com.Theeef.me.api.common.choice.CountedReference;
 import com.Theeef.me.api.equipment.armor.Armor;
-import com.Theeef.me.api.equipment.armor.ArmorPiece;
 import com.Theeef.me.api.equipment.containers.Container;
 import com.Theeef.me.api.equipment.containers.Pack;
 import com.Theeef.me.api.equipment.weapons.Weapon;
@@ -58,7 +58,7 @@ public abstract class Equipment {
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
         item.setItemMeta(meta);
 
-        NBTHandler.addString(item, "url", this.url);
+        NBTHandler.addString(item, "equipmentUrl", this.url);
 
         return item;
     }
@@ -124,7 +124,7 @@ public abstract class Equipment {
     }
 
     public static String getItemUrl(ItemStack item) {
-        return NBTHandler.getString(item, "url");
+        return NBTHandler.getString(item, "equipmentUrl");
     }
 
     public static double parseWeight(JSONObject json) {
@@ -137,13 +137,18 @@ public abstract class Equipment {
             return 0;
     }
 
-    public static double weighItem(ItemStack item) {
+    public static double weighItem(ItemStack item, boolean weighWholeStack) {
         Equipment equipment = Equipment.fromItem(item);
 
-        if (equipment instanceof Armor)
-            ((Armor) equipment).setPiece(ArmorPiece.getPiece(item));
+        return equipment.getWeight() * (weighWholeStack ? item.getAmount() : 1);
+    }
 
-        return equipment.getWeight();
+    public static ItemStack fromCountedReference(CountedReference equipmentReference) {
+        Equipment equipment = Equipment.fromString(equipmentReference.getReference().getUrl());
+        ItemStack item = equipment.getItemStack();
+        item.setAmount((int) equipmentReference.getCount());
+
+        return item;
     }
 
     public static Equipment fromString(String url) {
@@ -168,6 +173,8 @@ public abstract class Equipment {
                     return new Gear(url);
             } else if (equipmentCategory.equals("armor"))
                 return new Armor(url);
+            else if (equipmentCategory.equals("tools"))
+                return new Tool(url);
         }
 
         throw new IllegalArgumentException("Could not find proper Equipment Type for url: " + url);

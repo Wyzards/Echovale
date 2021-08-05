@@ -23,10 +23,8 @@ public class Armor extends Equipment {
     private final boolean stealth_disadvantage;
     private final double weight;
     private final Cost cost;
-    private final List<ArmorPiece> pieces;
-    private ArmorPiece piece; // Used to focus on certain data path, etc.
 
-    public Armor(String url, ArmorPiece piece) {
+    public Armor(String url) {
         super(url);
 
         JSONObject json = APIRequest.request(url);
@@ -37,57 +35,35 @@ public class Armor extends Equipment {
         this.stealth_disadvantage = (boolean) json.get("stealth_disadvantage");
         this.weight = Equipment.parseWeight(json);
         this.cost = new Cost((JSONObject) json.get("cost"));
-        this.pieces = retrieveArmorPieces();
-        this.piece = piece;
     }
 
-    public Armor(String url) {
-        this(url, null);
-    }
-
-    public ItemStack getItemStack(ArmorPiece piece) {
-        setPiece(piece); // Used to edit data path, weight, etc.
-
+    @Override
+    public ItemStack getItemStack() {
         ItemStack item = super.getItemStack();
         ItemMeta meta = item.getItemMeta();
 
         assert meta != null;
-        meta.setDisplayName(ChatColor.RESET + retrieveName(getName(), piece));
         item.setItemMeta(meta);
 
         lore(item);
-        NBTHandler.addString(item, "armorPiece", piece.name());
-
-        setPiece(null);
 
         return item;
     }
 
     @Override
     public double getWeight() {
-        if (getPiece() == null)
-            return this.weight;
-        else
-            return Math.round(this.weight * getPiece().getPercentage(this.pieces));
+        return this.weight;
     }
 
     @Override
     public Cost getCost() {
-        if (getPiece() == null)
-            return this.cost.clone();
-        else {
-            double percentage = getPiece().getPercentage(this.pieces);
-            System.out.println("SET: " + getName() + " PIECE: " + getPiece().name() + " PERCENTAGE: " + percentage);
-
-            return this.cost.clone().multiply(percentage);
-        }
+        return this.cost;
     }
 
     // Helper methods
     private void lore(ItemStack item) {
         List<String> lore = new ArrayList<>();
         ItemMeta meta = item.getItemMeta();
-        double multiplier = piece.getPercentage(this.pieces);
 
         lore.add(ChatColor.GRAY + this.getArmorCategory() + " (" + this.getEquipmentCategory().getName() + ")");
         lore.add("");
@@ -95,10 +71,10 @@ public class Armor extends Equipment {
         lore.add(ChatColor.GRAY + "Weight: " + ChatColor.WHITE + getWeight() + " pounds");
         lore.add("");
 
-        if (piece == ArmorPiece.SHIELD) {
+        if (getIndex().equals("shield"))
             lore.add(ChatColor.GRAY + "Armor Class: " + ChatColor.WHITE + "+" + this.armor_class.getBase() + " while holding");
-        } else {
-            lore.add(ChatColor.GRAY + "Armor Class: " + ChatColor.WHITE + this.armor_class.getBase() + (this.armor_class.hasDexBonus() ? " + DEX Modifier" + (this.armor_class.getMaxDexBonus() > 0 ? " (Max of " + this.armor_class.getMaxDexBonus() + ")" : "") : "") + " with full set equipped");
+        else {
+            lore.add(ChatColor.GRAY + "Armor Class: " + ChatColor.WHITE + this.armor_class.getBase() + (this.armor_class.hasDexBonus() ? " + DEX Modifier" + (this.armor_class.getMaxDexBonus() > 0 ? " (Max of " + this.armor_class.getMaxDexBonus() + ")" : "") : ""));
             if (this.str_minimum > 0)
                 lore.add(ChatColor.GRAY + "Strength Requirement: " + ChatColor.WHITE + this.str_minimum);
 
@@ -106,42 +82,11 @@ public class Armor extends Equipment {
                 lore.add("");
                 lore.add(ChatColor.RED + "Wearing this item gives disadvantage on Stealth");
             }
-
-            lore.add("");
-            lore.add(ChatColor.GRAY + "Set Includes:");
-
-            for (ArmorPiece setPiece : this.pieces)
-                lore.add(ChatColor.WHITE + "- " + retrieveName(getName(), setPiece));
         }
 
         assert meta != null;
         meta.setLore(lore);
         item.setItemMeta(meta);
-    }
-
-    private String retrieveName(String setName, ArmorPiece piece) {
-        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".name"))
-            return plugin.getConfigManager().getEquipmentConfig().getString(getDataPath() + ".name");
-        return setName + " " + Util.cleanEnumName(piece.name());
-    }
-
-    private List<ArmorPiece> retrieveArmorPieces() {
-        List<ArmorPiece> pieces = new ArrayList<>();
-
-        if (plugin.getConfigManager().getEquipmentConfig().contains(getDataPath() + ".pieces"))
-            for (String string : plugin.getConfigManager().getEquipmentConfig().getStringList(getDataPath() + ".pieces"))
-                pieces.add(ArmorPiece.valueOf(string));
-        else {
-            plugin.getConfigManager().getEquipmentConfig().set(getDataPath() + ".pieces", new ArrayList<String>());
-            plugin.getConfigManager().saveEquipmentConfig();
-        }
-
-        return pieces;
-    }
-
-    // Setter methods
-    public void setPiece(ArmorPiece piece) {
-        this.piece = piece;
     }
 
     // Getter methods
@@ -159,22 +104,6 @@ public class Armor extends Equipment {
 
     public boolean givesStealthDisadvantage() {
         return this.stealth_disadvantage;
-    }
-
-    public List<ArmorPiece> getPieces() {
-        return this.pieces;
-    }
-
-    public ArmorPiece getPiece() {
-        return this.piece;
-    }
-
-    @Override
-    public String getDataPath() {
-        if (this.piece == null)
-            return super.getDataPath();
-        else
-            return super.getDataPath() + "." + this.piece.name();
     }
 
     public static List<Armor> values() {

@@ -177,4 +177,8 @@ public class Spell {
 
         return list;
     }
+
+    public static Spell fromIndex(String index) {
+        return new Spell("/api/spells/" + index);
+    }
 }

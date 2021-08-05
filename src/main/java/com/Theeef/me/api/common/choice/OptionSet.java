@@ -15,4 +15,15 @@ public abstract class OptionSet {
     }
 
     public abstract List<Option> getOptions();
+
+    @Override
+    public abstract boolean equals(Object object);
+
+    @Override
+    public abstract int hashCode();
+
+    // Getter method
+    public OptionSetType getType() {
+        return this.option_set_type;
+    }
 }
