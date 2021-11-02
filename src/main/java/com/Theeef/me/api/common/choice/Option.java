@@ -2,6 +2,8 @@ package com.Theeef.me.api.common.choice;
 
 import com.Theeef.me.api.classes.subclasses.Prerequisite;
 import com.Theeef.me.api.common.Indexable;
+import com.Theeef.me.interaction.character.CharacterCreator;
+import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -29,6 +31,17 @@ public abstract class Option {
     @Override
     public abstract int hashCode();
 
+    public ItemStack getOptionItem(ChoiceResult parentResult, CharacterCreator creator) {
+        switch (this.option_type) {
+            case CHOICE:
+                return ((ChoiceOption) this).getOptionItem(parentResult);
+            case MULTIPLE:
+                return ((MultipleOption) this).getOptionItem(parentResult);
+            default:
+                return ((SingleOption) this).getOptionItem(parentResult, creator);
+        }
+    }
+
     // Getter methods
     public OptionType getOptionType() {
         return this.option_type;
@@ -45,12 +58,16 @@ public abstract class Option {
         // Choice Option (equipment_option only)
 
         if (json.containsKey("0")) {
-            List<Option> options = new ArrayList<>();
+            List<CountedReference> items = new ArrayList<>();
+            List<ChoiceOption> options = new ArrayList<>();
 
             for (Object numKey : json.keySet())
-                options.add(Option.fromJSON((JSONObject) json.get(numKey)));
+                if (((JSONObject) json.get(numKey)).containsKey("equipment_option"))
+                    options.add(new ChoiceOption(new ArrayList<>(), new Choice((JSONObject) ((JSONObject) json.get(numKey)).get("equipment_option"))));
+                else
+                    items.add(CountedReference.fromJSON((JSONObject) json.get(numKey)));
 
-            return new MultipleOption(new ArrayList<>(), options);
+            return new MultipleOption(new ArrayList<>(), items, options);
         } else if (json.containsKey("equipment_option"))
             return new ChoiceOption(new ArrayList<>(), new Choice((JSONObject) json.get("equipment_option")));
         else

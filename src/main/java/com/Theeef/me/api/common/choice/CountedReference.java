@@ -1,6 +1,8 @@
 package com.Theeef.me.api.common.choice;
 
 import com.Theeef.me.api.common.APIReference;
+import com.Theeef.me.api.equipment.Equipment;
+import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONObject;
 
 import java.util.Objects;
@@ -13,6 +15,18 @@ public class CountedReference {
     public CountedReference(long count, APIReference of) {
         this.count = count;
         this.of = of;
+    }
+
+    public String getDescription() {
+        return this.of.getName() + " x" + count;
+    }
+
+    public ItemStack getEquipment() {
+        Equipment equipment = Equipment.fromString(this.of.getUrl());
+        ItemStack item = equipment.getItemStack();
+        item.setAmount((int) this.count);
+
+        return item;
     }
 
     @Override

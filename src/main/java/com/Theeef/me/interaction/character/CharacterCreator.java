@@ -114,6 +114,19 @@ public class CharacterCreator {
     }
 
     // Menu
+    public void startingEquipmentMenu() {
+        Inventory inventory = Bukkit.createInventory(null, 27, getDNDClass().getName() + " Starting Equipment");
+
+        for (CountedReference equipment : getDNDClass().getStartingEquipment())
+            inventory.addItem(equipment.getEquipment());
+
+        for (ChoiceResult equipmentChoiceResult : this.startingEquipmentChoiceResult)
+            inventory.addItem(equipmentChoiceResult.getItem(this));
+
+        inventory.setItem(inventory.getSize() - 9, CharacterCreator.previousPage("class"));
+        getPlayer().openInventory(inventory);
+    }
+
     public void spellcastingMenu() {
         Inventory inventory = Bukkit.createInventory(null, 27, getDNDClass().getName() + " Spellcasting");
         ItemStack infoItem = new ItemStack(Material.ENCHANTED_BOOK);
@@ -130,27 +143,6 @@ public class CharacterCreator {
         inventory.setItem(inventory.getSize() - 9, CharacterCreator.previousPage("class"));
 
         getPlayer().openInventory(inventory);
-    }
-
-    public void startingEquipmentMenu() {
-        Inventory inventory = Bukkit.createInventory(null, 27, "Starting Equipment");
-
-        for (CountedReference equipment : getDNDClass().getStartingEquipment())
-            inventory.addItem(Equipment.fromCountedReference(equipment));
-
-        for (int i = 0; i < getDNDClass().getStartingEquipmentOptions().size(); i++)
-            inventory.addItem(equipmentChoiceItem(i));
-
-        inventory.setItem(inventory.getSize() - 9, previousPage("class"));
-
-        getPlayer().openInventory(inventory);
-
-        new BukkitRunnable() {
-            public void run() {
-                if (getPlayer().getOpenInventory().getTitle().equals("Starting Equipment"))
-                    startingEquipmentMenu();
-            }
-        }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
     }
 
     public void classLevelsMenu() {
@@ -401,55 +393,7 @@ public class CharacterCreator {
         menu.open(getPlayer());
     }
 
-    // Object based Items
-    public ItemStack equipmentChoiceItem(int index) {
-        ChoiceResult result = this.startingEquipmentChoiceResult.get(index);
-        ItemStack item = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.AQUA + "Equipment Choice");
-        List<String> lore = new ArrayList<>();
-
-        if (!result.isComplete()) {
-            if (result.getChoice().getOptionSet() instanceof ArrayOptionSet) {
-                lore.add(ChatColor.GRAY + "Select " + result.getChoice().getChoiceAmount() + (result.getChoice().getChoiceAmount() > 1 ? " options" : " option") + " from the following:");
-
-                for (Option option : result.getChoice().getOptions())
-                    lore.add(ChatColor.WHITE + "- " + option.getDescription());
-            } else if (result.getChoice().getOptionSet() instanceof ResourceListOptionSet)
-                lore.add(ChatColor.GRAY + "Select " + result.getChoice().getChoiceAmount() + (result.getChoice().getChoiceAmount() > 1 ? " items" : "item") + " from " + ((ResourceListOptionSet) result.getChoice().getOptionSet()).getReferenceList().get("name"));
-        } else {
-            if (result.getChosen().size() == 1) {
-                lore.add(ChatColor.GRAY + "Selected: " + ChatColor.WHITE + result.getChosen().get(0).getDescription());
-
-                if (result.getChosen().get(0).getOptionType() == Option.OptionType.SINGLE) {
-                    item.setItemMeta(meta);
-                    ItemStack equipmentItem = Equipment.fromCountedReference(((SingleOption) result.getChosen().get(0)).getItem());
-                    item.setType(equipmentItem.getType());
-                    item.setAmount(equipmentItem.getAmount());
-                    meta = item.getItemMeta();
-                    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                }
-            } else {
-                lore.add(ChatColor.GRAY + "Selected:");
-
-                for (Option option : result.getChosen())
-                    lore.add(ChatColor.WHITE + "- " + option.getDescription());
-            }
-        }
-
-
-        lore.add("");
-
-        if (result.isComplete())
-            lore.add(ChatColor.WHITE + "Click to change your choice");
-        else
-            lore.add(ChatColor.WHITE + "Click to choose");
-
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-
-        return new ChoiceMenuItem(item, this.startingEquipmentChoiceResult.get(index)).getItem();
-    }
+    // Object based Item
 
     public ItemStack spellcastingItem() {
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK, 1);
@@ -1233,12 +1177,6 @@ public class CharacterCreator {
         item.setItemMeta(meta);
 
         return NBTHandler.addString(item, "goesTo", goesTo);
-    }
-
-    public static ItemStack previousPage(int choiceMenuCode) {
-        ItemStack item = previousPage("previous choice menu");
-
-        return NBTHandler.addString(item, "choiceMenuKey", Integer.toString(choiceMenuCode));
     }
 
     public static ItemStack previousPage(String goesTo) {

@@ -26,8 +26,14 @@ public class Choice {
         if (json.get("from") instanceof JSONArray) {
             List<Option> options = new ArrayList<>();
 
-            for (Object option : (JSONArray) json.get("from"))
+            for (Object option : (JSONArray) json.get("from")) {
+                if (((JSONObject) option).containsKey("equipment_category")) {
+                    this.from = new ResourceListOptionSet((String) ((JSONObject) ((JSONObject) option).get("equipment_category")).get("url"));
+                    return;
+                }
+
                 options.add(Option.fromJSON((JSONObject) option));
+            }
 
             this.from = new ArrayOptionSet(options);
         } else if (((JSONObject) json.get("from")).containsKey("equipment_category"))

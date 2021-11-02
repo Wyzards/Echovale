@@ -19,30 +19,8 @@ import java.util.UUID;
 public class CharacterMenuEvents implements Listener {
 
     @EventHandler
-    public void clickMultiOptionsInfoPage(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() == null && event.getView().getTitle().equals("Items") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
-            event.setCancelled(true);
-
-            CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
-            ItemStack item = event.getCurrentItem();
-
-            if (item == null)
-                return;
-
-            ChoiceMenu menu = ChoiceMenu.getMenuFromItem(item);
-            ChoiceResult result = menu.getChoiceResult(); // This result's options contains this multiOption
-            MultipleOption multiOption = (MultipleOption) result.getChoice().getOptions().get(Integer.parseInt(NBTHandler.getString(item, "optionIndex")));
-
-            if (event.getSlot() < multiOption.getItems().size() && multiOption.getItems().get(event.getSlot()).getOptionType() == Option.OptionType.CHOICE) {
-                ChoiceMenu newMenu = new ChoiceMenu("Starting Equipment", event.getInventory(), result.getChoiceOptionResult(multiOption).getChoiceOptionResult(multiOption.getItems().get(event.getSlot())), Equipment.class);
-                newMenu.open((Player) event.getWhoClicked());
-            }
-        }
-    }
-
-    @EventHandler
     public void clickStartingEquipmentMenu(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() == null && event.getView().getTitle().equals("Starting Equipment") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
+        if (event.getInventory().getHolder() == null && event.getView().getTitle().endsWith("Starting Equipment") && !event.getView().getTitle().startsWith("Choice:") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
             event.setCancelled(true);
 
             CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
@@ -55,6 +33,7 @@ public class CharacterMenuEvents implements Listener {
                 ChoiceMenu menu = new ChoiceMenu("Starting Equipment", "starting equipment", creator.getStartingEquipmentChoiceResult().get(event.getSlot() - creator.getDNDClass().getStartingEquipment().size()), Equipment.class);
                 menu.open(creator.getPlayer());
             }
+
         }
     }
 
@@ -75,23 +54,18 @@ public class CharacterMenuEvents implements Listener {
 
                 switch (option.getOptionType()) {
                     case CHOICE:
-                        ChoiceResult optionResult = menu.getChoiceResult().getChoiceOptionResult((ChoiceOption) option);
-
-                        if (optionResult == null)
-                            optionResult = new ChoiceResult(((ChoiceOption) option).getChoice());
-
-                        if (menu.getChoiceResult().alreadyChosen(option) && event.getClick().isRightClick()) {
-                            ChoiceMenu choiceMenu = new ChoiceMenu("Starting Equipment", menu, optionResult, Equipment.class);
-                            choiceMenu.open((Player) event.getWhoClicked());
-                        } else
+                        if (event.getClick().isLeftClick())
                             chooseClick(menu, option, creator);
+                        else if (event.getClick().isRightClick()) {
 
+                        }
                         break;
                     case MULTIPLE:
-                        if (event.getClick().isRightClick())
-                            menu.multiOptionInfo(menu.getChoiceResult(), event.getSlot(), creator);
-                        else
+                        if (event.getClick().isLeftClick())
                             chooseClick(menu, option, creator);
+                        else if (event.getClick().isRightClick()) {
+                            ((MultipleOption) option).optionInfo(menu, creator);
+                        }
                         break;
                     case SINGLE:
                         if (NBTHandler.hasString(item, "race"))
@@ -191,13 +165,9 @@ public class CharacterMenuEvents implements Listener {
                 return;
 
             if (NBTHandler.hasString(item, "goesTo"))
-                if (NBTHandler.hasString(item, "parentInventory")) {
-                    ChoiceMenu menu = ChoiceMenu.getMenuFromItem(item);
-                    event.getWhoClicked().openInventory(menu.getParentInventory());
-                } else if (NBTHandler.getString(item, "goesTo").equals("previous choice menu")) {
-                    ChoiceMenu.getMenuFromItem(item).open((Player) event.getWhoClicked());
-                    System.out.println("THING");
-                } else
+                if (NBTHandler.getString(item, "goesTo").equals("previous") && ChoiceMenu.getMenuFromItem(item) != null)
+                    ChoiceMenu.getMenuFromItem(item).open(creator.getPlayer());
+                else
                     creator.goToPage(NBTHandler.getString(item, "goesTo"));
         }
     }

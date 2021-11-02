@@ -56,6 +56,7 @@ public abstract class Equipment {
         meta.setDisplayName(ChatColor.RESET + getName());
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
 
         NBTHandler.addString(item, "equipmentUrl", this.url);
@@ -141,14 +142,6 @@ public abstract class Equipment {
         Equipment equipment = Equipment.fromItem(item);
 
         return equipment.getWeight() * (weighWholeStack ? item.getAmount() : 1);
-    }
-
-    public static ItemStack fromCountedReference(CountedReference equipmentReference) {
-        Equipment equipment = Equipment.fromString(equipmentReference.getReference().getUrl());
-        ItemStack item = equipment.getItemStack();
-        item.setAmount((int) equipmentReference.getCount());
-
-        return item;
     }
 
     public static Equipment fromString(String url) {
