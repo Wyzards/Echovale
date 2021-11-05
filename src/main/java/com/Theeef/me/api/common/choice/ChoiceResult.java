@@ -30,7 +30,7 @@ public class ChoiceResult {
         meta.setDisplayName(ChatColor.AQUA + "Make A Choice");
         List<String> lore = new ArrayList<>();
 
-        lore.add(ChatColor.GRAY + "Select " + choice.getChoiceAmount() + " of the following:");
+        lore.add(ChatColor.GRAY + "Choose " + choice.getChoiceAmount() + " of the following:");
 
         for (Option option : choice.getOptions())
             lore.add(ChatColor.WHITE + "- " + option.getDescription());
@@ -39,13 +39,19 @@ public class ChoiceResult {
             lore.add("");
 
             if (this.chosen.size() == 1)
-                lore.add(ChatColor.GRAY + "Selected: " + ChatColor.WHITE + this.chosen.get(0).getDescription());
+                lore.add(ChatColor.GRAY + "Chosen: " + ChatColor.WHITE + this.chosen.get(0).getDescription());
             else {
-                lore.add(ChatColor.GRAY + "Selected:");
+                lore.add(ChatColor.GRAY + "Chosen:");
 
                 for (Option selectedOption : this.chosen)
                     lore.add(ChatColor.WHITE + "- " + selectedOption.getDescription());
             }
+
+            lore.add("");
+            lore.add(ChatColor.WHITE + "Click to edit your choice");
+        } else {
+            lore.add("");
+            lore.add(ChatColor.WHITE + "Click to make your choice");
         }
 
         meta.setLore(lore);
@@ -89,14 +95,21 @@ public class ChoiceResult {
     }
 
     public boolean isComplete() {
-        for (ChoiceResult choiceOptionResult : this.choiceOptions.values())
-            if (!choiceOptionResult.isComplete())
-                return false;
+        return isComplete(true);
+    }
 
-        for (MultipleOption multipleOption : this.multipleOptionChoiceOptions.keySet())
-            for (ChoiceResult choiceOptionResult : this.multipleOptionChoiceOptions.get(multipleOption).values())
+    public boolean isComplete(boolean includeSubchoices) {
+
+        if (includeSubchoices) {
+            for (ChoiceResult choiceOptionResult : this.choiceOptions.values())
                 if (!choiceOptionResult.isComplete())
                     return false;
+
+            for (MultipleOption multipleOption : this.multipleOptionChoiceOptions.keySet())
+                for (ChoiceResult choiceOptionResult : this.multipleOptionChoiceOptions.get(multipleOption).values())
+                    if (!choiceOptionResult.isComplete())
+                        return false;
+        }
 
         return this.chosen.size() == this.choice.getChoiceAmount();
     }

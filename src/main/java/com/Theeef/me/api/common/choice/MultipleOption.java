@@ -5,6 +5,7 @@ import com.Theeef.me.api.common.Indexable;
 import com.Theeef.me.interaction.character.CharacterCreator;
 import com.Theeef.me.interaction.character.ChoiceMenu;
 import com.Theeef.me.interaction.character.ChoiceMenuItem;
+import com.Theeef.me.util.NBTHandler;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,7 +34,7 @@ public class MultipleOption extends Option {
         this.choiceOptions = choiceOptions;
     }
 
-    public void optionInfo(ChoiceMenu parentMenu, CharacterCreator creator) {
+    public Inventory optionInfoInventory(ChoiceMenu parentMenu) {
         ChoiceResult result = parentMenu.getChoiceResult();
         Inventory inventory = Bukkit.createInventory(null, 9 * (3 + getItems().size() / 9), "More Option Info");
 
@@ -41,11 +42,15 @@ public class MultipleOption extends Option {
             inventory.addItem(item.getEquipment());
 
         for (ChoiceOption choiceOption : getChoices())
-            inventory.addItem(choiceOption.getOptionItem(result.getMultiOptionChoices(this).get(choiceOption)));
+            inventory.addItem(choiceOption.getMultiChoiceOptionItem(result.getMultiOptionChoices(this) != null && result.getMultiOptionChoices(this).containsKey(choiceOption) ? result.getMultiOptionChoices(this).get(choiceOption) : null));
 
-        inventory.setItem(inventory.getSize() - 9, parentMenu.attachToItem(CharacterCreator.previousPage("previous")));
+        inventory.setItem(inventory.getSize() - 9, NBTHandler.addString(parentMenu.attachToItem(CharacterCreator.previousPage("previous")), "optionIndex", Integer.toString(parentMenu.getChoiceResult().getChoice().getOptions().indexOf(this))));
 
-        creator.getPlayer().openInventory(inventory);
+        return inventory;
+    }
+
+    public void optionInfo(ChoiceMenu parentMenu, CharacterCreator creator) {
+        creator.getPlayer().openInventory(optionInfoInventory(parentMenu));
     }
 
     public ItemStack getOptionItem(ChoiceResult parentResult) {
@@ -64,9 +69,9 @@ public class MultipleOption extends Option {
         lore.add("");
 
         if (parentResult.alreadyChosen(this))
-            lore.add(ChatColor.WHITE + "Left Click to unselect this option");
-        else
-            lore.add(ChatColor.WHITE + "Left Click to select this option");
+            lore.add(ChatColor.WHITE + "Left Click to unchoose this option");
+        else if (!parentResult.isComplete(false))
+            lore.add(ChatColor.WHITE + "Left Click to choose this option");
         lore.add(ChatColor.WHITE + "Right Click to see more information");
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -97,16 +102,18 @@ public class MultipleOption extends Option {
             count++;
 
             if (count == itemsCount + choicesCount)
-                string.append("and ");
-            string.append(items.get(count - 1).getDescription());
+                string.append("and ").append(items.get(count - 1).getDescription());
+            else
+                string.append(items.get(count - 1).getDescription() + ", ");
         }
 
         for (ChoiceOption option : choiceOptions) {
             count++;
 
             if (count == itemsCount + choicesCount)
-                string.append(" and ");
-            string.append(choiceOptions.get(count - 1 - itemsCount).getDescription());
+                string.append("and ").append(choiceOptions.get(count - 1 - itemsCount).getDescription());
+            else
+                string.append(choiceOptions.get(count - 1 - itemsCount).getDescription() + ", ");
         }
 
         return string.toString();
@@ -114,7 +121,7 @@ public class MultipleOption extends Option {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof MultipleOption && ((MultipleOption) object).getItems().equals(this.items);
+        return object instanceof MultipleOption && ((MultipleOption) object).getItems().equals(this.items) && ((MultipleOption) object).getChoices().equals(this.choiceOptions);
     }
 
     @Override

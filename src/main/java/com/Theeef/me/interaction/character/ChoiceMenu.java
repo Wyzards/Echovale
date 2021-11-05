@@ -1,57 +1,54 @@
 package com.Theeef.me.interaction.character;
 
-import com.Theeef.me.api.chardata.Language;
-import com.Theeef.me.api.chardata.Proficiency;
-import com.Theeef.me.api.classes.DNDClass;
 import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.api.common.choice.*;
-import com.Theeef.me.api.equipment.Equipment;
-import com.Theeef.me.api.races.Race;
-import com.Theeef.me.api.races.Subrace;
-import com.Theeef.me.api.races.Trait;
-import com.Theeef.me.api.spells.Spell;
 import com.Theeef.me.util.NBTHandler;
-import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class ChoiceMenu<T> {
 
     public static HashMap<Integer, ChoiceMenu> menuMap = new HashMap<>();
+    public static HashMap<ChoiceMenu, Inventory> inventoryMap = new HashMap<>();
 
     private final String name;
     private final String previousPage;
+    private final ChoiceMenu previousMenu;
+    private Inventory previousInventory;
     private final ChoiceResult result;
     private final APIReference specificReference;
 
-    public ChoiceMenu(String name, String previousPage, ChoiceResult result, Class<T> type, APIReference specificReference) {
+    public ChoiceMenu(String name, String previousPage, ChoiceMenu previousMenu, ChoiceResult result, APIReference specificReference) {
         this.name = "Choice: " + name;
         this.previousPage = previousPage;
         this.result = result;
         this.specificReference = specificReference;
+        this.previousMenu = previousMenu;
+        this.previousInventory = null;
     }
 
-    public ChoiceMenu(String name, String previousPage, ChoiceResult result, Class<T> type) {
-        this(name, previousPage, result, type, null);
+    public ChoiceMenu(String name, Inventory previousInventory, ChoiceResult result) {
+        this(name, null, null, result, null);
+
+        this.previousInventory = previousInventory;
+        ChoiceMenu.menuMap.put(hashCode(), this);
+    }
+
+    public ChoiceMenu(String name, ChoiceMenu previousMenu, ChoiceResult result) {
+        this(name, null, previousMenu, result, null);
+    }
+
+    public ChoiceMenu(String name, String previousPage, ChoiceResult result) {
+        this(name, previousPage, null, result, null);
     }
 
     public void open(Player player) {
         CharacterCreator creator = CharacterCreator.getWIPCharacter(player);
         Inventory inventory = Bukkit.createInventory(null, 9 * ((this.result.getChoice().getOptions().size() - 1) / 9 + 3), this.name);
-
-        if (this.previousPage != null)
-            inventory.setItem(inventory.getSize() - 9, CharacterCreator.previousPage(this.previousPage));
 
         for (Option option : this.result.getChoice().getOptions())
             inventory.addItem(option.getOptionItem(this.result, creator));
@@ -65,7 +62,25 @@ public class ChoiceMenu<T> {
             if (item != null)
                 attachToItem(item);
 
+
+        if (this.previousPage != null)
+            inventory.setItem(inventory.getSize() - 9, attachToItem(CharacterCreator.previousPage(this.previousPage)));
+        else if (this.previousMenu != null)
+            inventory.setItem(inventory.getSize() - 9, this.previousMenu.attachToItem(CharacterCreator.previousPage("previous")));
+        else if (this.previousInventory != null)
+            inventory.setItem(inventory.getSize() - 9, ChoiceMenu.attachInventoryToItem(CharacterCreator.previousPage("previous"), this));
+
         player.openInventory(inventory);
+    }
+
+    public static ItemStack attachInventoryToItem(ItemStack item, ChoiceMenu owningMenu) {
+        NBTHandler.addString(item, "attachedInventory", Integer.toString(owningMenu.hashCode()));
+
+        return item;
+    }
+
+    public static Inventory getAttachedInventory(ItemStack item) {
+        return NBTHandler.hasString(item, "attachedInventory") && ChoiceMenu.menuMap.containsKey(Integer.parseInt(NBTHandler.getString(item, "attachedInventory"))) && ChoiceMenu.menuMap.get(Integer.parseInt(NBTHandler.getString(item, "attachedInventory"))).getInventory() != null ? ChoiceMenu.menuMap.get(Integer.parseInt(NBTHandler.getString(item, "attachedInventory"))).getInventory() : null;
     }
 
     // Helper methods
@@ -95,9 +110,13 @@ public class ChoiceMenu<T> {
         return this.specificReference;
     }
 
+    public Inventory getInventory() {
+        return this.previousInventory;
+    }
+
     // Static methods
 
     public static ChoiceMenu getMenuFromItem(ItemStack item) {
-        return ChoiceMenu.menuMap.get(Integer.parseInt(NBTHandler.getString(item, "choiceMenuCode")));
+        return NBTHandler.hasString(item, "choiceMenuCode") ? ChoiceMenu.menuMap.get(Integer.parseInt(NBTHandler.getString(item, "choiceMenuCode"))) : null;
     }
 }

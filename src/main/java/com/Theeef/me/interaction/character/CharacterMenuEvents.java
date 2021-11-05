@@ -14,9 +14,32 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class CharacterMenuEvents implements Listener {
+
+    @EventHandler
+    public void clickMultiInfo(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() == null && event.getView().getTitle().equals("More Option Info") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
+            CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
+            ItemStack item = event.getCurrentItem();
+            event.setCancelled(true);
+
+            if (item == null || !event.getClickedInventory().equals(event.getInventory()))
+                return;
+
+            ChoiceMenu previousMenu = ChoiceMenu.getMenuFromItem(event.getClickedInventory().getItem(event.getInventory().getSize() - 9));
+            MultipleOption multioption = (MultipleOption) previousMenu.getChoiceResult().getChoice().getOptions().get(Integer.parseInt(NBTHandler.getString(event.getInventory().getItem(event.getInventory().getSize() - 9), "optionIndex")));
+
+            if (multioption.getChoices().size() > 0 && event.getSlot() + 1 > multioption.getItems().size() && event.getSlot() < multioption.getItems().size() + multioption.getChoices().size()) {
+                ChoiceOption option = multioption.getChoices().get(event.getSlot() - multioption.getItems().size());
+
+                if (previousMenu.getChoiceResult().alreadyChosen(multioption))
+                    ((ChoiceOption) option).choiceMenu(event.getInventory(), previousMenu.getChoiceResult().getMultiOptionChoices(multioption).get(option), creator);
+            }
+        }
+    }
 
     @EventHandler
     public void clickStartingEquipmentMenu(InventoryClickEvent event) {
@@ -26,11 +49,11 @@ public class CharacterMenuEvents implements Listener {
             CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
             ItemStack item = event.getCurrentItem();
 
-            if (item == null)
+            if (item == null || !event.getClickedInventory().equals(event.getInventory()))
                 return;
 
             if (event.getSlot() >= creator.getDNDClass().getStartingEquipment().size() && event.getSlot() <= creator.getDNDClass().getStartingEquipment().size() + creator.getDNDClass().getStartingEquipmentOptions().size()) {
-                ChoiceMenu menu = new ChoiceMenu("Starting Equipment", "starting equipment", creator.getStartingEquipmentChoiceResult().get(event.getSlot() - creator.getDNDClass().getStartingEquipment().size()), Equipment.class);
+                ChoiceMenu menu = new ChoiceMenu("Starting Equipment", "starting equipment", creator.getStartingEquipmentChoiceResult().get(event.getSlot() - creator.getDNDClass().getStartingEquipment().size()));
                 menu.open(creator.getPlayer());
             }
 
@@ -44,10 +67,13 @@ public class CharacterMenuEvents implements Listener {
             ItemStack item = event.getCurrentItem();
             event.setCancelled(true);
 
-            if (item == null)
+            if (item == null || !event.getClickedInventory().equals(event.getInventory()))
                 return;
 
             ChoiceMenu menu = ChoiceMenu.getMenuFromItem(item);
+
+            if (menu == null)
+                return;
 
             if (event.getSlot() < menu.getChoiceResult().getChoice().getOptions().size()) {
                 Option option = menu.getChoiceResult().getChoice().getOptions().get(event.getSlot());
@@ -56,9 +82,8 @@ public class CharacterMenuEvents implements Listener {
                     case CHOICE:
                         if (event.getClick().isLeftClick())
                             chooseClick(menu, option, creator);
-                        else if (event.getClick().isRightClick()) {
-
-                        }
+                        else if (event.getClick().isRightClick() && menu.getChoiceResult().alreadyChosen(option))
+                            ((ChoiceOption) option).choiceMenu(menu, creator);
                         break;
                     case MULTIPLE:
                         if (event.getClick().isLeftClick())
@@ -86,7 +111,7 @@ public class CharacterMenuEvents implements Listener {
     private void chooseClick(ChoiceMenu menu, Option option, CharacterCreator creator) {
         if (menu.getChoiceResult().alreadyChosen(option))
             menu.getChoiceResult().unchoose(option);
-        else if (!menu.getChoiceResult().isComplete())
+        else if (!menu.getChoiceResult().isComplete(false))
             menu.getChoiceResult().choose(option);
 
         menu.open(creator.getPlayer());
@@ -100,14 +125,14 @@ public class CharacterMenuEvents implements Listener {
             ItemStack item = event.getCurrentItem();
             CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
 
-            if (item == null)
+            if (item == null || !event.getClickedInventory().equals(event.getInventory()))
                 return;
 
             if (NBTHandler.hasString(item, "trait")) {
                 Trait trait = new Trait(NBTHandler.getString(item, "trait"));
 
                 if (trait.getTraitSpecific() != null && trait.getTraitSpecific().getSpellOptions() != null) {
-                    ChoiceMenu<Spell> menu = new ChoiceMenu<Spell>("Select " + trait.getTraitSpecific().getSpellOptions().getChoiceAmount() + (trait.getTraitSpecific().getSpellOptions().getChoiceAmount() > 1 ? " Spells " : " Spell"), "subrace traits", creator.getTraitSpellChoices().get(trait), Spell.class, new APIReference(APIRequest.request(trait.getUrl())));
+                    ChoiceMenu<Spell> menu = new ChoiceMenu<Spell>("Select " + trait.getTraitSpecific().getSpellOptions().getChoiceAmount() + (trait.getTraitSpecific().getSpellOptions().getChoiceAmount() > 1 ? " Spells " : " Spell"), "subrace traits", null, creator.getTraitSpellChoices().get(trait), new APIReference(APIRequest.request(trait.getUrl())));
                     menu.open(creator.getPlayer());
                 }
             }
@@ -121,7 +146,7 @@ public class CharacterMenuEvents implements Listener {
 
             ItemStack item = event.getCurrentItem();
 
-            if (item == null)
+            if (item == null || !event.getClickedInventory().equals(event.getInventory()))
                 return;
 
             CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
@@ -142,7 +167,7 @@ public class CharacterMenuEvents implements Listener {
 
             ItemStack item = event.getCurrentItem();
 
-            if (item == null)
+            if (item == null || !event.getClickedInventory().equals(event.getInventory()))
                 return;
 
             if (NBTHandler.hasString(item, "characterUUID")) {
@@ -161,13 +186,21 @@ public class CharacterMenuEvents implements Listener {
             CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
             ItemStack item = event.getCurrentItem();
 
-            if (item == null)
+            if (item == null || !event.getClickedInventory().equals(event.getInventory()))
                 return;
 
             if (NBTHandler.hasString(item, "goesTo"))
-                if (NBTHandler.getString(item, "goesTo").equals("previous") && ChoiceMenu.getMenuFromItem(item) != null)
-                    ChoiceMenu.getMenuFromItem(item).open(creator.getPlayer());
-                else
+                if (NBTHandler.getString(item, "goesTo").equals("previous")) {
+                    if (ChoiceMenu.getMenuFromItem(item) != null)
+                        ChoiceMenu.getMenuFromItem(item).open(creator.getPlayer());
+                    else if (ChoiceMenu.getAttachedInventory(item) != null) {
+                        creator.getPlayer().openInventory(Objects.requireNonNull(ChoiceMenu.getAttachedInventory(item)));
+                        if (creator.getPlayer().getOpenInventory().getTitle().equals("More Option Info")) {
+                            ChoiceResult result = ChoiceMenu.getMenuFromItem(creator.getPlayer().getOpenInventory().getTopInventory().getItem(creator.getPlayer().getOpenInventory().getTopInventory().getSize() - 9)).getChoiceResult();
+                            ((MultipleOption) result.getChoice().getOptions().get(Integer.parseInt(NBTHandler.getString(creator.getPlayer().getOpenInventory().getTopInventory().getItem(creator.getPlayer().getOpenInventory().getTopInventory().getSize() - 9), "optionIndex")))).optionInfo(ChoiceMenu.getMenuFromItem(creator.getPlayer().getOpenInventory().getTopInventory().getItem(creator.getPlayer().getOpenInventory().getTopInventory().getSize() - 9)), creator);
+                        }
+                    }
+                } else
                     creator.goToPage(NBTHandler.getString(item, "goesTo"));
         }
     }

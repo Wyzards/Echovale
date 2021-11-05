@@ -150,12 +150,12 @@ public class CharacterCreator {
     }
 
     public void selectClassMenu() {
-        ChoiceMenu menu = new ChoiceMenu("Select Your Class", "class", this.classChoiceResult, DNDClass.class);
+        ChoiceMenu menu = new ChoiceMenu("Select Your Class", "class", this.classChoiceResult);
         menu.open(getPlayer());
     }
 
     public void subtraitsMenu(Trait parentTrait, String returnTo) {
-        ChoiceMenu menu = new ChoiceMenu(parentTrait.getName(), returnTo, this.subtraitChoices.get(parentTrait), Trait.class);
+        ChoiceMenu menu = new ChoiceMenu(parentTrait.getName(), returnTo, this.subtraitChoices.get(parentTrait));
         menu.open(getPlayer());
     }
 
@@ -178,17 +178,17 @@ public class CharacterCreator {
     }
 
     public void subraceLanguageOptionsMenu() {
-        ChoiceMenu menu = new ChoiceMenu("Choose " + getSubrace().getLanguageOptions().getChoiceAmount() + (getSubrace().getLanguageOptions().getChoiceAmount() > 1 ? " Languages" : " Language"), "subrace", this.subraceLanguageChoiceResult, Language.class);
+        ChoiceMenu menu = new ChoiceMenu("Choose " + getSubrace().getLanguageOptions().getChoiceAmount() + (getSubrace().getLanguageOptions().getChoiceAmount() > 1 ? " Languages" : " Language"), "subrace", this.subraceLanguageChoiceResult);
         menu.open(getPlayer());
     }
 
     public void raceLanguageOptionsMenu() {
-        ChoiceMenu menu = new ChoiceMenu("Choose " + getRace().getLanguageOptions().getChoiceAmount() + (getRace().getLanguageOptions().getChoiceAmount() > 1 ? " Languages" : " Language"), "race", this.raceLanguageChoiceResult, Language.class);
+        ChoiceMenu menu = new ChoiceMenu("Choose " + getRace().getLanguageOptions().getChoiceAmount() + (getRace().getLanguageOptions().getChoiceAmount() > 1 ? " Languages" : " Language"), "race", this.raceLanguageChoiceResult);
         menu.open(getPlayer());
     }
 
     public void selectSubraceMenu() {
-        ChoiceMenu menu = new ChoiceMenu("Select Your Subrace", "subrace", this.subraceChoiceResult, Subrace.class);
+        ChoiceMenu menu = new ChoiceMenu("Select Your Subrace", "subrace", this.subraceChoiceResult);
         menu.open(getPlayer());
     }
 
@@ -251,7 +251,7 @@ public class CharacterCreator {
     }
 
     public void raceProficiencyOptionsMenu() {
-        ChoiceMenu menu = new ChoiceMenu("Choose " + getRace().getStartingProficiencyOptions().getChoiceAmount() + (getRace().getStartingProficiencyOptions().getChoiceAmount() > 1 ? " Proficiencies" : " Proficiency"), "race", this.raceProfChoiceResult, Proficiency.class);
+        ChoiceMenu menu = new ChoiceMenu("Choose " + getRace().getStartingProficiencyOptions().getChoiceAmount() + (getRace().getStartingProficiencyOptions().getChoiceAmount() > 1 ? " Proficiencies" : " Proficiency"), "race", this.raceProfChoiceResult);
         menu.open(getPlayer());
     }
 
@@ -389,7 +389,7 @@ public class CharacterCreator {
     }
 
     public void selectRaceMenu() {
-        ChoiceMenu menu = new ChoiceMenu("Select Your Race", "race", this.raceChoiceResult, Race.class);
+        ChoiceMenu menu = new ChoiceMenu("Select Your Race", "race", this.raceChoiceResult);
         menu.open(getPlayer());
     }
 
