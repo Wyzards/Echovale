@@ -1,5 +1,6 @@
 package com.Theeef.me.interaction.character;
 
+import com.Theeef.me.Echovale;
 import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.api.common.choice.*;
 import com.Theeef.me.util.NBTHandler;
@@ -7,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 
@@ -47,6 +49,16 @@ public class ChoiceMenu<T> {
     }
 
     public void open(Player player) {
+        for (Option option : this.result.getChoice().getOptions())
+            if (option.getOptionType() == Option.OptionType.CHOICE || (option.getOptionType() == Option.OptionType.MULTIPLE && this.result.getMultiOptionChoices((MultipleOption) option) != null)) {
+                open(player, true);
+                return;
+            }
+
+        open(player, false);
+    }
+
+    public void open(Player player, boolean startLoop) {
         CharacterCreator creator = CharacterCreator.getWIPCharacter(player);
         Inventory inventory = Bukkit.createInventory(null, 9 * ((this.result.getChoice().getOptions().size() - 1) / 9 + 3), this.name);
 
@@ -71,6 +83,19 @@ public class ChoiceMenu<T> {
             inventory.setItem(inventory.getSize() - 9, ChoiceMenu.attachInventoryToItem(CharacterCreator.previousPage("previous"), this));
 
         player.openInventory(inventory);
+
+        ChoiceMenu.inventoryMap.put(this, inventory);
+
+        ChoiceMenu menu = this;
+
+        if (startLoop) {
+            new BukkitRunnable() {
+                public void run() {
+                    if (ChoiceMenu.inventoryMap.containsKey(menu) && ChoiceMenu.inventoryMap.get(menu).equals(player.getOpenInventory().getTopInventory()))
+                        open(player);
+                }
+            }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
+        }
     }
 
     public static ItemStack attachInventoryToItem(ItemStack item, ChoiceMenu owningMenu) {

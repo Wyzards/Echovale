@@ -51,7 +51,7 @@ public class ChoiceMenuItem {
 
     private boolean isComplete() {
         for (ChoiceResult result : this.results)
-            if (!result.isComplete())
+            if (result != null && !result.isComplete())
                 return false;
 
         return true;

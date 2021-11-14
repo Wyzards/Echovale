@@ -114,7 +114,7 @@ public class CharacterMenuEvents implements Listener {
         else if (!menu.getChoiceResult().isComplete(false))
             menu.getChoiceResult().choose(option);
 
-        menu.open(creator.getPlayer());
+        menu.open(creator.getPlayer(), false);
     }
 
     @EventHandler

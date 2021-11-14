@@ -1,6 +1,7 @@
 package com.Theeef.me.api.common.choice;
 
 import com.Theeef.me.interaction.character.CharacterCreator;
+import com.Theeef.me.interaction.character.ChoiceMenuItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -57,7 +58,7 @@ public class ChoiceResult {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        return item;
+        return new ChoiceMenuItem(item, this).getItem();
     }
 
     public boolean alreadyChosen(Option option) {
@@ -90,8 +91,8 @@ public class ChoiceResult {
 
         if (option.getOptionType() == Option.OptionType.CHOICE && choiceOptions.containsKey((ChoiceOption) option))
             this.choiceOptions.remove((ChoiceOption) option);
-        else if (option.getOptionType() == Option.OptionType.MULTIPLE && choiceOptions.containsKey((MultipleOption) option))
-            this.choiceOptions.remove((MultipleOption) option);
+        else if (option.getOptionType() == Option.OptionType.MULTIPLE && multipleOptionChoiceOptions.containsKey((MultipleOption) option))
+            this.multipleOptionChoiceOptions.remove((MultipleOption) option);
     }
 
     public boolean isComplete() {

@@ -4,6 +4,7 @@ import com.Theeef.me.api.classes.subclasses.Prerequisite;
 import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.interaction.character.CharacterCreator;
 import com.Theeef.me.interaction.character.ChoiceMenu;
+import com.Theeef.me.interaction.character.ChoiceMenuItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -110,7 +111,7 @@ public class ChoiceOption extends Option {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        return item;
+        return new ChoiceMenuItem(item, parentResult.getChoiceOptionResult(this)).getItem();
     }
 
     @Override

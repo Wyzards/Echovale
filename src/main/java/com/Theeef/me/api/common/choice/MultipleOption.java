@@ -88,7 +88,10 @@ public class MultipleOption extends Option {
                 if (!multiOptionChoices.get(choiceOption).isComplete())
                     return new ChoiceMenuItem(item, new ArrayList<>(multiOptionChoices.values())).getItem();
 
-        return item;
+        if (parentResult.getMultiOptionChoices(this) != null)
+            return new ChoiceMenuItem(item, new ArrayList<>(parentResult.getMultiOptionChoices(this).values())).getItem();
+        else
+            return item;
     }
 
     @Override

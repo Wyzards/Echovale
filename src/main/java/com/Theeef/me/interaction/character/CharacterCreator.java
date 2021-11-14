@@ -125,6 +125,13 @@ public class CharacterCreator {
 
         inventory.setItem(inventory.getSize() - 9, CharacterCreator.previousPage("class"));
         getPlayer().openInventory(inventory);
+
+        new BukkitRunnable() {
+            public void run() {
+                if (getPlayer().getOpenInventory().getTitle().equals(getDNDClass().getName() + " Starting Equipment"))
+                    startingEquipmentMenu();
+            }
+        }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
     }
 
     public void spellcastingMenu() {
