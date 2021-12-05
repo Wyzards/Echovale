@@ -39,7 +39,7 @@ public class APIRequest {
             in.close();
 
             JSONParser parser = new JSONParser();
-            json = (JSONObject) parser.parse(content.toString());
+            json = (JSONAware) parser.parse(content.toString());
 
             cachedRequests.put(path, json);
         } catch (IOException | ParseException e) {

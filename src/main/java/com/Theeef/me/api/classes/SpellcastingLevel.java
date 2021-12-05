@@ -16,16 +16,16 @@ public class SpellcastingLevel {
     private final long spell_slots_level_9;
 
     public SpellcastingLevel(JSONObject json) {
-        this.cantrips_known = (long) json.get("cantrips_known");
-        this.spell_slots_level_1 = (long) json.get("spell_slots_level_1");
-        this.spell_slots_level_2 = (long) json.get("spell_slots_level_2");
-        this.spell_slots_level_3 = (long) json.get("spell_slots_level_3");
-        this.spell_slots_level_4 = (long) json.get("spell_slots_level_4");
-        this.spell_slots_level_5 = (long) json.get("spell_slots_level_5");
-        this.spell_slots_level_6 = (long) json.get("spell_slots_level_6");
-        this.spell_slots_level_7 = (long) json.get("spell_slots_level_7");
-        this.spell_slots_level_8 = (long) json.get("spell_slots_level_8");
-        this.spell_slots_level_9 = (long) json.get("spell_slots_level_9");
+        this.cantrips_known = json.containsKey("cantrips_known") ? (long) json.get("cantrips_known") : 0;
+        this.spell_slots_level_1 = json.containsKey("spell_slots_level_1") ? (long) json.get("spell_slots_level_1") : 0;
+        this.spell_slots_level_2 = json.containsKey("spell_slots_level_2") ? (long) json.get("spell_slots_level_2") : 0;
+        this.spell_slots_level_3 = json.containsKey("spell_slots_level_3") ? (long) json.get("spell_slots_level_3") : 0;
+        this.spell_slots_level_4 = json.containsKey("spell_slots_level_4") ? (long) json.get("spell_slots_level_4") : 0;
+        this.spell_slots_level_5 = json.containsKey("spell_slots_level_5") ? (long) json.get("spell_slots_level_5") : 0;
+        this.spell_slots_level_6 = json.containsKey("spell_slots_level_6") ? (long) json.get("spell_slots_level_6") : 0;
+        this.spell_slots_level_7 = json.containsKey("spell_slots_level_7") ? (long) json.get("spell_slots_level_7") : 0;
+        this.spell_slots_level_8 = json.containsKey("spell_slots_level_8") ? (long) json.get("spell_slots_level_8") : 0;
+        this.spell_slots_level_9 = json.containsKey("spell_slots_level_9") ? (long) json.get("spell_slots_level_9") : 0;
     }
 
     // Getter methods

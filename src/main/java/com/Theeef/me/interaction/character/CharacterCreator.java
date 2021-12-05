@@ -1,11 +1,14 @@
 package com.Theeef.me.interaction.character;
 
+import com.Theeef.me.APIRequest;
 import com.Theeef.me.Echovale;
 import com.Theeef.me.api.chardata.AbilityScore;
 import com.Theeef.me.api.chardata.Language;
 import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.chardata.Skill;
 import com.Theeef.me.api.classes.DNDClass;
+import com.Theeef.me.api.classes.Spellcasting;
+import com.Theeef.me.api.classes.SpellcastingLevel;
 import com.Theeef.me.api.classes.subclasses.Subclass;
 import com.Theeef.me.api.common.AbilityBonus;
 import com.Theeef.me.api.common.Info;
@@ -24,11 +27,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,10 +132,16 @@ public class CharacterCreator {
         inventory.setItem(inventory.getSize() - 9, CharacterCreator.previousPage("class"));
         getPlayer().openInventory(inventory);
 
+        final CharacterCreator creator = this;
+
         new BukkitRunnable() {
             public void run() {
                 if (getPlayer().getOpenInventory().getTitle().equals(getDNDClass().getName() + " Starting Equipment"))
-                    startingEquipmentMenu();
+                    for (ChoiceResult result : creator.getStartingEquipmentChoiceResult())
+                        if (!result.isComplete()) {
+                            startingEquipmentMenu();
+                            break;
+                        }
             }
         }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
     }
@@ -153,7 +165,64 @@ public class CharacterCreator {
     }
 
     public void classLevelsMenu() {
+        // Item for spellcasting
+        // Item for proficiency & features (click for more info)
+        Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, "Leveling");
+        if (getDNDClass().getSpellcasting() != null)
+            inventory.addItem(levelingSpellcastingItem());
+        inventory.addItem(levelingPerksItem());
 
+        getPlayer().openInventory(inventory);
+    }
+
+    private ItemStack levelingSpellcastingItem() {
+        ItemStack item = new ItemStack(Material.ENCHANTING_TABLE, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "Spellcasting");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.AQUA + "Level ")
+        JSONArray levels = (JSONArray) APIRequest.requestAware(getDNDClass().getUrl() + "/levels");
+
+        for (Object classLevel : levels)
+            if (!((JSONObject) classLevel).containsKey("subclass") && ((JSONObject) classLevel).containsKey("spellcasting"))
+                lore.add(spellcastingString((JSONObject) classLevel));
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private String spellcastingString(JSONObject classLevelObject) {
+        SpellcastingLevel spellcasting = new SpellcastingLevel((JSONObject) classLevelObject.get("spellcasting"));
+        StringBuilder string = new StringBuilder(ChatColor.GOLD + nthLevelString((int) (long) classLevelObject.get("level")) + (spellcasting.getCantripsKnown() != 0 ? " " + spellcasting.getCantripsKnown() : "") + "  ");
+
+        for (int i = 1; i <= 9; i++)
+            string.append(" ").append(spellcasting.getSpellSlotsAtLevel(i));
+
+        return string.toString();
+    }
+
+    private String nthLevelString(int level) {
+        if (level > 3 && level < 21)
+            return level + "th";
+
+        switch (level % 10) {
+            case 1:
+                return level + "st";
+            case 2:
+                return level + "nd";
+            case 3:
+                return level + "rd";
+            default:
+                return level + "th";
+        }
+    }
+
+    private ItemStack levelingPerksItem() {
+        // Shows features, proficiency
+
+        return new ItemStack(Material.BEDROCK);
     }
 
     public void selectClassMenu() {
@@ -176,10 +245,16 @@ public class CharacterCreator {
 
         getPlayer().openInventory(inventory);
 
+        final CharacterCreator creator = this;
+
         new BukkitRunnable() {
             public void run() {
                 if (getPlayer().getOpenInventory().getTitle().equals("Subrace Traits"))
-                    subraceRacialTraitsMenu();
+                    for (ChoiceResult result : creator.getSubtraitChoices().values())
+                        if (!result.isComplete()) {
+                            subraceRacialTraitsMenu();
+                            break;
+                        }
             }
         }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
     }
@@ -247,9 +322,11 @@ public class CharacterCreator {
             }
         }
 
+        final CharacterCreator creator = this;
+
         new BukkitRunnable() {
             public void run() {
-                if (getPlayer().getOpenInventory().getTitle().equals("Subrace"))
+                if (getPlayer().getOpenInventory().getTitle().equals("Subrace") && !creator.getSubraceChoiceResult().isComplete())
                     subraceMenu();
             }
         }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
@@ -272,10 +349,16 @@ public class CharacterCreator {
 
         getPlayer().openInventory(inventory);
 
+        final CharacterCreator creator = this;
+
         new BukkitRunnable() {
             public void run() {
                 if (getPlayer().getOpenInventory().getTitle().equals("Racial Traits"))
-                    racialTraitMenu();
+                    for (ChoiceResult result : creator.getSubtraitChoices().values())
+                        if (!result.isComplete()) {
+                            racialTraitMenu();
+                            break;
+                        }
             }
         }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
     }
@@ -321,10 +404,13 @@ public class CharacterCreator {
 
         getPlayer().openInventory(inventory);
 
+        final CharacterCreator creator = this;
+
         new BukkitRunnable() {
             public void run() {
                 if (getPlayer().getOpenInventory().getTitle().equals("Class") || getDNDClass() != null && getPlayer().getOpenInventory().getTitle().equals("Class: " + getDNDClass().getName()))
                     classMenu();
+
             }
         }.runTaskLater(Echovale.getPlugin(Echovale.class), 20L);
     }
@@ -386,6 +472,8 @@ public class CharacterCreator {
         }
 
         getPlayer().openInventory(inventory);
+
+        final CharacterCreator creator = this;
 
         new BukkitRunnable() {
             public void run() {
