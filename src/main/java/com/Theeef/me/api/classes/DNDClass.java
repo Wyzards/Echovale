@@ -113,18 +113,19 @@ public class DNDClass {
         return this.starting_equipment_options;
     }
 
-    public List<Level> getClassLevels() {
+    public List<Level> getClassLevels(boolean includeSubclass) {
         List<Level> list = new ArrayList<>();
         JSONArray array = (JSONArray) APIRequest.requestAware(this.class_levels);
 
         for (Object level : array)
-            list.add(new Level((JSONObject) level));
+            if (!((JSONObject) level).containsKey("subclass") || includeSubclass)
+                list.add(new Level((JSONObject) level));
 
         return list;
     }
 
     public List<Level> getClassLevels(int level) {
-        List<Level> levels = getClassLevels();
+        List<Level> levels = getClassLevels(true);
 
         for (int i = levels.size() - 1; i >= 0; i--)
             if (levels.get(i).getLevel() != level)

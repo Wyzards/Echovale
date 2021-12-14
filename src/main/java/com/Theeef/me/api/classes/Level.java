@@ -13,7 +13,6 @@ public class Level {
     private final long level;
     private final long ability_score_bonuses;
     private final long prof_bonus;
-    private final List<APIReference> feature_choices;
     private final List<APIReference> features;
     private final SpellcastingLevel spellcasting;
     private final JSONObject class_specific;
@@ -26,7 +25,6 @@ public class Level {
         this.level = (long) json.get("level");
         this.ability_score_bonuses = json.containsKey("ability_score_bonuses") ? (long) json.get("ability_score_bonuses") : -1;
         this.prof_bonus = json.containsKey("prof_bonus") ? (long) json.get("prof_bonus") : -1;
-        this.feature_choices = new ArrayList<>();
         this.features = new ArrayList<>();
         this.spellcasting = json.containsKey("spellcasting") ? new SpellcastingLevel((JSONObject) json.get("spellcasting")) : null;
         this.class_specific = json.containsKey("class_specific") ? (JSONObject) json.get("class_specific") : null;
@@ -34,9 +32,6 @@ public class Level {
         this.dndclass = new APIReference((JSONObject) json.get("class"));
         this.subclass = json.containsKey("subclass") ? new APIReference((JSONObject) json.get("subclass")) : null;
         this.url = (String) json.get("url");
-
-        for (Object featureChoice : (JSONArray) json.get("feature_choices"))
-            this.feature_choices.add(new APIReference((JSONObject) featureChoice));
 
         for (Object feature : (JSONArray) json.get("features"))
             this.features.add(new APIReference((JSONObject) feature));
@@ -53,15 +48,6 @@ public class Level {
 
     public long getProficiencyBonus() {
         return this.prof_bonus;
-    }
-
-    public List<Feature> getFeatureChoices() {
-        List<Feature> list = new ArrayList<>();
-
-        for (APIReference featureChoice : this.feature_choices)
-            list.add(new Feature(featureChoice));
-
-        return list;
     }
 
     public List<Feature> getFeatures() {

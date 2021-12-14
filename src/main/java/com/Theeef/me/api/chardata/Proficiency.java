@@ -3,7 +3,6 @@ package com.Theeef.me.api.chardata;
 import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.classes.DNDClass;
-import com.Theeef.me.api.equipment.EquipmentCategory;
 import com.Theeef.me.api.races.Race;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,7 +19,7 @@ public class Proficiency {
     private final List<APIReference> classes;
     private final List<APIReference> races;
     private final String url;
-    private final List<APIReference> references;
+    private final APIReference reference;
 
     public Proficiency(String url) {
         JSONObject json = APIRequest.request(url);
@@ -30,16 +29,13 @@ public class Proficiency {
         this.classes = new ArrayList<>();
         this.races = new ArrayList<>();
         this.url = url;
-        this.references = new ArrayList<>();
+        this.reference = new APIReference((JSONObject) json.get("reference"));
 
         for (Object classObject : (JSONArray) json.get("classes"))
             this.classes.add(new APIReference((JSONObject) classObject));
 
         for (Object raceObject : (JSONArray) json.get("races"))
             this.races.add(new APIReference((JSONObject) raceObject));
-
-        for (Object referenceObject : (JSONArray) json.get("references"))
-            this.references.add(new APIReference((JSONObject) referenceObject));
     }
 
     public Proficiency(APIReference reference) {
@@ -81,8 +77,8 @@ public class Proficiency {
         return this.url;
     }
 
-    public List<APIReference> getReferences() {
-        return this.references;
+    public APIReference getReference() {
+        return this.reference;
     }
 
     @Override

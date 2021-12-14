@@ -1,19 +1,18 @@
 package com.Theeef.me.interaction.character;
 
-import com.Theeef.me.APIRequest;
 import com.Theeef.me.Echovale;
 import com.Theeef.me.api.chardata.AbilityScore;
 import com.Theeef.me.api.chardata.Language;
 import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.chardata.Skill;
 import com.Theeef.me.api.classes.DNDClass;
+import com.Theeef.me.api.classes.Level;
 import com.Theeef.me.api.classes.Spellcasting;
 import com.Theeef.me.api.classes.SpellcastingLevel;
 import com.Theeef.me.api.classes.subclasses.Subclass;
 import com.Theeef.me.api.common.AbilityBonus;
 import com.Theeef.me.api.common.Info;
 import com.Theeef.me.api.common.choice.*;
-import com.Theeef.me.api.equipment.Equipment;
 import com.Theeef.me.api.monsters.Action;
 import com.Theeef.me.api.races.Race;
 import com.Theeef.me.api.races.Subrace;
@@ -33,7 +32,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -114,6 +112,9 @@ public class CharacterCreator {
             case "spellcasting":
                 spellcastingMenu();
                 break;
+            case "spellcastingTable":
+                spellcastingTable(1);
+                break;
             default:
                 throw new NullPointerException(page + " DIDNT KNOW HOW TO DIRECT");
         }
@@ -180,25 +181,20 @@ public class CharacterCreator {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.AQUA + "Spellcasting");
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.AQUA + "Level ")
-        JSONArray levels = (JSONArray) APIRequest.requestAware(getDNDClass().getUrl() + "/levels");
-
-        for (Object classLevel : levels)
-            if (!((JSONObject) classLevel).containsKey("subclass") && ((JSONObject) classLevel).containsKey("spellcasting"))
-                lore.add(spellcastingString((JSONObject) classLevel));
+        lore.add(ChatColor.GRAY + "Click to view the spellcasting table for this class");
 
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        return item;
+        return NBTHandler.addString(item, "goesTo", "spellcastingTable");
     }
 
     private String spellcastingString(JSONObject classLevelObject) {
         SpellcastingLevel spellcasting = new SpellcastingLevel((JSONObject) classLevelObject.get("spellcasting"));
-        StringBuilder string = new StringBuilder(ChatColor.GOLD + nthLevelString((int) (long) classLevelObject.get("level")) + (spellcasting.getCantripsKnown() != 0 ? " " + spellcasting.getCantripsKnown() : "") + "  ");
+        StringBuilder string = new StringBuilder(ChatColor.GOLD + nthLevelString((int) (long) classLevelObject.get("level")) + ((long) classLevelObject.get("level") < 10 ? ((long) classLevelObject.get("level") > 3 ? "  " : " ") : " ") + (spellcasting.getCantripsKnown() != 0 ? "     " + spellcasting.getCantripsKnown() + "  " : "") + "  ");
 
         for (int i = 1; i <= 9; i++)
-            string.append(" ").append(spellcasting.getSpellSlotsAtLevel(i));
+            string.append("   ").append(spellcasting.getSpellSlotsAtLevel(i));
 
         return string.toString();
     }
@@ -217,6 +213,66 @@ public class CharacterCreator {
             default:
                 return level + "th";
         }
+    }
+
+    public void spellcastingTable(int row) {
+        Inventory inventory = Bukkit.createInventory(null, 6 * 9, "-Spell Slots per Spell Level-");
+        List<Level> levels = getDNDClass().getClassLevels(false);
+
+        for (int i = 0; i < 9; i++)
+            inventory.setItem(i, spellSlotColumn(i + 1));
+
+        for (int i = 45; i < 45 + 9; i++)
+            inventory.setItem(i, borderItem());
+
+        for (int i = 0; i < Math.min(4, 20 - (row - 1)); i++) {
+            inventory.setItem(9 + i * 9, new ItemStack(Material.PURPLE_DYE, i));
+            SpellcastingLevel spellcastingLevel = levels.get(row + i - 1).getSpellcasting();
+
+            for (int spellLevel = 1; spellLevel <= 9; spellLevel++)
+                inventory.setItem(9 + 9 * i + spellLevel - 1, spellSlotsAtLevelItem(spellcastingLevel, spellLevel, row + i));
+        }
+
+        inventory.setItem(49, infoSign(row));
+
+        getPlayer().openInventory(inventory);
+    }
+
+    private ItemStack spellSlotsAtLevelItem(SpellcastingLevel spellcasting, int slotLevel, int classLevel) {
+        ItemStack item = new ItemStack(Material.PURPLE_DYE, (int) spellcasting.getSpellSlotsAtLevel(slotLevel));
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + nthLevelString(slotLevel) + " Level Spell");
+        meta.setLore(Lists.newArrayList(ChatColor.GRAY + "This class has " + spellcasting.getSpellSlotsAtLevel(slotLevel) + " " + nthLevelString(slotLevel) + " level spell slots at level " + classLevel));
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private ItemStack infoSign(int startingRow) {
+        ItemStack item = new ItemStack(Material.SPRUCE_SIGN);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Viewing Levels " + startingRow + " through " + (startingRow + 3));
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private ItemStack borderItem() {
+        ItemStack item = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(" ");
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private ItemStack spellSlotColumn(int slotLevel) {
+        ItemStack item = new ItemStack(Material.END_PORTAL_FRAME);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + nthLevelString(slotLevel) + " Level Spell Slot");
+        item.setItemMeta(meta);
+
+        return item;
     }
 
     private ItemStack levelingPerksItem() {
@@ -1205,7 +1261,7 @@ public class CharacterCreator {
         meta.setDisplayName(ChatColor.AQUA + proficiency.getName());
 
         if (proficiency.getType().equals("Skills")) {
-            Skill skill = new Skill(proficiency.getReferences().get(0).getUrl());
+            Skill skill = new Skill(proficiency.getReference().getUrl());
 
             for (String desc : skill.getDescription()) {
                 if (!skill.getDescription().get(0).equals(desc))
