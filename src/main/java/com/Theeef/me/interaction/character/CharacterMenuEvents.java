@@ -20,6 +20,45 @@ import java.util.UUID;
 public class CharacterMenuEvents implements Listener {
 
     @EventHandler
+    public void clickFeatureTableMenu(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() == null && event.getView().getTitle().equals("Level Features") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
+            CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
+            ItemStack item = event.getCurrentItem();
+            event.setCancelled(true);
+
+            if (item == null || !event.getClickedInventory().equals(event.getInventory()))
+                return;
+
+            int currentRow = Integer.parseInt(NBTHandler.getString(event.getClickedInventory().getItem(49), "row"));
+
+            if (item.isSimilar(CharacterCreator.previousFeatureRow(currentRow)))
+                creator.featureTable(currentRow - 1);
+            else if (item.isSimilar(CharacterCreator.nextFeatureRow(currentRow)))
+                creator.featureTable(currentRow + 1);
+        }
+    }
+
+    @EventHandler
+    public void clickSpellTableMenu(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() == null && event.getView().getTitle().equals("-Spell Slots per Spell Level-") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
+            CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());
+            ItemStack item = event.getCurrentItem();
+            event.setCancelled(true);
+
+            if (item == null || !event.getClickedInventory().equals(event.getInventory()))
+                return;
+
+            int currentRow = Integer.parseInt(NBTHandler.getString(event.getClickedInventory().getItem(49), "row"));
+
+            if (item.isSimilar(CharacterCreator.spellTablePrevRow()))
+                creator.spellcastingTable(currentRow - 1);
+            else if (item.isSimilar(CharacterCreator.spellTableNextRow()))
+                creator.spellcastingTable(currentRow + 1);
+        }
+    }
+
+
+    @EventHandler
     public void clickMultiInfo(InventoryClickEvent event) {
         if (event.getInventory().getHolder() == null && event.getView().getTitle().equals("More Option Info") && CharacterCreator.hasWIPCharacter((Player) event.getWhoClicked())) {
             CharacterCreator creator = CharacterCreator.getWIPCharacter((Player) event.getWhoClicked());

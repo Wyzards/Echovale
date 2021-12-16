@@ -6,8 +6,8 @@ import com.Theeef.me.api.chardata.Language;
 import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.chardata.Skill;
 import com.Theeef.me.api.classes.DNDClass;
+import com.Theeef.me.api.classes.Feature;
 import com.Theeef.me.api.classes.Level;
-import com.Theeef.me.api.classes.Spellcasting;
 import com.Theeef.me.api.classes.SpellcastingLevel;
 import com.Theeef.me.api.classes.subclasses.Subclass;
 import com.Theeef.me.api.common.AbilityBonus;
@@ -34,10 +34,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class CharacterCreator {
 
@@ -106,6 +103,9 @@ public class CharacterCreator {
             case "class levels":
                 classLevelsMenu();
                 break;
+            case "class features":
+                featureTable(1);
+                break;
             case "starting equipment":
                 startingEquipmentMenu();
                 break;
@@ -171,9 +171,22 @@ public class CharacterCreator {
         Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, "Leveling");
         if (getDNDClass().getSpellcasting() != null)
             inventory.addItem(levelingSpellcastingItem());
-        inventory.addItem(levelingPerksItem());
+        inventory.addItem(levelingFeaturesItem());
 
         getPlayer().openInventory(inventory);
+    }
+
+    private ItemStack levelingFeaturesItem() {
+        ItemStack item = new ItemStack(Material.ARMOR_STAND, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "Class Features");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Click to view the features for this class");
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+
+        return NBTHandler.addString(item, "goesTo", "class features");
     }
 
     private ItemStack levelingSpellcastingItem() {
@@ -215,6 +228,100 @@ public class CharacterCreator {
         }
     }
 
+    public void featureTable(int level) {
+        Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Level Features");
+        List<Level> levels = getDNDClass().getClassLevels(false);
+
+        for (int i = 0; i < Math.min(20 - (level - 1), 5); i++) {
+            inventory.setItem(i * 9, featureXPItem(level + i));
+            Level levelObj = null;
+
+            for (Level levelO : levels)
+                if (levelO.getLevel() == level + i)
+                    levelObj = levelO;
+
+            if (levelObj == null)
+                throw new NullPointerException();
+
+            System.out.println(level + ", " + i + ", " + Arrays.toString(levelObj.getFeatures().toArray(new Feature[0])));
+
+            for (int j = 0; j < levelObj.getFeatures().size(); j++)
+                inventory.setItem(i * 9 + 1 + j, featureItem(levelObj.getFeatures().get(j)));
+        }
+
+        for (int i = 45; i < 45 + 9; i++)
+            inventory.setItem(i, borderItem());
+
+        inventory.setItem(49, featureSignItem(level));
+        inventory.setItem(45, CharacterCreator.previousPage("class levels"));
+
+        if (level > 1)
+            inventory.setItem(48, previousFeatureRow(level));
+        if (level <= 15)
+            inventory.setItem(50, nextFeatureRow(level));
+
+        getPlayer().openInventory(inventory);
+    }
+
+    public static ItemStack previousFeatureRow(int level) {
+        ItemStack item = new ItemStack(Material.PAPER, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "View Lower Levels");
+        meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Click to view this class's features at lower levels"));
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    public static ItemStack nextFeatureRow(int level) {
+        ItemStack item = new ItemStack(Material.PAPER, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "View Higher Levels");
+        meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Click to view this class's features at higher levels"));
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private static ItemStack featureItem(Feature feature) {
+        ItemStack item;
+        if (feature.getName().equals("Ability Score Improvement"))
+            item = new ItemStack(Material.NETHER_STAR);
+        else
+            item = new ItemStack(Material.BOOK);
+
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + feature.getName());
+        List<String> lore = new ArrayList<>();
+
+        for (String desc : feature.getDescription())
+            lore.addAll(Util.fitForLore(ChatColor.GRAY + desc));
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+
+        return NBTHandler.addString(item, "goesTo", "class features");
+    }
+
+    private static ItemStack featureSignItem(int level) {
+        ItemStack item = new ItemStack(Material.SPRUCE_SIGN);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Viewing features for levels " + level + " through " + (level + 4));
+        item.setItemMeta(meta);
+
+        return NBTHandler.addString(item, "row", Integer.toString(level));
+    }
+
+    private static ItemStack featureXPItem(int level) {
+        ItemStack item = new ItemStack(Material.EXPERIENCE_BOTTLE);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.GREEN + "Level " + level + "'s Features");
+        meta.setLore(Lists.newArrayList(ChatColor.GRAY + "The features to the right are obtained at level " + level));
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
     public void spellcastingTable(int row) {
         Inventory inventory = Bukkit.createInventory(null, 6 * 9, "-Spell Slots per Spell Level-");
         List<Level> levels = getDNDClass().getClassLevels(false);
@@ -233,9 +340,38 @@ public class CharacterCreator {
                 inventory.setItem(9 + 9 * i + spellLevel - 1, spellSlotsAtLevelItem(spellcastingLevel, spellLevel, row + i));
         }
 
-        inventory.setItem(49, infoSign(row));
+
+        inventory.setItem(49, spellInfoSign(row));
+
+        if (row > 1)
+            inventory.setItem(48, spellTablePrevRow());
+
+        if (row <= 16)
+            inventory.setItem(50, spellTableNextRow());
+
+        inventory.setItem(45, previousPage("class levels"));
 
         getPlayer().openInventory(inventory);
+    }
+
+    public static ItemStack spellTableNextRow() {
+        ItemStack item = new ItemStack(Material.PAPER, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "View Higher Levels");
+        meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Click to view this class's spell slots at higher levels"));
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    public static ItemStack spellTablePrevRow() {
+        ItemStack item = new ItemStack(Material.PAPER, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "View Lower Levels");
+        meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Click to view this class's spell slots at lower levels"));
+        item.setItemMeta(meta);
+
+        return item;
     }
 
     private ItemStack spellSlotsAtLevelItem(SpellcastingLevel spellcasting, int slotLevel, int classLevel) {
@@ -248,13 +384,13 @@ public class CharacterCreator {
         return item;
     }
 
-    private ItemStack infoSign(int startingRow) {
+    private ItemStack spellInfoSign(int startingRow) {
         ItemStack item = new ItemStack(Material.SPRUCE_SIGN);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Viewing Levels " + startingRow + " through " + (startingRow + 3));
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Viewing spell slots at levels " + startingRow + " through " + (startingRow + 3));
         item.setItemMeta(meta);
 
-        return item;
+        return NBTHandler.addString(item, "row", Integer.toString(startingRow));
     }
 
     private ItemStack borderItem() {
@@ -267,7 +403,7 @@ public class CharacterCreator {
     }
 
     private ItemStack spellSlotColumn(int slotLevel) {
-        ItemStack item = new ItemStack(Material.END_PORTAL_FRAME);
+        ItemStack item = new ItemStack(Material.END_PORTAL_FRAME, slotLevel);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.LIGHT_PURPLE + nthLevelString(slotLevel) + " Level Spell Slot");
         item.setItemMeta(meta);
@@ -276,9 +412,13 @@ public class CharacterCreator {
     }
 
     private ItemStack levelingPerksItem() {
-        // Shows features, proficiency
+        ItemStack item = new ItemStack(Material.ARMOR_STAND);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "Level Features");
+        meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Click to view this class's features at each level"));
+        item.setItemMeta(meta);
 
-        return new ItemStack(Material.BEDROCK);
+        return item;
     }
 
     public void selectClassMenu() {
