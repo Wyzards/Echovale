@@ -1,8 +1,8 @@
 package com.Theeef.me.api.common.choice;
 
 import com.Theeef.me.api.classes.subclasses.Prerequisite;
-import com.Theeef.me.api.common.Indexable;
 import com.Theeef.me.interaction.character.CharacterCreator;
+import com.Theeef.me.interaction.character.CharacterCreatorItems;
 import com.Theeef.me.interaction.character.ChoiceMenu;
 import com.Theeef.me.interaction.character.ChoiceMenuItem;
 import com.Theeef.me.util.NBTHandler;
@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -44,7 +43,7 @@ public class MultipleOption extends Option {
         for (ChoiceOption choiceOption : getChoices())
             inventory.addItem(choiceOption.getMultiChoiceOptionItem(result.getMultiOptionChoices(this) != null && result.getMultiOptionChoices(this).containsKey(choiceOption) ? result.getMultiOptionChoices(this).get(choiceOption) : null));
 
-        inventory.setItem(inventory.getSize() - 9, NBTHandler.addString(parentMenu.attachToItem(CharacterCreator.previousPage("previous")), "optionIndex", Integer.toString(parentMenu.getChoiceResult().getChoice().getOptions().indexOf(this))));
+        inventory.setItem(inventory.getSize() - 9, NBTHandler.addString(parentMenu.attachToItem(CharacterCreatorItems.previousPage("previous")), "optionIndex", Integer.toString(parentMenu.getChoiceResult().getNonexcludedOptions().indexOf(this))));
 
         return inventory;
     }

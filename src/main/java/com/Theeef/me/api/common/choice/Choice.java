@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Choice {
 
     private final long choose;
-    private final String type;
+    private String type;
     private final OptionSet from;
 
     public Choice(String type, long choose, OptionSet from) {
@@ -27,12 +27,15 @@ public class Choice {
             List<Option> options = new ArrayList<>();
 
             for (Object option : (JSONArray) json.get("from")) {
-                if (((JSONObject) option).containsKey("equipment_category")) {
-                    this.from = new ResourceListOptionSet((String) ((JSONObject) ((JSONObject) option).get("equipment_category")).get("url"));
-                    return;
-                }
+                if (option instanceof JSONObject) {
+                    if (((JSONObject) option).containsKey("equipment_category")) {
+                        this.from = new ResourceListOptionSet((String) ((JSONObject) ((JSONObject) option).get("equipment_category")).get("url"));
+                        return;
+                    }
 
-                options.add(Option.fromJSON((JSONObject) option));
+                    options.add(Option.fromJSON((JSONObject) option));
+                } else if (option instanceof String)
+                    options.add(new SingleStringOption(new ArrayList<>(), (String) option));
             }
 
             this.from = new ArrayOptionSet(options);
@@ -67,5 +70,9 @@ public class Choice {
 
     public OptionSet getOptionSet() {
         return this.from;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

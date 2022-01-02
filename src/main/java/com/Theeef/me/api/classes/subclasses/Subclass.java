@@ -4,10 +4,14 @@ import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.classes.DNDClass;
 import com.Theeef.me.api.classes.Level;
 import com.Theeef.me.api.common.APIReference;
+import com.Theeef.me.api.spells.Spell;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Subclass {
@@ -67,6 +71,18 @@ public class Subclass {
 
     public List<SubclassSpell> getSpells() {
         return this.spells;
+    }
+
+    public HashMap<Integer, List<Spell>> getSpellsByLevel() {
+        HashMap<Integer, List<Spell>> spells = Maps.newHashMap();
+
+        for (SubclassSpell spell : getSpells())
+            if (spells.containsKey((int) spell.getSpell().getLevel()))
+                spells.get((int) spell.getSpell().getLevel()).add(spell.getSpell());
+            else
+                spells.put((int) spell.getSpell().getLevel(), Lists.newArrayList(spell.getSpell()));
+
+        return spells;
     }
 
     public List<Level> getSublassLevels() {

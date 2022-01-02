@@ -70,6 +70,14 @@ public class DNDClass {
         this(reference.getUrl());
     }
 
+    public boolean hasFirstLevelSubclass() {
+        for (Subclass subclass : getSubclasses())
+            for (Level level : subclass.getSublassLevels())
+                if (level.getLevel() == 1)
+                    return true;
+        return false;
+    }
+
     // Get methods
     public String getIndex() {
         return this.index;
@@ -122,6 +130,13 @@ public class DNDClass {
                 list.add(new Level((JSONObject) level));
 
         return list;
+    }
+
+    public Level getClassLevel(int level) {
+        for (Level levelObject : getClassLevels(level))
+            if (levelObject.getSubclass() == null)
+                return levelObject;
+        throw new NullPointerException();
     }
 
     public List<Level> getClassLevels(int level) {

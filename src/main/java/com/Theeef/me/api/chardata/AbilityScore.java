@@ -73,15 +73,6 @@ public class AbilityScore {
         return this.desc;
     }
 
-    public List<Skill> getSkills() {
-        List<Skill> list = new ArrayList<>();
-
-        for (APIReference skillReference : this.skills)
-            list.add(new Skill(skillReference.getUrl()));
-
-        return list;
-    }
-
     public String getUrl() {
         return this.url;
     }

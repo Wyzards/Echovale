@@ -70,4 +70,8 @@ public class Language {
         return this.url;
     }
 
+    public APIReference getReference() {
+        return new APIReference(this.index, this.name, this.url);
+    }
+
 }

@@ -13,12 +13,18 @@ public class Ideal {
     private final String desc;
     private final List<APIReference> alignments;
 
-    public Ideal(JSONObject json) {
-        this.desc = (String) json.get("desc");
-        this.alignments = new ArrayList<>();
+    public Ideal(String desc, List<APIReference> alignments) {
+        this.desc = desc;
+        this.alignments = alignments;
+    }
+
+    public static Ideal fromJSON(JSONObject json) {
+        List<APIReference> alignments = new ArrayList<>();
 
         for (Object alignment : (JSONArray) json.get("alignments"))
-            this.alignments.add(new APIReference((JSONObject) alignment));
+            alignments.add(new APIReference((JSONObject) alignment));
+
+        return new Ideal((String) json.get("desc"), alignments);
     }
 
     // Getter methods

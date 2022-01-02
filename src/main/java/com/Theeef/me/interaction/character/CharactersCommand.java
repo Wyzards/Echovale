@@ -13,7 +13,7 @@ public class CharactersCommand implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            CharacterMenu.characters(player);
+            CharacterCreator.charCommand(player);
             player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0f, 1.0f);
         }
 

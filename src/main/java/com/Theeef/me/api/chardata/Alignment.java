@@ -13,19 +13,17 @@ public class Alignment {
     private final String index;
     private final String name;
     private final String abbreviation;
-    private final List<String> desc;
+    private final String desc;
     private final String url;
 
     public Alignment(String url) {
         JSONObject json = APIRequest.request(url);
+
         this.index = (String) json.get("index");
         this.name = (String) json.get("name");
         this.abbreviation = (String) json.get("abbreviation");
-        this.desc = new ArrayList<>();
+        this.desc = (String) json.get("desc");
         this.url = url;
-
-        for (Object descLine : (JSONArray) json.get("desc"))
-            this.desc.add((String) descLine);
     }
 
     public Alignment(APIReference reference) {
@@ -45,7 +43,7 @@ public class Alignment {
         return this.abbreviation;
     }
 
-    public List<String> getDescription() {
+    public String getDescription() {
         return this.desc;
     }
 

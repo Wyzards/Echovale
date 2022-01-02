@@ -2,7 +2,9 @@ package com.Theeef.me.interaction.character;
 
 import com.Theeef.me.Echovale;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.common.choice.*;
+import com.Theeef.me.api.common.choice.ChoiceResult;
+import com.Theeef.me.api.common.choice.MultipleOption;
+import com.Theeef.me.api.common.choice.Option;
 import com.Theeef.me.util.NBTHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -11,8 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.List;
 
-public class ChoiceMenu<T> {
+public class ChoiceMenu {
 
     public static HashMap<Integer, ChoiceMenu> menuMap = new HashMap<>();
     public static HashMap<ChoiceMenu, Inventory> inventoryMap = new HashMap<>();
@@ -49,7 +52,7 @@ public class ChoiceMenu<T> {
     }
 
     public void open(Player player) {
-        for (Option option : this.result.getChoice().getOptions())
+        for (Option option : this.result.getNonexcludedOptions())
             if (option.getOptionType() == Option.OptionType.CHOICE || (option.getOptionType() == Option.OptionType.MULTIPLE && this.result.getMultiOptionChoices((MultipleOption) option) != null)) {
                 open(player, true);
                 return;
@@ -60,9 +63,13 @@ public class ChoiceMenu<T> {
 
     public void open(Player player, boolean startLoop) {
         CharacterCreator creator = CharacterCreator.getWIPCharacter(player);
-        Inventory inventory = Bukkit.createInventory(null, 9 * ((this.result.getChoice().getOptions().size() - 1) / 9 + 3), this.name);
+        Inventory inventory = Bukkit.createInventory(null, 9 * ((this.result.getNonexcludedOptions().size() - 1) / 9 + 3), this.name);
+        List<Option> options = this.result.getNonexcludedOptions();
 
-        for (Option option : this.result.getChoice().getOptions())
+        if (getChoiceResult().getChoice().getType().equals("expertise"))
+            options.retainAll(creator.toOptionsList(creator.getCurrentProficiencies()));
+
+        for (Option option : options)
             inventory.addItem(option.getOptionItem(this.result, creator));
 
         if (this.specificReference != null)
@@ -76,11 +83,11 @@ public class ChoiceMenu<T> {
 
 
         if (this.previousPage != null)
-            inventory.setItem(inventory.getSize() - 9, attachToItem(CharacterCreator.previousPage(this.previousPage)));
+            inventory.setItem(inventory.getSize() - 9, attachToItem(CharacterCreatorItems.previousPage(this.previousPage)));
         else if (this.previousMenu != null)
-            inventory.setItem(inventory.getSize() - 9, this.previousMenu.attachToItem(CharacterCreator.previousPage("previous")));
+            inventory.setItem(inventory.getSize() - 9, this.previousMenu.attachToItem(CharacterCreatorItems.previousPage("previous")));
         else if (this.previousInventory != null)
-            inventory.setItem(inventory.getSize() - 9, ChoiceMenu.attachInventoryToItem(CharacterCreator.previousPage("previous"), this));
+            inventory.setItem(inventory.getSize() - 9, ChoiceMenu.attachInventoryToItem(CharacterCreatorItems.previousPage("previous"), this));
 
         player.openInventory(inventory);
 

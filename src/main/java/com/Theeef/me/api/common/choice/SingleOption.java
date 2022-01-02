@@ -1,14 +1,17 @@
 package com.Theeef.me.api.common.choice;
 
+import com.Theeef.me.api.backgrounds.Background;
 import com.Theeef.me.api.chardata.Language;
 import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.classes.DNDClass;
+import com.Theeef.me.api.classes.Feature;
 import com.Theeef.me.api.classes.subclasses.Prerequisite;
+import com.Theeef.me.api.classes.subclasses.Subclass;
 import com.Theeef.me.api.common.APIReference;
-import com.Theeef.me.api.common.Indexable;
 import com.Theeef.me.api.races.Race;
 import com.Theeef.me.api.races.Subrace;
 import com.Theeef.me.interaction.character.CharacterCreator;
+import com.Theeef.me.interaction.character.CharacterCreatorItems;
 import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -32,29 +35,36 @@ public class SingleOption extends Option {
 
         switch (parentResult.getChoice().getType()) {
             case "trait":
-                return creator.subtraitItem(this);
+                return new CharacterCreatorItems(creator).subtraitItem(this);
             case "language":
             case "languages":
-                return CharacterCreator.languageItem(new Language(reference), parentResult.alreadyChosen(this));
+                return CharacterCreatorItems.languageItem(new Language(reference), parentResult.alreadyChosen(this));
+            case "expertise":
             case "proficiencies":
             case "proficiency":
-                return CharacterCreator.proficiencyItem(new Proficiency(reference), parentResult.alreadyChosen(this));
+                return CharacterCreatorItems.proficiencyItem(new Proficiency(reference), parentResult.alreadyChosen(this));
             case "spell":
-                return creator.traitSpellItem(parentResult, this);
+                return CharacterCreatorItems.traitSpellItem(parentResult, this);
             case "race":
-                return CharacterCreator.raceItem(new Race(reference));
+                return CharacterCreatorItems.raceItem(new Race(reference));
             case "subrace":
-                return CharacterCreator.subraceItem(new Subrace(reference));
+                return CharacterCreatorItems.subraceItem(new Subrace(reference));
             case "class":
-                return CharacterCreator.classItem(new DNDClass(reference));
+                return CharacterCreatorItems.classItem(new DNDClass(reference));
+            case "subclass":
+                return CharacterCreatorItems.selectSubclassItem(new Subclass(reference));
+            case "background":
+                return CharacterCreatorItems.backgroundItem(new Background(reference.getUrl()));
             case "equipment":
                 ItemStack item = this.getItem().getEquipment();
                 if (parentResult.alreadyChosen(this))
                     item.addUnsafeEnchantment(Enchantment.OXYGEN, 1);
                 ItemMeta meta = item.getItemMeta();
+                assert meta != null;
                 List<String> lore = meta.getLore();
 
                 if (!parentResult.isComplete() || parentResult.alreadyChosen(this)) {
+                    assert lore != null;
                     lore.add("");
                     lore.add(ChatColor.WHITE + "Click to " + (parentResult.alreadyChosen(this) ? "unselect" : "select"));
                 }
@@ -63,6 +73,8 @@ public class SingleOption extends Option {
                 item.setItemMeta(meta);
 
                 return item;
+            case "feature":
+                return creator.featureItem(new Feature(getItem().getReference().getUrl()));
             default:
                 throw new IllegalArgumentException("ChoiceResult type " + parentResult.getChoice().getType() + " could not have an item created for it!");
         }

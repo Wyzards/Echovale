@@ -10,10 +10,14 @@ public class APIReference {
     private final String name;
     private final String url;
 
+    public APIReference(String index, String name, String url) {
+        this.index = index;
+        this.name = name;
+        this.url = url;
+    }
+
     public APIReference(JSONObject json) {
-        this.index = (String) json.get("index");
-        this.name = (String) json.get("name");
-        this.url = (String) json.get("url");
+        this((String) json.get("index"), (String) json.get("name"), (String) json.get("url"));
     }
 
     @Override

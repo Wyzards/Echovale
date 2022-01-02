@@ -1,5 +1,6 @@
 package com.Theeef.me.api.common.choice;
 
+import com.Theeef.me.api.backgrounds.Ideal;
 import com.Theeef.me.api.classes.subclasses.Prerequisite;
 import com.Theeef.me.api.common.Indexable;
 import com.Theeef.me.interaction.character.CharacterCreator;
@@ -70,6 +71,8 @@ public abstract class Option {
             return new MultipleOption(new ArrayList<>(), items, options);
         } else if (json.containsKey("equipment_option"))
             return new ChoiceOption(new ArrayList<>(), new Choice((JSONObject) json.get("equipment_option")));
+        else if (json.containsKey("desc") && json.containsKey("alignments"))
+            return new SingleIdealOption(new ArrayList<>(), Ideal.fromJSON(json));
         else
             return new SingleOption(new ArrayList<>(), CountedReference.fromJSON(json));
     }

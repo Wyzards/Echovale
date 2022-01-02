@@ -4,7 +4,8 @@ import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.chardata.Proficiency;
 import com.Theeef.me.api.common.APIReference;
 import com.Theeef.me.api.common.choice.Choice;
-import com.Theeef.me.api.equipment.Equipment;
+import com.Theeef.me.api.common.choice.CountedReference;
+import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -17,13 +18,13 @@ public class Background {
     private final String name;
     private final List<APIReference> starting_proficiencies;
     private final Choice language_options;
-    private final List<APIReference> starting_equipment;
+    private final List<CountedReference> starting_equipment;
     private final List<Choice> starting_equipment_options;
     private final BackgroundFeature feature;
-    private final DescriptionChoice personality_traits;
-    private final IdealsChoice ideals;
-    private final DescriptionChoice bonds;
-    private final DescriptionChoice flaws;
+    private final Choice personality_traits;
+    private final Choice ideals;
+    private final Choice bonds;
+    private final Choice flaws;
     private final String url;
 
     public Background(String url) {
@@ -35,17 +36,17 @@ public class Background {
         this.starting_equipment = new ArrayList<>();
         this.starting_equipment_options = new ArrayList<>();
         this.feature = new BackgroundFeature((JSONObject) json.get("feature"));
-        this.personality_traits = new DescriptionChoice((JSONObject) json.get("personality_traits"));
-        this.ideals = new IdealsChoice((JSONObject) json.get("ideals"));
-        this.bonds = new DescriptionChoice((JSONObject) json.get("bonds"));
-        this.flaws = new DescriptionChoice((JSONObject) json.get("flaws"));
+        this.personality_traits = new Choice((JSONObject) json.get("personality_traits"));
+        this.ideals = new Choice((JSONObject) json.get("ideals"));
+        this.bonds = new Choice((JSONObject) json.get("bonds"));
+        this.flaws = new Choice((JSONObject) json.get("flaws"));
         this.url = url;
 
         for (Object startingProficiency : (JSONArray) json.get("starting_proficiencies"))
             this.starting_proficiencies.add(new APIReference((JSONObject) startingProficiency));
 
         for (Object startingEquipment : (JSONArray) json.get("starting_equipment"))
-            this.starting_equipment.add(new APIReference((JSONObject) startingEquipment));
+            this.starting_equipment.add(CountedReference.fromJSON((JSONObject) startingEquipment));
 
         for (Object equipChoice : (JSONArray) json.get("starting_equipment_options"))
             this.starting_equipment_options.add(new Choice((JSONObject) equipChoice));
@@ -73,11 +74,11 @@ public class Background {
         return this.language_options;
     }
 
-    public List<Equipment> getStartingEquipment() {
-        List<Equipment> list = new ArrayList<>();
+    public List<ItemStack> getStartingEquipment() {
+        List<ItemStack> list = new ArrayList<>();
 
-        for (APIReference equipment : this.starting_equipment)
-            list.add(Equipment.fromString(equipment.getUrl()));
+        for (CountedReference equipment : this.starting_equipment)
+            list.add(equipment.getEquipment());
 
         return list;
     }
@@ -90,24 +91,34 @@ public class Background {
         return this.feature;
     }
 
-    public DescriptionChoice getPersonalityTraits() {
+    public Choice getPersonalityTraits() {
         return this.personality_traits;
     }
 
-    public IdealsChoice getIdeals() {
+    public Choice getIdeals() {
         return this.ideals;
     }
 
-    public DescriptionChoice getBonds() {
+    public Choice getBonds() {
         return this.bonds;
     }
 
-    public DescriptionChoice getFlaws() {
+    public Choice getFlaws() {
         return this.flaws;
     }
 
     public String getUrl() {
         return this.url;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof Background))
+            return false;
+
+        Background background = (Background) object;
+
+        return background.getUrl().equals(this.url);
     }
 
     // Static methods

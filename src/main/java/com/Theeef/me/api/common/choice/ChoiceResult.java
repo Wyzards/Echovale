@@ -2,6 +2,7 @@ package com.Theeef.me.api.common.choice;
 
 import com.Theeef.me.interaction.character.CharacterCreator;
 import com.Theeef.me.interaction.character.ChoiceMenuItem;
+import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -10,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class ChoiceResult {
 
@@ -17,12 +19,48 @@ public class ChoiceResult {
     private final Choice choice;
     private final HashMap<ChoiceOption, ChoiceResult> choiceOptions;
     private final HashMap<MultipleOption, HashMap<ChoiceOption, ChoiceResult>> multipleOptionChoiceOptions;
+    public final List<ChoiceResult> excludedResults;
+    public final List<Option> excludedOptions;
 
-    public ChoiceResult(Choice choice) {
+    public ChoiceResult(Choice choice, List<Option> excludedOptions, ChoiceResult... excludeResults) {
         this.choice = choice;
         this.chosen = new ArrayList<>();
         this.choiceOptions = new HashMap<>();
         this.multipleOptionChoiceOptions = new HashMap<>();
+        this.excludedResults = Lists.newArrayList(excludeResults);
+        this.excludedOptions = excludedOptions;
+        this.excludedResults.removeIf(Objects::isNull);
+
+        for (ChoiceResult result : this.excludedResults)
+            result.exclude(this);
+    }
+
+    public ChoiceResult(Choice choice) {
+        this(choice, Lists.newArrayList());
+    }
+
+    public void exclude(ChoiceResult... excluded) {
+        for (ChoiceResult result : excluded)
+            if (result != null && !this.excludedResults.contains(result)) {
+                this.excludedResults.add(result);
+
+                for (Option option : result.getChosen())
+                    if (alreadyChosen(option))
+                        unchoose(option);
+            }
+    }
+
+    public void exclude(Option... options) {
+        for (Option option : options) {
+            this.excludedOptions.add(option);
+
+            if (alreadyChosen(option))
+                unchoose(option);
+        }
+    }
+
+    public void clearOptionExclusions() {
+        this.excludedOptions.clear();
     }
 
     public ItemStack getItem(CharacterCreator creator) {
@@ -119,6 +157,29 @@ public class ChoiceResult {
         this.chosen.clear();
         this.choiceOptions.clear();
         this.multipleOptionChoiceOptions.clear();
+    }
+
+    public List<Option> getNonexcludedOptions() {
+        List<Option> options = Lists.newArrayList();
+
+        for (Option option : getChoice().getOptions())
+            options.add(option);
+
+        options.removeAll(getExcludedOptions());
+
+        return options;
+    }
+
+    public List<Option> getExcludedOptions() {
+        List<Option> options = Lists.newArrayList();
+
+        for (ChoiceResult excludedResult : this.excludedResults)
+            if (excludedResult != null)
+                options.addAll(excludedResult.getChosen());
+
+        options.addAll(this.excludedOptions);
+
+        return options;
     }
 
     // Getter methods

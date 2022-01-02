@@ -4,14 +4,12 @@ import com.Theeef.me.APIRequest;
 import com.Theeef.me.api.classes.subclasses.FeatureSpecific;
 import com.Theeef.me.api.classes.subclasses.Subclass;
 import com.Theeef.me.api.common.APIReference;
+import com.Theeef.me.api.common.choice.CountedReference;
 import com.Theeef.me.api.races.Trait;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Feature {
 
@@ -45,6 +43,10 @@ public class Feature {
         this(reference.getUrl());
     }
 
+    public static Feature fromIndex(String index) {
+        return new Feature("/api/features/" + index);
+    }
+
     // Getter methods
     public String getIndex() {
         return this.index;
@@ -63,7 +65,7 @@ public class Feature {
     }
 
     public Subclass getSubclass() {
-        return new Subclass(this.subclass.getUrl());
+        return this.subclass == null ? null : new Subclass(this.subclass.getUrl());
     }
 
     public List<String> getDescription() {
@@ -71,7 +73,7 @@ public class Feature {
     }
 
     public Feature getParent() {
-        return new Feature(this.parent);
+        return this.parent == null ? null : new Feature(this.parent);
     }
 
     public FeatureSpecific getFeatureSpecific() {
@@ -93,4 +95,17 @@ public class Feature {
         return set;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Feature && ((Feature) object).getIndex().equals(this.index);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass(), this.index);
+    }
+
+    public APIReference getReference() {
+        return new APIReference(this.index, this.name, this.url);
+    }
 }

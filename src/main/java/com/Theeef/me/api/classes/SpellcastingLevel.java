@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 public class SpellcastingLevel {
 
     private final long cantrips_known;
+    private final long spells_known;
     private final long spell_slots_level_1;
     private final long spell_slots_level_2;
     private final long spell_slots_level_3;
@@ -17,6 +18,7 @@ public class SpellcastingLevel {
 
     public SpellcastingLevel(JSONObject json) {
         this.cantrips_known = json.containsKey("cantrips_known") ? (long) json.get("cantrips_known") : 0;
+        this.spells_known = json.containsKey("spells_known") ? (long) json.get("spells_known") : 0;
         this.spell_slots_level_1 = json.containsKey("spell_slots_level_1") ? (long) json.get("spell_slots_level_1") : 0;
         this.spell_slots_level_2 = json.containsKey("spell_slots_level_2") ? (long) json.get("spell_slots_level_2") : 0;
         this.spell_slots_level_3 = json.containsKey("spell_slots_level_3") ? (long) json.get("spell_slots_level_3") : 0;
@@ -31,6 +33,10 @@ public class SpellcastingLevel {
     // Getter methods
     public long getCantripsKnown() {
         return this.cantrips_known;
+    }
+
+    public long getSpellsKnown() {
+        return this.spells_known;
     }
 
     public long getSpellSlotsAtLevel(int level) {

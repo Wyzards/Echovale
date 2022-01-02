@@ -19,7 +19,7 @@ public class Proficiency {
     private final List<APIReference> classes;
     private final List<APIReference> races;
     private final String url;
-    private final APIReference reference;
+    private final APIReference usage_reference;
 
     public Proficiency(String url) {
         JSONObject json = APIRequest.request(url);
@@ -29,7 +29,7 @@ public class Proficiency {
         this.classes = new ArrayList<>();
         this.races = new ArrayList<>();
         this.url = url;
-        this.reference = new APIReference((JSONObject) json.get("reference"));
+        this.usage_reference = new APIReference((JSONObject) json.get("reference"));
 
         for (Object classObject : (JSONArray) json.get("classes"))
             this.classes.add(new APIReference((JSONObject) classObject));
@@ -77,8 +77,12 @@ public class Proficiency {
         return this.url;
     }
 
-    public APIReference getReference() {
-        return this.reference;
+    public APIReference getUsageReference() {
+        return this.usage_reference;
+    }
+
+    public APIReference toReference() {
+        return new APIReference(this.index, this.name, this.url);
     }
 
     @Override
